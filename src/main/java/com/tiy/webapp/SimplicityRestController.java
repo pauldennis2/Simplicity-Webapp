@@ -53,20 +53,20 @@ public class SimplicityRestController {
     }
 
     @RequestMapping(path = "/diplomacy-info.json", method = RequestMethod.POST)
-    public List<Player> diplomacyInfo (@RequestBody IdRequestWrapper wrapper) {
+    public List<PlayerTemp> diplomacyInfo (@RequestBody IdRequestWrapper wrapper) {
         Integer gameId = wrapper.getGameId();
         Integer playerId = wrapper.getPlayerId();
-        List<Player> hardCodedList = new ArrayList<>();
-        hardCodedList.add(new Player(10, "Snovemdomas", "assets/1.jpg"));
-        hardCodedList.add(new Player(15, "Mebes", "assets/2.jpg"));
-        hardCodedList.add(new Player(9, "Oculons", "assets/3.jpg"));
-        hardCodedList.add(new Player(0, "Chamachies", "assets/4.jpg"));
+        List<PlayerTemp> hardCodedList = new ArrayList<>();
+        hardCodedList.add(new PlayerTemp(10, "Snovemdomas", "assets/1.jpg"));
+        hardCodedList.add(new PlayerTemp(15, "Mebes", "assets/2.jpg"));
+        hardCodedList.add(new PlayerTemp(0, "Oculons", "assets/3.jpg"));
+        hardCodedList.add(new PlayerTemp(1, "Chamachies", "assets/4.jpg"));
         int total = 0;
-        for (Player player : hardCodedList) {
-            total += player.getPopulation();
+        for (PlayerTemp playerTemp : hardCodedList) {
+            total += playerTemp.getPopulation();
         }
-        for (Player player : hardCodedList) {
-            player.calculatePercentageOfTotalPop((double) total);
+        for (PlayerTemp playerTemp : hardCodedList) {
+            playerTemp.calculatePercentageOfTotalPop((double) total);
         }
         return hardCodedList;
     }
@@ -82,7 +82,7 @@ public class SimplicityRestController {
         return hardCodedList;
     }
 
-    @RequestMapping(path = "/planets-info.json", method = RequestMethod.POST)
+    /*@RequestMapping(path = "/planets-info.json", method = RequestMethod.POST)
     public List<Planet> planetsInfo (@RequestBody IdRequestWrapper wrapper) {
         Integer gameId = wrapper.getGameId();
         Integer playerId = wrapper.getPlayerId();
@@ -91,7 +91,8 @@ public class SimplicityRestController {
         hardCodedList.add(new Planet("Zebulon IV", "Zebulon", 5, "assets/zebulon.png"));
         hardCodedList.add(new Planet("Alpha Centauri III", "Alpha Centauri", 3, "assets/alphacentauri.png"));
         return hardCodedList;
-    }
+        todo fix
+    }*/
 
     @RequestMapping(path = "/shipyard-info.json", method = RequestMethod.POST)
     public Response shipyardInfo (@RequestBody IdRequestWrapper wrapper) {

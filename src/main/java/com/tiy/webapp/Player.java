@@ -1,73 +1,123 @@
 package com.tiy.webapp;
 
+import com.tiy.webapp.starship.Shipyard;
+import com.tiy.webapp.starship.Starship;
+import com.tiy.webapp.starship.Weapon;
+import com.tiy.webapp.starship.WeaponClass;
+import com.tiy.webapp.starsys.Planet;
+import com.tiy.webapp.starsys.StarSystem;
+import com.tiy.webapp.starsys.Technology;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Created by Paul Dennis on 2/6/2017.
+ * Created by erronius on 12/20/2016.
  */
 public class Player {
+    List<Planet> planets;
+    List<Starship> ships;
+    Shipyard shipyard;
 
-    private int population;
-    private String name;
-    private int id;
-    private String imageFile;
+    int totalResearch;
 
-    private double percentOfTotalPop;
+    private Technology tech;
 
-    public Player(int population, String name, String imageFile) {
-        this.population = population;
+    String name;
+
+    private StarSystem homeSystem;
+
+    public Player(StarSystem homeSystem, String name) {
+        planets = new ArrayList<>();
+        ships = new ArrayList<>();
+        shipyard = new Shipyard(homeSystem, this);
+
+        planets.add(homeSystem.getPlanets().get(0));//BAD (we shoudln't be assuming this. works for now) todo fix
+        totalResearch = 0;
         this.name = name;
-        this.imageFile = imageFile;
-        if (population == 0) {
-            this.imageFile = imageFile.substring(0, 8) + "g" + ".jpg";
+        this.homeSystem = homeSystem;
+        tech = Technology.HEPHAESTUS_I;
+    }
+
+    public int getCurrentProductionPerTurn () {
+        System.out.println("getCurrentProductionPerTurn() returning a hard-coded value");
+        return 5;
+    }
+
+    public void addShip (Starship starship) {
+        ships.add(starship);
+    }
+
+    public void addPlanet (Planet planet) {
+        if (planet.getOwner().equals(this)) {
+            planets.add(planet);
+        } else {
+            throw new AssertionError("Attempted to add a planet I don't own.");
         }
     }
 
-    public int getPopulation() {
-        return population;
+    public void doTurn () {
+        int production = 0;
+        int research = 0;
+        for (Planet planet : planets) {
+            production += planet.getProduction();
+            research += planet.getResearch();
+            planet.growPopulation();
+        }
+        System.out.println("Adding " + research + " research to pool.");
+        totalResearch += research;
+        if (totalResearch > tech.getResearchCost()) {
+            tech.setComplete(true);
+        }
+        System.out.println("Adding " + production + " production to " + shipyard.getName() + " Shipyard.");
+        shipyard.addProductionToCurrentProject(production);
     }
 
-    public void setPopulation(int population) {
-        this.population = population;
+    public void moveShips () {
+        for (Starship starship : ships) {
+            starship.moveToDestination();
+        }
     }
 
-    public String getName() {
+    public String getName () {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void removeShip (Starship ship) {
+        ships.remove(ship);
     }
 
-    public int getId() {
-        return id;
+    public StarSystem getHomeSystem () {
+        return homeSystem;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public List<Planet> getPlanets () {
+        return planets;
     }
 
-    public void calculatePercentageOfTotalPop (double total) {
-        percentOfTotalPop = (double)population/total;
-        percentOfTotalPop *= 100.0;
-        String pct = "" + percentOfTotalPop;
-        if (pct.length() > 3) {
-            pct = pct.substring(0, 4);
-        }
-        percentOfTotalPop = Double.parseDouble(pct);
+    public List<Starship> getShips () {
+        return ships;
     }
 
-    public double getPercentOfTotalPop () {
-        return percentOfTotalPop;
+    public Technology getTech () {
+        return tech;
     }
 
-    public void setPercentOfTotalPop(double percentOfTotalPop) {
-        this.percentOfTotalPop = percentOfTotalPop;
+    public Shipyard getShipyard () {
+        return shipyard;
     }
 
-    public String getImageFile() {
-        return imageFile;
+    public List<Weapon> getAvailableSmallWeaps () {
+        List<Weapon> smallWeaps = new ArrayList<>();
+        smallWeaps.add(new Weapon(WeaponClass.BEAM, false));
+        smallWeaps.add(new Weapon(WeaponClass.MISSILE, false));
+        return smallWeaps;
     }
 
-    public void setImageFile(String imageFile) {
-        this.imageFile = imageFile;
+    public List<Weapon> getAvailableLargeWeaps () {
+        List<Weapon> largeWeaps = new ArrayList<>();
+        largeWeaps.add(new Weapon(WeaponClass.BEAM, true));
+        largeWeaps.add(new Weapon(WeaponClass.MISSILE, true));
+        return largeWeaps;
     }
 }

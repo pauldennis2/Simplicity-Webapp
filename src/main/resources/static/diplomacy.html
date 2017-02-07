@@ -1,8 +1,8 @@
-<div ng-repeat="player in players" style="float: left">
-    <img src={{player.imageFile}}>
-    {{player.name}}<br>
-    Population: {{player.population}}<br>
-    Percentage of Total: {{player.percentOfTotalPop}}
+<div ng-repeat="playerTemp in players" style="float: left">
+    <img src={{playerTemp.imageFile}}>
+    {{playerTemp.name}}<br>
+    Population: {{playerTemp.population}}<br>
+    Percentage of Total: {{playerTemp.percentOfTotalPop}}
 </div>
 <hr>
 Required Percent to Win: {{requiredPct}}
