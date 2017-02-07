@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="shipyardApp">
+<head>
+    <meta charset="UTF-8">
+    <title>Shipyard</title>
+    <script src="js/angular.min.js"></script>
+    <script src="js/shipyard.js"></script>
+
+    <link rel="stylesheet" imageString="text/css" href="../css/shipyard.css">
+</head>
+<body ng-controller="shipyardController">
+<div id="main-div">
+    <div id="topdiv">
+        Ship Size:
+        <select ng-model="selectedItem" ng-options="size for size in shipSizes" ng-change = "updateInfo()"></select>
+        Ship Name:
+        <input imageString="text" placeholder="Enter ship name">
+        {{shipyard.name}} @ {{shipyard.systemName}}
+    </div>
+    <br>
+    <div id="middlediv">
+        <div id="small-weaps" width="25%" style="float: left">
+            <select ng-model="firstSmWeap" ng-options="smweap for smweap in smallWeapons" ng-disabled="sm1"></select><br>
+            <select ng-model="secondSmWeap" ng-options="smweap for smweap in smallWeapons" ng-disabled="sm2"></select><br>
+            <select ng-model="thirdSmWeap" ng-options="smweap for smweap in smallWeapons" ng-disabled="sm3"></select><br>
+            <select ng-model="fourthSmWeap" ng-options="smweap for smweap in smallWeapons" ng-disabled="sm4"></select>
+        </div>
+        <div id="large-weaps" width="25%" style="float: left">
+            <select ng-model="firstLgWeap" ng-options="lgweap for lgweap in largeWeapons" ng-disabled="lg1"></select><br>
+            <select ng-model="secondLgWeap" ng-options="lgweap for lgweap in largeWeapons" ng-disabled="lg2"></select><br>
+            <select ng-model="thirdLgWeap" ng-options="lgweap for lgweap in largeWeapons" ng-disabled="lg3"></select>
+        </div>
+        <div id="upgrades" width = "25%" style="float: left">
+            <select ng-model="firstUpgrade" ng-options="upgrade for upgrade in upgrades" ng-disabled="upg1"></select><br>
+            <select ng-model="secondUpgrade" ng-options="upgrade for upgrade in upgrades" ng-disabled="upg2"></select>
+        </div>
+        <div id="ship-info" width = "20%" style="float: left">
+            <u>Ship Info:</u><br>
+            Health: {{shipInfo.health}}<br>
+            Shield Health: {{shipInfo.shield.shieldHealth}}<br>
+            Shield Strength: {{shipInfo.shield.shieldStrength}}<br>
+            Shield Regen: {{shipInfo.shield.shieldRegen}}<br>
+            Generator Reserve: {{shipInfo.generator.reservePower}}<br>
+            Generator Per Turn: {{shipInfo.generator.perTurn}}<br>
+            Fighter Berths: {{shipInfo.fighterBerths}}
+        </div>
+        <div id="production-queue" width = "25%" style="float: left">
+            <ul>
+                <li ng-repeat="ship in productionQueue">
+                    {{ship.name}}
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="bottomdiv" style = "clear: both">
+        <div id="production-info">
+
+        </div>
+        <div id="addShip">
+            Add Ship to Production Queue:
+            <button imageString="button">Top</button>
+            <button imageString="button">Bottom</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>
