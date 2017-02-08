@@ -1,17 +1,38 @@
 package com.tiy.webapp.starship;
 
+import javax.persistence.*;
+
 /**
  * Created by erronius on 12/22/2016.
  */
+@Entity
+@Table(name = "shields")
 public class Shield {
 
-    private ShieldType type;
-    private int maxDamageAbsorb;
-    private int shieldHealth;
-    private int maxShieldHealth;
-    private int regenRate;
+    @GeneratedValue
+    @Id
+    Integer id;
 
-    private boolean shieldsUp;
+    @Column(nullable = false)
+    private ShieldType type;
+
+    @Column(nullable = false)
+    private Integer maxDamageAbsorb;
+
+    @Column(nullable = false)
+    private Integer shieldHealth;
+
+    @Column(nullable = false)
+    private Integer maxShieldHealth;
+
+    @Column(nullable = false)
+    private Integer regenRate;
+
+    @Column(nullable = false)
+    private Boolean shieldsUp;
+
+    public Shield() {
+    }
 
     public Shield(ShieldType type, int maxDamageAbsorb, int shieldHealth, int regenRate) {
         this.type = type;
@@ -165,5 +186,29 @@ public class Shield {
         }
         response += shieldHealth + "/" + maxShieldHealth;
         return response;
+    }
+
+    public void setMaxDamageAbsorb(Integer maxDamageAbsorb) {
+        this.maxDamageAbsorb = maxDamageAbsorb;
+    }
+
+    public void setShieldHealth(Integer shieldHealth) {
+        this.shieldHealth = shieldHealth;
+    }
+
+    public void setMaxShieldHealth(Integer maxShieldHealth) {
+        this.maxShieldHealth = maxShieldHealth;
+    }
+
+    public void setRegenRate(Integer regenRate) {
+        this.regenRate = regenRate;
+    }
+
+    public Boolean getShieldsUp() {
+        return shieldsUp;
+    }
+
+    public void setShieldsUp(Boolean shieldsUp) {
+        this.shieldsUp = shieldsUp;
     }
 }

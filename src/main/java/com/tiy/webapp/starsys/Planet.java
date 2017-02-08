@@ -1,67 +1,62 @@
 package com.tiy.webapp.starsys;
 
 import com.tiy.webapp.ImproperFunctionInputException;
-import com.tiy.webapp.Player;
 
-import java.util.Random;
+import javax.persistence.*;
 
 /**
  * Created by erronius on 12/20/2016.
  */
+
+@Entity
+@Table(name = "planets")
 public class Planet {
 
-    private boolean habitable;
-    private int mineralLevel;
-    private int size;
-    private int population;
+    @GeneratedValue
+    @Id
+    private Integer id;
+
+    @Column(nullable = false)
     private String name;
-    private Player owner;
 
-    private float researchPct;
-    private float productionPct;
+    @Column(nullable = false)
+    private Integer size;
 
-    private double partialResearch;
-    private double partialProduction;
+    @Column(nullable = false)
+    private String imageString;
 
-    private StarSystem system;
+    @Column(nullable = true)
+    private Integer population;
+
+    @Column(nullable = true)
+    private Double researchPct;
+
+    @Column(nullable = true)
+    private Double productionPct;
+
+    @Column(nullable = true)
+    private Integer turnsToGrowth;
 
     public static final double BASE_GROWTH_RATE = 1.05; //Planets grow by 5% per turn
-    private double planetGrowthRate = 1.0;
-    private int turnsToGrowth;
 
-    public Planet (String name, int size, boolean habitable, StarSystem system) {
-        this.name = name;
+    public Planet () {
+
+    }
+
+    public Planet(String name, Integer size, String imageString) {
         this.size = size;
-        this.habitable = habitable;
-        owner = null;
-        population = 0;
-        researchPct = 0.4f;
-        productionPct = 0.6f;
-        this.system = system;
-    }
-
-    public Planet (String name, Random random) {
         this.name = name;
+        this.imageString = imageString;
     }
 
+    @Transient
     @Override
     public String toString () {
         //Example:
         //Alpha Centauri Owned by Player 4/8
         String response = name + " ";
-        if (owner != null) {
-            response += "Owned by " + owner.getName() + " ";
-        }
         response += population + "/" + size;
         return response;
-    }
-
-    public Player getOwner () {
-        return owner;
-    }
-
-    public StarSystem getSystem () {
-        return system;
     }
 
     public void setPopulation (int pop) {
@@ -69,11 +64,8 @@ public class Planet {
         turnsToGrowth = calculateTurnsToGrowth();
     }
 
-    public void setOwner (Player owner) {
-        this.owner = owner;
-    }
 
-    public void setResearchPct (float researchPct) throws ImproperFunctionInputException {
+    public void setResearchPct (double researchPct) throws ImproperFunctionInputException {
         if (researchPct > 1.0f || researchPct < 0.0f) {
             throw new ImproperFunctionInputException("Value must be between 0.0 and 1.0 inclusive.");
         }
@@ -81,16 +73,19 @@ public class Planet {
         productionPct = 1.0f - researchPct;
     }
 
+    @Transient
     public int getResearch () {
         //for now always round to nearest number.
         //Later go back and add to partialResearch
-        float researchProduced = researchPct * population;
-        return Math.round(researchProduced);
+        //Todo fix rounding
+        double researchProduced = researchPct * population;
+        return Math.round(Math.round(researchProduced));
     }
 
+    @Transient
     public int getProduction () {
-        float productionProduced = productionPct * population;
-        return Math.round(productionProduced);
+        double productionProduced = productionPct * population;
+        return Math.round(Math.round(productionProduced));
     }
 
     public void growPopulation () {
@@ -102,18 +97,11 @@ public class Planet {
         }
     }
 
-    public float getResearchPct () {
-        return researchPct;
-    }
-
-    public float getProductionPct () {
-        return productionPct;
-    }
-
     public int getPopulation () {
         return population;
     }
 
+    @Transient
     public int calculateTurnsToGrowth () {
         if (population > 0 && population < size) {
             double pop = (double) population;
@@ -126,5 +114,61 @@ public class Planet {
         } else {
             return -1;
         }
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public void setPopulation(Integer population) {
+        this.population = population;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Double getResearchPct() {
+        return researchPct;
+    }
+
+    public void setResearchPct(Double researchPct) {
+        this.researchPct = researchPct;
+    }
+
+    public Double getProductionPct() {
+        return productionPct;
+    }
+
+    public void setProductionPct(Double productionPct) {
+        this.productionPct = productionPct;
+    }
+
+    public Integer getTurnsToGrowth() {
+        return turnsToGrowth;
+    }
+
+    public void setTurnsToGrowth(Integer turnsToGrowth) {
+        this.turnsToGrowth = turnsToGrowth;
+    }
+
+    public void setSize(Integer size) {
+        this.size = size;
+    }
+
+    public String getImageString() {
+        return imageString;
+    }
+
+    public void setImageString(String imageString) {
+        this.imageString = imageString;
     }
 }

@@ -1,5 +1,5 @@
 <div ng-repeat="playerTemp in players" style="float: left">
-    <img src={{playerTemp.imageFile}}>
+    <img ng-src={{playerTemp.imageFile}}>
     {{playerTemp.name}}<br>
     Population: {{playerTemp.population}}<br>
     Percentage of Total: {{playerTemp.percentOfTotalPop}}

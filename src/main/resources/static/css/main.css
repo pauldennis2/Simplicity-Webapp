@@ -6,3 +6,8 @@ body {
     margin: 5px;
     padding: 5px;
 }
+
+.erro_miniview {
+    height: 100px;
+    border-style: solid;
+}

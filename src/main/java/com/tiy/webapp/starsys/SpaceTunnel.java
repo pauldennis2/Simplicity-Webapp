@@ -1,56 +1,72 @@
 package com.tiy.webapp.starsys;
 
+import javax.persistence.*;
+
 /**
  * Created by erronius on 12/20/2016.
  */
+
+@Entity
+@Table(name = "tunnels")
 public class SpaceTunnel extends Location {
 
-    //TODO make some version of this class that works with any 2 Locations (superclass of StarSystem anyway)
-    private int length;
-    private StarSystem firstSystem;
-    private StarSystem secondSystem;
-    private TunnelType type;
+    @GeneratedValue
+    @Id
+    private Integer id;
 
-    public SpaceTunnel (int length, StarSystem firstSystem, StarSystem secondSystem) {
+    private Integer length;
+
+    @ManyToOne (cascade = CascadeType.ALL)
+    StarSystem firstSystem;
+
+    @ManyToOne (cascade = CascadeType.ALL)
+    StarSystem secondSystem;
+
+    public SpaceTunnel () {
+
+    }
+
+    public SpaceTunnel(Integer length, StarSystem firstSystem, StarSystem secondSystem) {
         this.length = length;
         this.firstSystem = firstSystem;
         this.secondSystem = secondSystem;
-        type = TunnelType.BLUE;
     }
 
     public int getLength () {
         return length;
     }
 
-    /**
-     *
-     * @param notThisOne
-     * @return the OTHER star system this tunnel connects to. NULL if it doesn't connect to the specified system
-     */
-    public StarSystem getOtherSystem (StarSystem notThisOne) {
-        if (firstSystem.equals(notThisOne)) {
-            return secondSystem;
-        }
-        if (secondSystem.equals(notThisOne)) {
-            return firstSystem;
-        }
-        return null;
+    @Transient
+    @Override
+    public String getName () {
+        return "Tunnel";
     }
 
-    public String getName () {
-        return "Tunnel between " + firstSystem.getName() + " and " + secondSystem.getName();
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public void setLength(Integer length) {
+        this.length = length;
     }
 
     public StarSystem getFirstSystem() {
         return firstSystem;
     }
 
+    public void setFirstSystem(StarSystem firstSystem) {
+        this.firstSystem = firstSystem;
+    }
+
     public StarSystem getSecondSystem() {
         return secondSystem;
     }
 
-    @Override
-    public String toString () {
-        return this.getName();
+    public void setSecondSystem(StarSystem secondSystem) {
+        this.secondSystem = secondSystem;
     }
 }

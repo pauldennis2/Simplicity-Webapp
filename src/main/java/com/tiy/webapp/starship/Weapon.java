@@ -1,16 +1,31 @@
 package com.tiy.webapp.starship;
 
+import javax.persistence.*;
+
 /**
  * Created by erronius on 12/20/2016.
  */
 
 //Weapon will probably be abstract later. for now we just have 2 possibilities
+@Entity
+@Table(name = "weapons")
 public /*abstract*/ class Weapon extends ShipComponent {
 
-    private int damage;
+    @GeneratedValue
+    @Id
+    Integer id;
+
+    @Column(nullable = false)
+    private Integer damage;
+
+    @Column(nullable = false)
     private WeaponClass type;
-    private int shots;
-    private boolean isLarge;
+
+    @Column(nullable = false)
+    private Integer shots;
+
+    @Column(nullable = false)
+    private Boolean isLarge;
 
     public static final int DEFAULT_NUM_MISSILES = 3;
 
@@ -23,6 +38,10 @@ public /*abstract*/ class Weapon extends ShipComponent {
     public static final int SMALL_MSL_DAMAGE = 30;
     public static final int LARGE_BEAM_DAMAGE = 35;
     public static final int LARGE_MSL_DAMAGE = 70;
+
+    public Weapon () {
+
+    }
 
     public Weapon (WeaponClass type, boolean large) {
         super (large ? SlotType.LARGE_WEAPON : SlotType.SMALL_WEAPON, Weapon.getProductionCost(type, large));
@@ -114,5 +133,37 @@ public /*abstract*/ class Weapon extends ShipComponent {
         } else {
             throw new AssertionError("Not implemented");
         }
+    }
+
+    public Integer getDamage() {
+        return damage;
+    }
+
+    public void setDamage(Integer damage) {
+        this.damage = damage;
+    }
+
+    public WeaponClass getType() {
+        return type;
+    }
+
+    public void setType(WeaponClass type) {
+        this.type = type;
+    }
+
+    public Integer getShots() {
+        return shots;
+    }
+
+    public void setShots(Integer shots) {
+        this.shots = shots;
+    }
+
+    public Boolean getLarge() {
+        return isLarge;
+    }
+
+    public void setLarge(Boolean large) {
+        isLarge = large;
     }
 }

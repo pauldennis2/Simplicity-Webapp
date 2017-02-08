@@ -1,13 +1,29 @@
 package com.tiy.webapp.starship;
 
+import javax.persistence.*;
+
 /**
  * Created by erronius on 12/26/2016.
  */
+@Entity
+@Table(name = "generators")
 public class Generator {
 
-    private int currentReservePower;
-    private int maxReservePower;
-    private int powerPerTurn;
+    @GeneratedValue
+    @Id
+    Integer id;
+
+    @Column (nullable = false)
+    private Integer currentReservePower;
+
+    @Column (nullable = false)
+    private Integer maxReservePower;
+
+    @Column (nullable = false)
+    private Integer powerPerTurn;
+
+    public Generator() {
+    }
 
     public Generator (int maxReservePower, int powerPerTurn) {
         this.maxReservePower = maxReservePower;

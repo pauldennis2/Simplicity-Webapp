@@ -30,12 +30,13 @@ public class Project {
         if (currentProduction + production >= requiredProduction) {
             //make the spaceship
             shipyard.getOwner().addShip(goal);
-            try {
+            /*try {
                 goal.setLocation(shipyard.getSystem());
             } catch (IllegalMoveException ex) {
                 ex.printStackTrace();
-            }
-            return (currentProduction + production - requiredProduction); //Return the extra
+            }*/
+            throw new AssertionError("Fix");
+            //return (currentProduction + production - requiredProduction); //Return the extra
         } else if ((currentProduction + production) == requiredProduction) {
             //make spaceship
             shipyard.getOwner().addShip(goal);

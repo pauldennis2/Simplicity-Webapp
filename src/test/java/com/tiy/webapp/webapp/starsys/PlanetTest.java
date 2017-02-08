@@ -22,7 +22,7 @@ public class PlanetTest {
 
     @Before
     public void setUp() throws Exception {
-        captainPlanet = new Planet("Captain Planet's Planet", 12, true, null);
+        //captainPlanet = new Planet("Captain Planet's Planet", 12, true, null);
     }
 
     @After

@@ -22,29 +22,8 @@ public class StarSystemGraph {
     public static final int THIRD_TUNNEL_LENGTH = 5;
 
 
-    //Create a super simple graph, A <=> B <=> C
-    public StarSystemGraph () {
-        starSystems = new ArrayList<StarSystem>();
-        StarSystem homeSystem = new StarSystem("Home");
-        StarSystem emptySystem = new StarSystem("Alpha Centauri");
-        StarSystem scarySystem = new StarSystem("ScaryTown");
-        starSystems.add(homeSystem);
-        starSystems.add(emptySystem);
-        starSystems.add(scarySystem);
-        SpaceTunnel homeToEmpty = new SpaceTunnel(2, homeSystem, emptySystem);
-        SpaceTunnel emptyToScary = new SpaceTunnel(3, emptySystem, scarySystem);
-
-        homeSystem.addTunnel(homeToEmpty);
-        emptySystem.addTunnel(homeToEmpty);
-        emptySystem.addTunnel(emptyToScary);
-        scarySystem.addTunnel(emptyToScary);
-
-        Planet homePlanet = homeSystem.getPlanets().get(0);
-        homePlanet.setOwner(new Player(homeSystem, "Tester"));
-        homePlanet.setPopulation(6);
-    }
-
     public StarSystemGraph (int numPlayers, MapSize size) {
+        /*
         starSystems = new ArrayList<StarSystem>();
         nameStarSystemMap = new HashMap<String, StarSystem>();
         numPlayers = 2;
@@ -95,7 +74,8 @@ public class StarSystemGraph {
 
             firstSystem.addTunnel(tunnel);
             secondSystem.addTunnel(tunnel);
-        }
+        }*/
+        throw new AssertionError("Fix");
     }
 
     public StarSystemGraph (String fileName) {
@@ -124,7 +104,7 @@ public class StarSystemGraph {
             }
             for (StarSystem starSystem : starSystems) {
                 nameStarSystemMap.put(starSystem.getName(), starSystem);
-                pointStarSystemMap.put(new Point(starSystem.getX(), starSystem.getY()), starSystem);
+                pointStarSystemMap.put(new Point(starSystem.getGridCoordX(), starSystem.getGridCoordY()), starSystem);
             }
             while (fileScanner.hasNext()) {
                 //Second Section: Tunnel Information
@@ -141,7 +121,7 @@ public class StarSystemGraph {
                 } else {
                     tunnelLength = StarSystem.calculateCartesianDistance(firstSystem, secondSystem);
                 }
-                SpaceTunnel tunnel = new SpaceTunnel(tunnelLength, firstSystem, secondSystem);
+                SpaceTunnel tunnel = new SpaceTunnel(tunnelLength);
                 tunnels.add(tunnel);
                 firstSystem.addTunnel(tunnel);
                 secondSystem.addTunnel(tunnel);
@@ -184,7 +164,8 @@ public class StarSystemGraph {
             System.out.println("System name: " + systemName);
             System.out.println("Connected Systems:");
             for (SpaceTunnel tunnel : system.getTunnels()) {
-                System.out.println("\t" + tunnel.getOtherSystem(system).getName());
+                //System.out.println("\t" + tunnel.getOtherSystem(system).getName());
+                throw new AssertionError("Fix");
             }
         }
     }
@@ -220,13 +201,14 @@ public class StarSystemGraph {
 
         for (StarSystem currentSystem : lastRoundFoundSystems) {
             for (SpaceTunnel tunnel : currentSystem.getTunnels()) {
-                StarSystem otherSystem = tunnel.getOtherSystem(currentSystem);
+                /*StarSystem otherSystem = tunnel.getOtherSystem(currentSystem);
 
                 //If we found an undiscovered system, add it to the set and the recently found system list
                 if (!connectedSystems.contains(otherSystem)) {
                     thisRoundFoundSystems.add(otherSystem);
                     connectedSystems.add(otherSystem);
-                }
+                }*/
+                throw new AssertionError("Fix");
             }
         }
         if (thisRoundFoundSystems.size() > 0) {
