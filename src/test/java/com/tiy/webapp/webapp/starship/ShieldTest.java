@@ -1,7 +1,6 @@
 package com.tiy.webapp.webapp.starship;
 
 import com.tiy.webapp.starship.Shield;
-import com.tiy.webapp.starship.ShieldType;
 import com.tiy.webapp.starship.ShipChassis;
 import org.junit.After;
 import org.junit.Before;
@@ -54,7 +53,7 @@ public class ShieldTest {
 
     @Test
     public void testInsufficientPowerShieldRegen () {
-        shield = new Shield(ShieldType.BASIC, 20, 50, 5);
+        shield = new Shield(20, 50, 5);
         shield.takeDamage(20);
         int powerUsed = shield.regenerate(2);
         assertEquals (2, powerUsed);
@@ -63,7 +62,7 @@ public class ShieldTest {
 
     @Test
     public void testManySmallDamageInstances () {
-        shield = new Shield(ShieldType.BASIC, 10, 30, 0);
+        shield = new Shield(10, 30, 0);
         int totalReturned = 0;
         for (int i = 0; i < 25; i++) {
             totalReturned += shield.takeDamage(1);

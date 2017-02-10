@@ -29,6 +29,17 @@ simplicityApp.config(function($routeProvider) {
             templateUrl: "starsystem.html",
             controller: "systemController"
         })
+        .when("/help", {
+            templateUrl: "help.html"
+        })
+        .when("/research", {
+            templateUrl: "research.html",
+            controller: "researchController"
+        })
+        .when("/combat", {
+            templateUrl: "combat.html",
+            controller: "combatController"
+        })
 });
 
 simplicityApp.controller('mainController', function($scope, $http) {
@@ -124,6 +135,42 @@ simplicityApp.controller('researchController', function($scope, $http) {
     getResearchInfo();
 });
 
+simplicityApp.controller('combatController', function($scope, $http) {
+    console.log("Initializing combatController");
+    var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-canvas-container',
+     { preload: preload, create: create, update: update });
+
+    getStarSystemInfo = function () {
+        console.log("Getting star system info");
+        var wrapper = {"gameId": 1, "playerId":2};
+
+        //$http.post("/simple-system-info.json", wrapper)
+        $http.post("/system-info.json", wrapper)
+        .then(
+            function successCallback (response) {
+                console.log("Found system info");
+                console.log(response.data);
+                $scope.starSystemInfo = response.data;
+            },
+
+            function errorCallback (response) {
+                console.log("No sys info");
+            });
+    };
+
+    function preload() {
+        game.load.image('stars', 'assets/starfield.png');
+    }
+
+    function create() {
+        game.add.sprite(0, 0, 'stars');
+    }
+
+    function update() {
+        //Called every frame
+    }
+});
+
 simplicityApp.controller('systemController', function($scope, $http) {
     console.log("Initializing systemController");
     var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-canvas-container',
@@ -133,7 +180,8 @@ simplicityApp.controller('systemController', function($scope, $http) {
         console.log("Getting star system info");
         var wrapper = {"gameId": 1, "playerId":2};
 
-        $http.post("/simple-system-info.json", wrapper)
+        //$http.post("/simple-system-info.json", wrapper)
+        $http.post("/system-info.json", wrapper)
         .then(
             function successCallback (response) {
                 console.log("Found system info");
@@ -149,6 +197,8 @@ simplicityApp.controller('systemController', function($scope, $http) {
     getStarSystemInfo();
     $scope.selected = "Nothing";
     var explosions;
+    var wormholes;
+    var wormhole;
 
     function preload() {
         game.load.image('stars', 'assets/starfield.png');
@@ -159,6 +209,7 @@ simplicityApp.controller('systemController', function($scope, $http) {
         game.load.image('fighter', 'assets/fighter.png');
         game.load.image('tunnel', 'assets/green_wormhole_small_clear.png');
         game.load.spritesheet('kaboom', 'assets/explode.png', 128, 128);
+        game.load.spritesheet('wormhole', 'assets/black_wormhole.png', 128, 128);
     }
 
     function create() {
@@ -186,13 +237,20 @@ simplicityApp.controller('systemController', function($scope, $http) {
         planetNames[2] = 'earth';
 
         var graphics = game.add.graphics(100, 100);
-
+        var planets = [];
         graphics.lineStyle(1, 0x6C6C6C, 1);
-        //for(i = 0; i < $scope.starSystemInfo.starSystem.planets.length; i++) {
-        for (i = 0; i < $scope.starSystemInfo.numPlanets; i++) {
+        for(i = 0; i < $scope.starSystemInfo.starSystem.planets.length; i++) {
+        //for (i = 0; i < $scope.starSystemInfo.numPlanets; i++) {
             graphics.drawCircle(ringCenterX, ringCenterY, 100 + i*50);
-            game.add.sprite(planetCoordsX[i], planetCoordsY[i], planetNames[i]);
+            //game.add.sprite(planetCoordsX[i], planetCoordsY[i], planetNames[i]);
             //Todo fix to use the image string coming in
+            planets[i] = game.add.sprite(planetCoordsX[i], planetCoordsY[i], $scope.starSystemInfo.starSystem.planets[i].imageString);
+            planets[i].inputEnabled = true;
+            planets[i].events.onInputDown.add(listener, this);
+            planets[i].elementName = $scope.starSystemInfo.starSystem.planets[i].name;
+            planets[i].population = $scope.starSystemInfo.starSystem.planets[i].size;
+            //ships[i].events.onInputDown.add(listener, this);
+            //ships[i].elementName = $scope.starSystemInfo.ships[i].name;
         }
 
         fighter = game.add.sprite(500, 20, 'fighter');
@@ -208,6 +266,15 @@ simplicityApp.controller('systemController', function($scope, $http) {
         tunnel.inputEnabled = true;
         tunnel.events.onInputDown.add(listener, this);
         tunnel.elementName = "Tunnel";
+        tunnel.alpha = 0.0;
+
+        wormholes = game.add.group();
+        wormholes.createMultiple(10, 'wormhole');
+        //tunnel.animations.add('wormhole');
+        wormholes.forEach(setupDiamond, this);
+        wormhole = wormholes.getFirstExists(false);
+        wormhole.reset(20, 400);
+        wormhole.play('wormhole', 20, true, false);
 
         /*var destroyer = game.add.sprite(20, 20, 'destroyer');
         destroyer.inputEnabled = true;
@@ -227,10 +294,12 @@ simplicityApp.controller('systemController', function($scope, $http) {
             ships[i].shipHealth = $scope.starSystemInfo.ships[i].health;
             ships[i].maxHealth = $scope.starSystemInfo.ships[i].maxHealth;
             ships[i].events.onKilled.add(onKill, this);
-            ships[i].animations.add('kaboom', [0,1,2,3], 4, true);
-
-            //player.animations.add('player_idle', [8,9,10,11,12], 4, true);
+            ships[i].animations.add('kaboom');
         }
+    }
+
+    function setupDiamond (tunnel) {
+        tunnel.animations.add('wormhole');
     }
 
     function update() {
@@ -253,8 +322,14 @@ simplicityApp.controller('systemController', function($scope, $http) {
         console.log("Element name = " + sprite.elementName);
         $scope.selectedElement = {};
         $scope.selectedElement.name = sprite.elementName;
-        $scope.selectedElement.health = sprite.shipHealth;
-        $scope.selectedElement.maxHealth = sprite.maxHealth;
+        //$scope.selectedElement.health = sprite.shipHealth;
+        //$scope.selectedElement.maxHealth = sprite.maxHealth;
+        if (sprite.shipHealth != null) {
+            $scope.selectedElement.health = sprite.shipHealth + "/" + sprite.maxHealth;
+        }
+        if (sprite.population != null) {
+            $scope.selectedElement.population = "Population: " + sprite.population;
+        }
         $scope.$apply();
     }
 

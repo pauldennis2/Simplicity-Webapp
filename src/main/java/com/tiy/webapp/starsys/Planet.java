@@ -49,19 +49,8 @@ public class Planet {
         this.imageString = imageString;
     }
 
-    @Transient
-    @Override
-    public String toString () {
-        //Example:
-        //Alpha Centauri Owned by Player 4/8
-        String response = name + " ";
-        response += population + "/" + size;
-        return response;
-    }
-
-    public void setPopulation (int pop) {
+    /*public void setPopulation (int pop) {
         population = pop;
-        turnsToGrowth = calculateTurnsToGrowth();
     }
 
 
@@ -74,7 +63,7 @@ public class Planet {
     }
 
     @Transient
-    public int getResearch () {
+    public int produceResearch () {
         //for now always round to nearest number.
         //Later go back and add to partialResearch
         //Todo fix rounding
@@ -83,7 +72,7 @@ public class Planet {
     }
 
     @Transient
-    public int getProduction () {
+    public int produceProduction () {
         double productionProduced = productionPct * population;
         return Math.round(Math.round(productionProduced));
     }
@@ -170,5 +159,62 @@ public class Planet {
 
     public void setImageString(String imageString) {
         this.imageString = imageString;
+    }
+    */
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Integer getSize() {
+        return size;
+    }
+
+    public void setSize(Integer size) {
+        this.size = size;
+    }
+
+    public String getImageString() {
+        return imageString;
+    }
+
+    public void setImageString(String imageString) {
+        this.imageString = imageString;
+    }
+
+    public Integer getPopulation() {
+        return population;
+    }
+
+    public void setPopulation(Integer population) {
+        this.population = population;
+    }
+
+    public Double getResearchPct() {
+        return researchPct;
+    }
+
+    public void setResearchPct(Double researchPct) {
+        this.researchPct = researchPct;
+    }
+
+    public Double getProductionPct() {
+        return productionPct;
+    }
+
+    public void setProductionPct(Double productionPct) {
+        this.productionPct = productionPct;
+    }
+
+    public Integer getTurnsToGrowth() {
+        return turnsToGrowth;
+    }
+
+    public void setTurnsToGrowth(Integer turnsToGrowth) {
+        this.turnsToGrowth = turnsToGrowth;
     }
 }

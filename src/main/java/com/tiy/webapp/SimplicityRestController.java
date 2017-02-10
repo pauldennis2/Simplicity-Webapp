@@ -1,6 +1,7 @@
 package com.tiy.webapp;
 
 import com.tiy.webapp.repos.StarSystemRepo;
+import com.tiy.webapp.repos.UserRepo;
 import com.tiy.webapp.starship.ShipChassis;
 import com.tiy.webapp.starship.Starship;
 import com.tiy.webapp.starsys.*;
@@ -20,12 +21,21 @@ import java.util.List;
 @RestController
 public class SimplicityRestController {
 
+    //@Autowired
+    //StarSystemRepo starSystems;
+
     @Autowired
-    StarSystemRepo starSystems;
+    UserRepo users;
 
     @RequestMapping(path = "/user-login.json", method = RequestMethod.POST)
-    public Response login () {
-        return null;
+    public Response login (@RequestBody User user) {
+        User retrievedUser = users.findFirstByEmail(user.getEmail());
+        if (retrievedUser != null) {
+            if (retrievedUser.getPassword().equals(user.getPassword())) {
+                return new Response(true);
+            }
+        }
+        return new Response(false);
     }
 
     @RequestMapping(path = "/user-registration.json", method = RequestMethod.POST)
@@ -47,23 +57,21 @@ public class SimplicityRestController {
 
     @RequestMapping(path = "/system-info.json", method = RequestMethod.POST)
     public StarSystemInfoWrapper systemInfo (@RequestBody IdRequestWrapper wrapper) {
-        Integer gameId = wrapper.getGameId();
-        Integer playerId = wrapper.getPlayerId();
-        Integer systemId = wrapper.getSystemId();
-        //return new StarSystemTemp(2, 3);
+        //Integer gameId = wrapper.getGameId();
+        //Integer playerId = wrapper.getPlayerId();
+        //Integer systemId = wrapper.getSystemId();
         StarSystem hardCodedSystem = new StarSystem();
         List<SpaceTunnel> tunnels = new ArrayList<>();
         tunnels.add(new SpaceTunnel());
         tunnels.add(new SpaceTunnel());
         List<Planet> planets = new ArrayList<>();
-        planets.add(new Planet("Awesome I", 10, "earth.png"));
-        planets.add(new Planet("Awesome II", 8, "zebulon.png"));
-        hardCodedSystem.setTunnels(tunnels);
+        planets.add(new Planet("Awesome I", 10, "earth"));
+        planets.add(new Planet("Awesome II", 8, "zebulon"));
         hardCodedSystem.setPlanets(planets);
         List<Starship> ships = new ArrayList<>();
-        ships.add(new Starship(null, ShipChassis.DESTROYER));
-        ships.add(new Starship(null, ShipChassis.FIGHTER));
-        return new StarSystemInfoWrapper(hardCodedSystem, ships);
+        ships.add(new Starship(null, ShipChassis.DESTROYER, "Enterprise"));
+        ships.add(new Starship(null, ShipChassis.FIGHTER, "Voyager"));
+        return new StarSystemInfoWrapper(hardCodedSystem, ships, null);
     }
 
     @RequestMapping(path = "/simple-system-info.json", method = RequestMethod.POST)
@@ -118,7 +126,7 @@ public class SimplicityRestController {
         List<PlanetTemp> hardCodedList = new ArrayList<>();
         hardCodedList.add(new PlanetTemp("Earth", "Terran", 12, "assets/earth.png"));
         hardCodedList.add(new PlanetTemp("Zebulon IV", "Zebulon", 5, "assets/zebulon.png"));
-        hardCodedList.add(new PlanetTemp("Alpha Centauri III", "Alpha Centauri", 3, "assets/alphacentauri.png"));
+        hardCodedList.add(new PlanetTemp("Alpha Centauri III", "Alpha Centauri", 3, "assets/alpha_centauri.png"));
         return hardCodedList;
     }
 

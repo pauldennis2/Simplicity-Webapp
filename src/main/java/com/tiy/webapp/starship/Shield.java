@@ -5,37 +5,18 @@ import javax.persistence.*;
 /**
  * Created by erronius on 12/22/2016.
  */
-@Entity
-@Table(name = "shields")
 public class Shield {
 
-    @GeneratedValue
-    @Id
-    Integer id;
-
-    @Column(nullable = false)
-    private ShieldType type;
-
-    @Column(nullable = false)
     private Integer maxDamageAbsorb;
-
-    @Column(nullable = false)
     private Integer shieldHealth;
-
-    @Column(nullable = false)
     private Integer maxShieldHealth;
-
-    @Column(nullable = false)
     private Integer regenRate;
-
-    @Column(nullable = false)
     private Boolean shieldsUp;
 
     public Shield() {
     }
 
-    public Shield(ShieldType type, int maxDamageAbsorb, int shieldHealth, int regenRate) {
-        this.type = type;
+    public Shield(int maxDamageAbsorb, int shieldHealth, int regenRate) {
         this.maxDamageAbsorb = maxDamageAbsorb;
         this.maxShieldHealth = shieldHealth;
         this.shieldHealth = maxShieldHealth;
@@ -126,13 +107,6 @@ public class Shield {
         }
     }
 
-    public ShieldType getType() {
-        return type;
-    }
-
-    public void setType(ShieldType type) {
-        this.type = type;
-    }
 
     public int getMaxDamageAbsorb() {
         return maxDamageAbsorb;
@@ -152,10 +126,10 @@ public class Shield {
 
     public static Shield getTemplateShield (ShipChassis shipType){
         if (shipType == ShipChassis.DESTROYER) {
-            return new Shield(ShieldType.BASIC, 12, 100, 1);
+            return new Shield(12, 100, 1);
         }
         if (shipType == ShipChassis.FIGHTER) {
-            return new Shield(ShieldType.BASIC, 10, 30, 0);
+            return new Shield(10, 30, 0);
         }
         return null;
     }

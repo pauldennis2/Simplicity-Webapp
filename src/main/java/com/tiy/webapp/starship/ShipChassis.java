@@ -6,49 +6,21 @@ package com.tiy.webapp.starship;
 public enum ShipChassis {
     //ShipChassis Constructor:
     //smallWeap, largeWeap, fighterBerths, upgrades, fighterSlots, health, baseCost
-    FIGHTER (2, 0, 0, 0, 0, 25, 20),
-    DESTROYER (2, 1, 2, 0, 0, 100, 90);
+    FIGHTER (25, 20, 15),
+    DESTROYER (100, 90, 60),
+    COLONIZER (50, 80, 0);
     //CRUISER (data),
     //BATTLESHIP (data),
     //CAPITOL_SHIP (data);
 
-    private final int smallWeaponSlots;
-    private final int largeWeaponSlots;
-    private final int fighterBerths;
-    private final int upgradeSlots;
-    private final int fighterSlots;
     private final int health;
     private final int baseProductionCost;
+    private final int damage;
 
-    ShipChassis(int smallWeaponSlots, int largeWeaponSlots, int fighterBerths, int upgradeSlots, int fighterSlots,
-                int health, int baseProductionCost) {
-        this.smallWeaponSlots = smallWeaponSlots;
-        this.largeWeaponSlots = largeWeaponSlots;
-        this.fighterBerths = fighterBerths;
-        this.upgradeSlots = upgradeSlots;
-        this.fighterSlots = fighterSlots;
+    ShipChassis(int health, int baseProductionCost, int damage) {
         this.health = health;
         this.baseProductionCost = baseProductionCost;
-    }
-
-    public int getSmallWeaponSlots() {
-        return smallWeaponSlots;
-    }
-
-    public int getLargeWeaponSlots() {
-        return largeWeaponSlots;
-    }
-
-    public int getFighterBerths() {
-        return fighterBerths;
-    }
-
-    public int getUpgradeSlots() {
-        return upgradeSlots;
-    }
-
-    public int getFighterSlots() {
-        return fighterSlots;
+        this.damage = damage;
     }
 
     public int getHealth() {
@@ -83,5 +55,9 @@ public enum ShipChassis {
 
     public int getBaseProductionCost () {
         return baseProductionCost;
+    }
+
+    public int getDamage() {
+        return damage;
     }
 }

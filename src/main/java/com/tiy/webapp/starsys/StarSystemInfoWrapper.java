@@ -11,10 +11,12 @@ public class StarSystemInfoWrapper {
 
     StarSystem starSystem;
     List<Starship> ships;
+    List<SpaceTunnel> tunnels;
 
-    public StarSystemInfoWrapper(StarSystem starSystem, List<Starship> ships) {
+    public StarSystemInfoWrapper(StarSystem starSystem, List<Starship> ships, List<SpaceTunnel> tunnels) {
         this.starSystem = starSystem;
         this.ships = ships;
+        this.tunnels = tunnels;
     }
 
     public StarSystem getStarSystem() {
@@ -31,5 +33,13 @@ public class StarSystemInfoWrapper {
 
     public void setShips(List<Starship> ships) {
         this.ships = ships;
+    }
+
+    public List<SpaceTunnel> getTunnels() {
+        return tunnels;
+    }
+
+    public void setTunnels(List<SpaceTunnel> tunnels) {
+        this.tunnels = tunnels;
     }
 }

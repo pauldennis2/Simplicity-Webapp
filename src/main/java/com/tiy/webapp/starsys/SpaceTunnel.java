@@ -7,19 +7,20 @@ import javax.persistence.*;
  */
 
 @Entity
-@Table(name = "tunnels")
-public class SpaceTunnel extends Location {
+@Table (name = "tunnels")
+public class SpaceTunnel {
 
     @GeneratedValue
     @Id
     private Integer id;
 
+    @Column(nullable = false)
     private Integer length;
 
-    @ManyToOne (cascade = CascadeType.ALL)
+    @ManyToOne //(cascade = CascadeType.ALL)
     StarSystem firstSystem;
 
-    @ManyToOne (cascade = CascadeType.ALL)
+    @ManyToOne //(cascade = CascadeType.ALL)
     StarSystem secondSystem;
 
     public SpaceTunnel () {
@@ -34,12 +35,6 @@ public class SpaceTunnel extends Location {
 
     public int getLength () {
         return length;
-    }
-
-    @Transient
-    @Override
-    public String getName () {
-        return "Tunnel";
     }
 
     public Integer getId() {

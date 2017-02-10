@@ -9,8 +9,8 @@ import java.util.Random;
  * Created by erronius on 12/20/2016.
  */
 @Entity
-@Table(name="systems")
-public class StarSystem extends Location {
+@Table (name = "systems")
+public class StarSystem {
 
     @GeneratedValue
     @Id
@@ -36,24 +36,6 @@ public class StarSystem extends Location {
 
     }
 
-    //Create one habitable planet of default size
-    public StarSystem (String name) {
-        this.name = name;
-        planets = new ArrayList<>();
-        planets.add(new Planet(name + " " + ROMAN_NUMERALS[0], DEFAULT_PLANET_SIZE, "default"));
-    }
-
-    public StarSystem (String name, Random random) {
-        this.name = name;
-        planets = new ArrayList<>();
-        //decide how many planets to create, 0-4
-        int numPlanets = random.nextInt(5);
-        for (int index = 0; index < numPlanets; index++) {
-            int size = random.nextInt(3);
-            planets.add(new Planet(name + " " + ROMAN_NUMERALS[index], DEFAULT_PLANET_SIZE + size, "default"));
-        }
-    }
-
     public StarSystem (String name, int gridCoordX, int gridCoordY) {
         this.name = name;
         planets = new ArrayList<>();
@@ -75,18 +57,6 @@ public class StarSystem extends Location {
         }
     }
 
-
-
-    @Transient
-    @Override
-    public String toString() {
-        return "I'm a system and my name is " + name;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
 
     public Integer getId() {
         return id;
@@ -124,9 +94,14 @@ public class StarSystem extends Location {
         this.gridCoordY = gridCoordY;
     }
 
+    public String getName() {
+        return name;
+    }
+
     /**
      * Calculates the Cartesian distance between the two StarSystems (namely the length of the tunnel between them
      * if the tunnel follows normal Cartesian rules). We don't care if there IS a tunnel.
+     * I think, therefore this works.
      * @param firstSystem
      * @param secondSystem
      * @return Distance between the systems (rounded to nearest whole number)
@@ -137,4 +112,6 @@ public class StarSystem extends Location {
         double hypotenuseLength = Math.sqrt(xDif*xDif + yDif*yDif);
         return (int)Math.round(hypotenuseLength);
     }
+
+
 }

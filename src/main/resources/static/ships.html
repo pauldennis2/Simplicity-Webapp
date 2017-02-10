@@ -1,7 +1,19 @@
-<div ng-repeat="ship in ships">
+<!--<div ng-repeat="ship in ships">
     <img ng-src={{ship.imageString}}>
     {{ship.name}}<br>
     Location: {{ship.location}} <br>
     Health: {{ship.health}}/{{ship.maxHealth}}
-</div>
-<a href="#shipyard">Shipyard</a>
+</div>-->
+
+<ul class="media-list" style="width: 800px;">
+    <li class="media" ng-repeat="ship in ships">
+        <div class="media-left">
+            <img class="media-object" ng-src={{ship.imageString}} alt="spaceship?">
+        </div>
+        <div class="media-body">
+            <h4 class="media-heading">{{ship.name}}</h4>
+            Location: {{ship.location}} <br>
+            HealthL {{ship.health}}/{{ship.maxHealth}}
+        </div>
+    </li>
+</ul>

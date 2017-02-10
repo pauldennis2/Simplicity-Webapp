@@ -5,21 +5,11 @@ import javax.persistence.*;
 /**
  * Created by erronius on 12/26/2016.
  */
-@Entity
-@Table(name = "generators")
 public class Generator {
-
-    @GeneratedValue
-    @Id
-    Integer id;
-
-    @Column (nullable = false)
     private Integer currentReservePower;
 
-    @Column (nullable = false)
     private Integer maxReservePower;
 
-    @Column (nullable = false)
     private Integer powerPerTurn;
 
     public Generator() {
