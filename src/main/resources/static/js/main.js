@@ -217,57 +217,27 @@ simplicityApp.controller('optionsController', function($scope, $http) {
 
 simplicityApp.controller('combatController', function($scope, $http) {
     console.log("Initializing combatController");
-    var game = new Phaser.Game(800, 580, Phaser.AUTO, 'phaser-canvas-container',
+    var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-canvas-container',
      { preload: preload, create: create, update: update });
+    var friendShips = [];
+    var enemyShips = [];
 
-    getStarSystemInfo = function () {
-        console.log("Getting star system info");
-        var wrapper = {"gameId": 1, "playerId":2};
-
-        $http.post("/system-info.json", wrapper)
+    getCombatInfo = function () {
+        $http.post("/combat-info.json")
         .then(
             function successCallback (response) {
-                console.log("Found system info");
-                console.log(response.data);
-                $scope.starSystemInfo = response.data;
+                console.log("Found combat info");
+                friendShips = response.data.friendShips;
+                enemyShips = response.data.enemyShips;
+                console.log(friendShips);
+                console.log(enemyShips);
             },
 
             function errorCallback (response) {
-                console.log("No sys info");
+                console.log("Did not find combat info");
             });
     };
-
-    $scope.friendSelected = {};
-    $scope.friendSelected.name = "Voyager";
-    $scope.friendSelected.damage = 50;
-
-    $scope.friendSelected.healthPct = "95%";
-    $scope.friendSelected.health = 95;
-    $scope.friendSelected.maxHealth = 100;
-
-    $scope.friendSelected.shieldPct = "75%";
-    $scope.friendSelected.shieldHealth = 150;
-    $scope.friendSelected.maxShield = 200;
-
-    $scope.friendSelected.energyPct = "100%";
-    $scope.friendSelected.energy = 400;
-    $scope.friendSelected.maxEnergy = 400;
-
-    $scope.enemySelected = {};
-    $scope.enemySelected.name = "Tempest";
-    $scope.enemySelected.damage = 35;
-
-    $scope.enemySelected.healthPct = "100%";
-    $scope.enemySelected.health = 75;
-    $scope.enemySelected.maxHealth = 75;
-
-    $scope.enemySelected.shieldPct = "75%";
-    $scope.enemySelected.shieldHealth = 45;
-    $scope.enemySelected.maxShield = 60;
-
-    $scope.enemySelected.energyPct = "50%";
-    $scope.enemySelected.energy = 100;
-    $scope.enemySelected.maxEnergy = 200;
+    getCombatInfo();
 
     function preload() {
         game.load.image('stars', 'assets/starfield.png');
@@ -278,43 +248,54 @@ simplicityApp.controller('combatController', function($scope, $http) {
     function create() {
         game.add.sprite(0, 0, 'stars');
 
-        var destroyer1 = game.add.sprite(50, 50, 'destroyer');
-        var destroyer2 = game.add.sprite(50, 200, 'destroyer');
-
-        var enemies = [];
-
-        for (i = 0; i < 3; i++) {
-            enemies[i] = game.add.sprite(500, 50 + 100*i, 'enemy');
-            enemies[i].inputEnabled = true;
-            enemies[i].events.onInputDown.add(enemyListener, this);
+        var friendSprites = [];
+        for (i = 0; i < friendShips.length; i++) {
+            friendSprites[i] = game.add.sprite(50, 50 + 150*i, friendShips[i].imageString);
+            friendSprites[i].inputEnabled = true;
+            friendSprites[i].events.onInputDown.add(friendListener, this);
+            friendSprites[i].index = i;
+        }
+        var enemySprites = [];
+        for (i = 0; i < enemyShips.length; i++) {
+            enemySprites[i] = game.add.sprite(500, 50 + 100*i, enemyShips[i].imageString);
+            enemySprites[i].inputEnabled = true;
+            enemySprites[i].events.onInputDown.add(enemyListener, this);
+            enemySprites[i].index = i;
         }
     }
 
+    function friendListener (sprite) {
+        $scope.friendSelected = friendShips[sprite.index];
+        var ship = friendShips[sprite.index];
+        $scope.friendSelected.healthPct = "" + (ship.health/ship.maxHealth)*100 + "%";
+        $scope.friendSelected.shieldPct = "" + (ship.shieldHealth/ship.maxShieldHealth)*100 + "%";
+        $scope.friendSelected.energyPct = "" + (ship.currentReservePower/ship.maxReservePower)*100 + "%";
+        $scope.$apply();
+    }
+
     function enemyListener (sprite) {
-        console.log("Element name = " + sprite.elementName);
-        $scope.selectedElement = {};
-        $scope.selectedElement.name = sprite.elementName;
-        //$scope.selectedElement.health = sprite.shipHealth;
-        //$scope.selectedElement.maxHealth = sprite.maxHealth;
-        if (sprite.shipHealth != null) {
-            $scope.selectedElement.health = sprite.shipHealth + "/" + sprite.maxHealth;
-        }
-        if (sprite.population != null) {
-            $scope.selectedElement.population = "Population: " + sprite.population;
-        }
-        $scope.selectedElement.travelTime = sprite.travelTime;
+        $scope.enemySelected = enemyShips[sprite.index];
+        var ship = enemyShips[sprite.index];
+        $scope.enemySelected.healthPct = "" + (ship.health/ship.maxHealth)*100 + "%";
+        $scope.enemySelected.shieldPct = "" + (ship.shieldHealth/ship.maxShieldHealth)*100 + "%";
+        $scope.enemySelected.energyPct = "" + (ship.currentReservePower/ship.maxReservePower)*100 + "%";
         $scope.$apply();
     }
 
     function update() {
         //Called every frame
     }
+
+    $scope.fireWeapons = function () {
+        console.log("IMA FIRIN MAH LASUR");
+    }
 });
 
 simplicityApp.controller('systemController', function($scope, $http) {
     console.log("Initializing systemController");
+
     var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-canvas-container',
-     { preload: preload, create: create, update: update });
+                                      { preload: preload, create: create, update: update });
 
     getStarSystemInfo = function () {
         console.log("Getting star system info");

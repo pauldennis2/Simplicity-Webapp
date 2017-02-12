@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Simplicity Registration</title>
 </head>
-<body>
+<body background="assets/space.png" style="color:white; margin: 5px; padding:5px">
 Welcome to Simplicity 4x Registration. Registration is quick and <del>painful</del> painless. A few notes before you
 get started:
 <ul>
@@ -22,9 +22,12 @@ get started:
     </li>
 </ul>
 <form action="/register" method="post">
-    <input type="text" placeholder="Email" required>E-mail: <br>
-    <input type="password" placeholder="password" required>Password (CLEAR TEXT)<br>
+    <input type="text" placeholder="Email" required> E-mail <br>
+    <input type="text" placeholder="Handle*" required> Handle <br>
+    <input type="password" placeholder="password" required> Password (CLEAR TEXT)<br>
     <button type="submit">Create Account</button>
 </form>
+*Your "Handle" is how other users will see you. You will use your email (which must be unique) for login. Your handle
+will be your "display name".
 </body>
 </html>

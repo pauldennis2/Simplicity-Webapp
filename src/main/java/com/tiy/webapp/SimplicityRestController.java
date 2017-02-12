@@ -109,8 +109,8 @@ public class SimplicityRestController {
         List<SpaceTunnel> zebulonTunnels = new ArrayList<>();
         zebulonTunnels.add(tunnels.findFirstByName("Avalon - Zebulon"));
         List<Starship> ships = new ArrayList<>();
-        ships.add(new Starship(null, ShipChassis.DESTROYER, "Enterprise"));
-        ships.add(new Starship(null, ShipChassis.FIGHTER, "Voyager"));
+        ships.add(new Starship(null, ShipChassis.DESTROYER, "Enterprise", "default"));
+        ships.add(new Starship(null, ShipChassis.FIGHTER, "Voyager", "default"));
         return new StarSystemInfoWrapper(zebulon, ships, zebulonTunnels);
     }
 
@@ -218,6 +218,7 @@ public class SimplicityRestController {
     public List<Ship> shipsInfo (@RequestBody IdRequestWrapper wrapper) {
         Integer gameId = wrapper.getGameId();
         Integer playerId = wrapper.getPlayerId();
+
         List<Ship> hardCodedList = new ArrayList<>();
         hardCodedList.add(new Ship("Defiant", 25, 30, "assets/fighter.png", "Zebulon System"));
         hardCodedList.add(new Ship("Voyager", 100, 100, "assets/destroyer.png", "Zebulon System"));
@@ -257,9 +258,17 @@ public class SimplicityRestController {
         return null;
     }
 
-    @RequestMapping(path = "/start-combat.json", method = RequestMethod.POST)
-    public Response startCombat () {
-        return null;
+    @RequestMapping(path = "/combat-info.json", method = RequestMethod.POST)
+    public CombatInfoWrapper combatInfo () {
+        List<Starship> friendShips = new ArrayList<>();
+        List<Starship> enemyShips = new ArrayList<>();
+        friendShips.add(new Starship(null, ShipChassis.DESTROYER, "Defiant", "destroyer"));
+        friendShips.add(new Starship(null, ShipChassis.DESTROYER, "Valiant", "destroyer"));
+        enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Tempest", "enemy"));
+        enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Earthquake", "enemy"));
+        enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Hurricane", "enemy"));
+        enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Landslide", "enemy"));
+        return new CombatInfoWrapper(friendShips, enemyShips);
     }
 
     @RequestMapping(path = "/scrap-ship.json", method = RequestMethod.POST)

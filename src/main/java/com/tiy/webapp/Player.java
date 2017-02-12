@@ -25,22 +25,21 @@ public class Player {
     @OneToMany
     private List<Starship> ships;
 
-    int totalResearch;
+    @Column
+    private Integer totalResearch;
 
     @Column(nullable = false)
     private String name;
 
-    @OneToOne
-    private StarSystem homeSystem;
+    public Player () {
 
-    public Player(StarSystem homeSystem, String name) {
+    }
+
+    public Player(String name) {
         planets = new ArrayList<>();
         ships = new ArrayList<>();
-
-        planets.add(homeSystem.getPlanets().get(0));//BAD (we shouldn't be assuming this. works for now) todo fix
         totalResearch = 0;
         this.name = name;
-        this.homeSystem = homeSystem;
     }
 
     public void addShip (Starship starship) {
@@ -89,9 +88,6 @@ public class Player {
         ships.remove(ship);
     }
 
-    public StarSystem getHomeSystem () {
-        return homeSystem;
-    }
 
     public List<Planet> getPlanets () {
         return planets;
@@ -99,5 +95,37 @@ public class Player {
 
     public List<Starship> getShips () {
         return ships;
+    }
+
+    public void setPlanets(List<Planet> planets) {
+        this.planets = planets;
+    }
+
+    public void setShips(List<Starship> ships) {
+        this.ships = ships;
+    }
+
+    public int getTotalResearch() {
+        return totalResearch;
+    }
+
+    public void setTotalResearch(int totalResearch) {
+        this.totalResearch = totalResearch;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public void setTotalResearch(Integer totalResearch) {
+        this.totalResearch = totalResearch;
     }
 }

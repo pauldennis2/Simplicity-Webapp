@@ -74,10 +74,12 @@ public class Starship {
     @Column (nullable = false)
     private Integer productionRemaining;
 
+    private String imageString;
+
     public Starship() {
     }
 
-    public Starship(StarSystem starSystem, ShipChassis chassis, String name) {
+    public Starship(StarSystem starSystem, ShipChassis chassis, String name, String imageString) {
         this.name = name;
         this.starSystem = starSystem;
         isDestroyed = false;
@@ -96,6 +98,7 @@ public class Starship {
         powerPerTurn = generator.getPowerPerTurn();
         maxReservePower = generator.getMaxReservePower();
         currentReservePower = maxReservePower;
+        this.imageString = imageString;
 
         isComplete = true;
         productionRemaining = 0;
@@ -326,5 +329,29 @@ public class Starship {
 
     public void setChassis(ShipChassis chassis) {
         this.chassis = chassis;
+    }
+
+    public Boolean getComplete() {
+        return isComplete;
+    }
+
+    public void setComplete(Boolean complete) {
+        isComplete = complete;
+    }
+
+    public Integer getProductionRemaining() {
+        return productionRemaining;
+    }
+
+    public void setProductionRemaining(Integer productionRemaining) {
+        this.productionRemaining = productionRemaining;
+    }
+
+    public String getImageString() {
+        return imageString;
+    }
+
+    public void setImageString(String imageString) {
+        this.imageString = imageString;
     }
 }

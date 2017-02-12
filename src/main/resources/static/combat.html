@@ -11,12 +11,12 @@
     </div>
     <div class="progress" style="background: black">
         <div class="progress-bar progress-bar-info" role="progressbar" style="width: {{friendSelected.shieldPct}}">
-            Shield {{friendSelected.shieldHealth}} / {{friendSelected.maxShield}}
+            Shield {{friendSelected.shieldHealth}} / {{friendSelected.maxShieldHealth}}
         </div>
     </div>
     <div class="progress" style="background: black">
         <div class="progress-bar progress-bar-warning" role="progressbar" style="width: {{friendSelected.energyPct}}">
-            Energy {{friendSelected.energy}} / {{friendSelected.maxEnergy}}
+            Energy {{friendSelected.currentReservePower}} / {{friendSelected.maxReservePower}}
         </div>
     </div>
 
@@ -34,12 +34,13 @@
     </div>
     <div class="progress" style="background: black">
         <div class="progress-bar progress-bar-info" role="progressbar" style="width: {{enemySelected.shieldPct}}">
-            Shield {{enemySelected.shieldHealth}} / {{enemySelected.maxShield}}
+            Shield {{enemySelected.shieldHealth}} / {{enemySelected.maxShieldHealth}}
         </div>
     </div>
     <div class="progress" style="background: black">
         <div class="progress-bar progress-bar-warning" role="progressbar" style="width: {{enemySelected.energyPct}}">
-            Energy {{enemySelected.energy}} / {{enemySelected.maxEnergy}}
+            Energy {{enemySelected.currentReservePower}} / {{enemySelected.maxReservePower}}
         </div>
     </div>
 </div>
+<button type="button" ng-click="fireWeapons()">Fire</button>
