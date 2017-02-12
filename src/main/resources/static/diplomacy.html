@@ -5,11 +5,11 @@
     Percentage of Total: {{playerTemp.percentOfTotalPop}}
 </div>
 <hr>-->
-<div class="row" ng-repeat="playerTemp in players" style="float:left">
-    <div class="col-sm-10 col-md-40">
-        <div class="thumbnail">
+<div class="row" ng-repeat="playerTemp in players" style="float:left; background: black">
+    <div class="col-sm-10 col-md-70">
+        <div class="thumbnail" style="background: black; border: none">
             <img ng-src={{playerTemp.imageFile}} alt="player picture">
-            <div class="caption">
+            <div class="caption" style="color: white">
                 <h4>{{playerTemp.name}}</h4><br>
                 Population: {{playerTemp.population}}<br>
                 Percentage of Total: {{playerTemp.percentOfTotalPop}}

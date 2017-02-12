@@ -1,2 +1,45 @@
 <div id="phaser-canvas-container">
 </div>
+
+<div id="allied_info" style="width: 390px; float: left; background: black; color:white;">
+    <b>{{friendSelected.name}}</b>
+    (Damage: {{friendSelected.damage}})<br>
+    <div class="progress" style="background: black">
+        <div class="progress-bar progress-bar-success" role="progressbar" style="width: {{friendSelected.healthPct}}">
+            Health {{friendSelected.health}} / {{friendSelected.maxHealth}}
+        </div>
+    </div>
+    <div class="progress" style="background: black">
+        <div class="progress-bar progress-bar-info" role="progressbar" style="width: {{friendSelected.shieldPct}}">
+            Shield {{friendSelected.shieldHealth}} / {{friendSelected.maxShield}}
+        </div>
+    </div>
+    <div class="progress" style="background: black">
+        <div class="progress-bar progress-bar-warning" role="progressbar" style="width: {{friendSelected.energyPct}}">
+            Energy {{friendSelected.energy}} / {{friendSelected.maxEnergy}}
+        </div>
+    </div>
+
+</div>
+<div id = "spacer" style="width: 20px; float: left; background: black; color: black">
+|<br>|<br>|<br>|<br>|<br>|<br>|<br>
+</div>
+<div id="enemy_info" style="width: 390px; float: left; background: black; color:white">
+    <b>{{enemySelected.name}}</b>
+     (Damage: {{enemySelected.damage}})<br>
+    <div class="progress" style="background: black">
+        <div class="progress-bar progress-bar-success" role="progressbar" style="width: {{enemySelected.healthPct}}">
+            Health {{enemySelected.health}} / {{enemySelected.maxHealth}}
+        </div>
+    </div>
+    <div class="progress" style="background: black">
+        <div class="progress-bar progress-bar-info" role="progressbar" style="width: {{enemySelected.shieldPct}}">
+            Shield {{enemySelected.shieldHealth}} / {{enemySelected.maxShield}}
+        </div>
+    </div>
+    <div class="progress" style="background: black">
+        <div class="progress-bar progress-bar-warning" role="progressbar" style="width: {{enemySelected.energyPct}}">
+            Energy {{enemySelected.energy}} / {{enemySelected.maxEnergy}}
+        </div>
+    </div>
+</div>

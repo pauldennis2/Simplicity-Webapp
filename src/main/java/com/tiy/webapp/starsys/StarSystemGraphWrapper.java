@@ -1,29 +1,25 @@
 package com.tiy.webapp.starsys;
 
-import com.tiy.webapp.Player;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
 /**
- * Created by erronius on 12/20/2016.
+ * Created by Paul Dennis on 2/11/2017.
  */
-public class StarSystemGraph {
+public class StarSystemGraphWrapper {
 
-    List<StarSystem> starSystems;
-    List<SpaceTunnel> tunnels;
+    List<SpaceTunnel> tunnels = new ArrayList<>();
+    List<StarSystem> starSystems = new ArrayList<>();
 
-    Map<String, StarSystem> nameStarSystemMap;
-    Map<Point, StarSystem> pointStarSystemMap;
+    public StarSystemGraphWrapper () {
 
-    public StarSystemGraph (String fileName) {
-        starSystems = new ArrayList<StarSystem>();
-        nameStarSystemMap = new HashMap<String, StarSystem>();
-        pointStarSystemMap = new HashMap<Point, StarSystem>();
-        tunnels = new ArrayList<SpaceTunnel>();
+    }
 
+    public StarSystemGraphWrapper (String fileName) {
 
+        Map<String, StarSystem> nameStarSystemMap = new HashMap<>();
+        Map<Point, StarSystem> pointStarSystemMap = new HashMap<>();
         //read from file
         try {
             //File Syntax: First Section ... "=====" Second Section
@@ -60,26 +56,28 @@ public class StarSystemGraph {
                 } else {
                     tunnelLength = StarSystem.calculateCartesianDistance(firstSystem, secondSystem);
                 }
-                /*SpaceTunnel tunnel = new SpaceTunnel(tunnelLength);
+                SpaceTunnel tunnel = new SpaceTunnel(tunnelLength, firstSystem, secondSystem);
                 tunnels.add(tunnel);
-                firstSystem.addTunnel(tunnel);
-                secondSystem.addTunnel(tunnel);*/
-                throw new AssertionError("Fix");
             }
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
         }
+
     }
 
-    public List<StarSystem> getStarSystems () {
-        return starSystems;
-    }
-
-    public List<SpaceTunnel> getTunnels () {
+    public List<SpaceTunnel> getTunnels() {
         return tunnels;
     }
 
-    public Map<String, StarSystem> getNameStarSystemMap () {
-        return nameStarSystemMap;
+    public void setTunnels(List<SpaceTunnel> tunnels) {
+        this.tunnels = tunnels;
+    }
+
+    public List<StarSystem> getStarSystems() {
+        return starSystems;
+    }
+
+    public void setStarSystems(List<StarSystem> starSystems) {
+        this.starSystems = starSystems;
     }
 }

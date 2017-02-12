@@ -14,6 +14,9 @@ public class SpaceTunnel {
     @Id
     private Integer id;
 
+    @Column (nullable = false, unique = true)
+    private String name;
+
     @Column(nullable = false)
     private Integer length;
 
@@ -31,6 +34,7 @@ public class SpaceTunnel {
         this.length = length;
         this.firstSystem = firstSystem;
         this.secondSystem = secondSystem;
+        name = firstSystem.getName() + " - " + secondSystem.getName();
     }
 
     public int getLength () {
@@ -63,5 +67,13 @@ public class SpaceTunnel {
 
     public void setSecondSystem(StarSystem secondSystem) {
         this.secondSystem = secondSystem;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

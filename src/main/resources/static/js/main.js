@@ -7,7 +7,7 @@ simplicityApp.config(function($routeProvider) {
     $routeProvider
         .when("/", {
             templateUrl: "ssgview.html",
-            //controller: "spaController"
+            controller: "ssgViewController"
         })
         .when("/shipyard", {
             templateUrl: "shipyard.html",
@@ -32,6 +32,10 @@ simplicityApp.config(function($routeProvider) {
         .when("/help", {
             templateUrl: "help.html"
         })
+        .when("/options", {
+            templateUrl: "options.html",
+            controller: "optionsController"
+        })
         .when("/research", {
             templateUrl: "research.html",
             controller: "researchController"
@@ -42,9 +46,81 @@ simplicityApp.config(function($routeProvider) {
         })
 });
 
-simplicityApp.controller('mainController', function($scope, $http) {
-    console.log("Initializing mainController");
+simplicityApp.controller('ssgViewController', function($scope, $http) {
+    console.log("Initializing ssgViewController");
+    var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-canvas-container',
+         { preload: preload, create: create, update: update });
+
+    $scope.starSystemGraph = {};
+    var starSystems = [];
+    var tunnels = [];
+    getSSGInfo = function () {
+        console.log("Getting ssg info");
+        var wrapper = {"gameId": 1, "playerId":2};
+        $http.post("/ssg-main-info.json", wrapper)
+        .then(
+            function successCallback (response) {
+                console.log("Found info");
+                starSystems = response.data.starSystems;
+                console.log("starSystems = " + starSystems);
+                tunnels = response.data.tunnels;
+                console.log("tunnels = " + tunnels);
+            },
+
+            function errorCallback (response) {
+                console.log("Failed to find SSG info");
+            });
+    };
+    getSSGInfo();
+    var scale = 30;
+    /*var starSystems = [];
+    starSystems[0] = {};
+    starSystems[0].x = 5;
+    starSystems[0].y = 2;
+
+    starSystems[1] = {};
+    starSystems[1].x = 8;
+    starSystems[1].y = 4;*/
+    var xOffset = 20;
+    var yOffset = 20;
+    function preload () {
+        game.load.image('stars', 'assets/starfield.png');
+        game.load.image('tinysun', 'assets/tinysun.png');
+    }
+
+    function create () {
+        game.add.sprite(0, 0, 'stars');
+        var graphics = game.add.graphics(0, 0);
+        graphics.lineStyle(3, 0x002266, 1);
+        var systemSprites = [];
+        for (i = 0; i < starSystems.length; i++) {
+            systemSprites[i] = game.add.sprite(starSystems[i].gridCoordX * scale + xOffset, starSystems[i].gridCoordY * scale + yOffset, 'tinysun');
+            systemSprites[i].inputEnabled = true;
+            systemSprites[i].anchor.setTo(0.5, 0.5);
+            systemSprites[i].events.onInputDown.add(listener, this);
+            systemSprites[i].systemName = starSystems[i].name;
+        }
+        for (i = 0; i < tunnels.length; i++) {
+            var x1 = tunnels[i].firstSystem.gridCoordX;
+            var y1 = tunnels[i].firstSystem.gridCoordY;
+            var x2 = tunnels[i].secondSystem.gridCoordX;
+            var y2 = tunnels[i].secondSystem.gridCoordY;
+
+            graphics.moveTo(x1 * scale + xOffset, y1 * scale + yOffset);
+            graphics.lineTo(x2 * scale + xOffset, y2 * scale + yOffset);
+        }
+    }
+
+    function listener (sprite) {
+        console.log("Someone clicked a system! HOORAY!");
+        $scope.selectedSystem = sprite.systemName;
+        $scope.$apply();
+    }
+
+    function update () {
+    }
 });
+
 
 simplicityApp.controller('diplomacyController', function($scope, $http) {
     console.log("Initializing diplomacyController");
@@ -135,16 +211,19 @@ simplicityApp.controller('researchController', function($scope, $http) {
     getResearchInfo();
 });
 
+simplicityApp.controller('optionsController', function($scope, $http) {
+    console.log("Initializing optionsController");
+});
+
 simplicityApp.controller('combatController', function($scope, $http) {
     console.log("Initializing combatController");
-    var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-canvas-container',
+    var game = new Phaser.Game(800, 580, Phaser.AUTO, 'phaser-canvas-container',
      { preload: preload, create: create, update: update });
 
     getStarSystemInfo = function () {
         console.log("Getting star system info");
         var wrapper = {"gameId": 1, "playerId":2};
 
-        //$http.post("/simple-system-info.json", wrapper)
         $http.post("/system-info.json", wrapper)
         .then(
             function successCallback (response) {
@@ -158,12 +237,73 @@ simplicityApp.controller('combatController', function($scope, $http) {
             });
     };
 
+    $scope.friendSelected = {};
+    $scope.friendSelected.name = "Voyager";
+    $scope.friendSelected.damage = 50;
+
+    $scope.friendSelected.healthPct = "95%";
+    $scope.friendSelected.health = 95;
+    $scope.friendSelected.maxHealth = 100;
+
+    $scope.friendSelected.shieldPct = "75%";
+    $scope.friendSelected.shieldHealth = 150;
+    $scope.friendSelected.maxShield = 200;
+
+    $scope.friendSelected.energyPct = "100%";
+    $scope.friendSelected.energy = 400;
+    $scope.friendSelected.maxEnergy = 400;
+
+    $scope.enemySelected = {};
+    $scope.enemySelected.name = "Tempest";
+    $scope.enemySelected.damage = 35;
+
+    $scope.enemySelected.healthPct = "100%";
+    $scope.enemySelected.health = 75;
+    $scope.enemySelected.maxHealth = 75;
+
+    $scope.enemySelected.shieldPct = "75%";
+    $scope.enemySelected.shieldHealth = 45;
+    $scope.enemySelected.maxShield = 60;
+
+    $scope.enemySelected.energyPct = "50%";
+    $scope.enemySelected.energy = 100;
+    $scope.enemySelected.maxEnergy = 200;
+
     function preload() {
         game.load.image('stars', 'assets/starfield.png');
+        game.load.image('destroyer', 'assets/destroyerblue.png');
+        game.load.image('enemy', 'assets/enemy_ship.png');
     }
 
     function create() {
         game.add.sprite(0, 0, 'stars');
+
+        var destroyer1 = game.add.sprite(50, 50, 'destroyer');
+        var destroyer2 = game.add.sprite(50, 200, 'destroyer');
+
+        var enemies = [];
+
+        for (i = 0; i < 3; i++) {
+            enemies[i] = game.add.sprite(500, 50 + 100*i, 'enemy');
+            enemies[i].inputEnabled = true;
+            enemies[i].events.onInputDown.add(enemyListener, this);
+        }
+    }
+
+    function enemyListener (sprite) {
+        console.log("Element name = " + sprite.elementName);
+        $scope.selectedElement = {};
+        $scope.selectedElement.name = sprite.elementName;
+        //$scope.selectedElement.health = sprite.shipHealth;
+        //$scope.selectedElement.maxHealth = sprite.maxHealth;
+        if (sprite.shipHealth != null) {
+            $scope.selectedElement.health = sprite.shipHealth + "/" + sprite.maxHealth;
+        }
+        if (sprite.population != null) {
+            $scope.selectedElement.population = "Population: " + sprite.population;
+        }
+        $scope.selectedElement.travelTime = sprite.travelTime;
+        $scope.$apply();
     }
 
     function update() {
@@ -199,6 +339,8 @@ simplicityApp.controller('systemController', function($scope, $http) {
     var explosions;
     var wormholes;
     var wormhole;
+    var addAnimations = false;
+    var systemText;
 
     function preload() {
         game.load.image('stars', 'assets/starfield.png');
@@ -231,6 +373,16 @@ simplicityApp.controller('systemController', function($scope, $http) {
         planetCoordsY[1] = 205;
         planetCoordsY[2] = 360;
 
+        var tunnelCoordsX = [];
+        tunnelCoordsX[0] = 20;
+        tunnelCoordsX[1] = 600;
+        tunnelCoordsX[2] = 350;
+
+        var tunnelCoordsY = [];
+        tunnelCoordsY[0] = 400;
+        tunnelCoordsY[1] = 400;
+        tunnelCoordsY[2] = 475;
+
         var planetNames = [];
         planetNames[0] = 'earth';
         planetNames[1] = 'zebulon';
@@ -262,19 +414,36 @@ simplicityApp.controller('systemController', function($scope, $http) {
             game.add.sprite(20, 400 + i*80, 'tunnel')
         }*/
 
-        var tunnel = game.add.sprite(20, 400, 'tunnel');
-        tunnel.inputEnabled = true;
-        tunnel.events.onInputDown.add(listener, this);
-        tunnel.elementName = "Tunnel";
-        tunnel.alpha = 0.0;
+        if (addAnimations) {
+            var tunnel = game.add.sprite(20, 400, 'tunnel');
+            tunnel.inputEnabled = true;
+            tunnel.events.onInputDown.add(listener, this);
+            tunnel.elementName = "Tunnel";
+            tunnel.alpha = 0.0;
+        }
 
-        wormholes = game.add.group();
-        wormholes.createMultiple(10, 'wormhole');
-        //tunnel.animations.add('wormhole');
-        wormholes.forEach(setupDiamond, this);
-        wormhole = wormholes.getFirstExists(false);
-        wormhole.reset(20, 400);
-        wormhole.play('wormhole', 20, true, false);
+
+        systemText = game.add.text(200 , 25, $scope.starSystemInfo.starSystem.name + " System" , { font: '28px Arial', fill: '#fff' });
+        systemText.visible = true;
+
+        var tunnels = [];
+        for (i = 0; i < $scope.starSystemInfo.tunnels.length; i++) {
+            tunnels[i] = game.add.sprite(tunnelCoordsX[i], tunnelCoordsY[i], 'tunnel');
+            tunnels[i].inputEnabled = true;
+            tunnels[i].events.onInputDown.add(listener, this);
+            tunnels[i].elementName = "Tunnel: " + $scope.starSystemInfo.tunnels[i].name;
+            tunnels[i].travelTime = $scope.starSystemInfo.tunnels[i].length + " turns journey";
+        }
+
+        if (addAnimations) {
+            wormholes = game.add.group();
+            wormholes.createMultiple(10, 'wormhole');
+            //tunnel.animations.add('wormhole');
+            wormholes.forEach(setupDiamond, this);
+            wormhole = wormholes.getFirstExists(false);
+            wormhole.reset(20, 400);
+            wormhole.play('wormhole', 20, true, false);
+        }
 
         /*var destroyer = game.add.sprite(20, 20, 'destroyer');
         destroyer.inputEnabled = true;
@@ -299,7 +468,9 @@ simplicityApp.controller('systemController', function($scope, $http) {
     }
 
     function setupDiamond (tunnel) {
-        tunnel.animations.add('wormhole');
+        if (addAnimations) {
+            tunnel.animations.add('wormhole');
+        }
     }
 
     function update() {
@@ -330,6 +501,7 @@ simplicityApp.controller('systemController', function($scope, $http) {
         if (sprite.population != null) {
             $scope.selectedElement.population = "Population: " + sprite.population;
         }
+        $scope.selectedElement.travelTime = sprite.travelTime;
         $scope.$apply();
     }
 

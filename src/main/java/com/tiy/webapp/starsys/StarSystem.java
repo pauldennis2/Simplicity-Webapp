@@ -16,7 +16,7 @@ public class StarSystem {
     @Id
     private Integer id;
 
-    @Column (nullable = false)
+    @Column (nullable = false, unique = true)
     private String name;
 
     @OneToMany (cascade = CascadeType.ALL)
@@ -41,7 +41,6 @@ public class StarSystem {
         planets = new ArrayList<>();
         this.gridCoordX = gridCoordX;
         this.gridCoordY = gridCoordY;
-        planets.add(new Planet(name + " " + ROMAN_NUMERALS[0], DEFAULT_PLANET_SIZE, "default"));
     }
 
     public StarSystem (String name, int gridCoordX, int gridCoordY, Random random) {

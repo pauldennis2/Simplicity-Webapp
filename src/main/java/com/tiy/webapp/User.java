@@ -19,6 +19,9 @@ public class User {
     @Column (nullable = false)
     private String password;
 
+    @Column
+    private Boolean logged;
+
     public User () {
 
     }
@@ -42,5 +45,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Boolean getLoggedIn() {
+        return logged;
+    }
+
+    public void setLoggedIn(Boolean loggedIn) {
+        this.logged = loggedIn;
     }
 }

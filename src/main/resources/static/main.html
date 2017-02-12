@@ -10,11 +10,12 @@
     <script src="js/angular-route.min.js"></script>
     <script src="js/main.js"></script>
     <script type="text/javascript" src="js/phaser.min.js"></script>
-
+    <link rel="icon" href="assets/mandelbrot_trans_small.png">
 </head>
-<body ng-controller="mainController">
-<div ng-view style = "float: left"></div>
-<div class="erronav">
+<body style="background: black; color: white">
+<div ng-view style = "float: left; width: 800px"></div>
+<div class="erronav" style="float: left">
+    <h3>
     <ul class="nav nav-pills nav-stacked">
         <li role="presentation">
             <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span> Advance Turn
@@ -22,7 +23,7 @@
         <li role="presentation"><a href="#/">
             <span class="glyphicon glyphicon-home" aria-hidden="true"></span> Go Home</a>
         </li>
-        <li role="presentation"><a href="#">
+        <li role="presentation"><a href="#options">
             <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Game Options</a>
         </li>
         <li role="presentation"><a href="#diplomacy">
@@ -47,6 +48,7 @@
             <span class="glyphicon glyphicon-fire" aria-hidden="true"></span> Combat (Temp)</a>
         </li>
     </ul>
+    </h3>
 </div>
 </body>
 </html>
