@@ -38,9 +38,29 @@ public class SimplicityRestController {
     @Autowired
     UserRepo users;
 
+
     @RequestMapping(path = "/users.json", method = RequestMethod.GET)
-    public List<User> getUsers () {
-        return users.findByLogged(true);
+    public LobbyUsersWrapper getUsers () {
+        List<User> alphaUsers = users.findByLobbyStatus(LobbyStatus.ALPHA);
+        List<User> bakerUsers = users.findByLobbyStatus(LobbyStatus.BAKER);
+        List<User> charlieUsers = users.findByLobbyStatus(LobbyStatus.CHARLIE);
+        List<User> deltaUsers = users.findByLobbyStatus(LobbyStatus.DELTA);
+        List<User> mainLobbyUsers = users.findByLobbyStatus(LobbyStatus.MAIN);
+        return new LobbyUsersWrapper(alphaUsers, bakerUsers, charlieUsers, deltaUsers, mainLobbyUsers);
+    }
+
+    @RequestMapping(path = "/my-user.json", method = RequestMethod.GET)
+    public User getMyUser (HttpSession session) {
+        return (User)session.getAttribute("user");
+    }
+
+    @RequestMapping(path = "/change-users-lobby.json", method = RequestMethod.POST)
+    public Response changeUsersLobby (@RequestBody Integer lobby, HttpSession session) {
+        LobbyStatus newStatus = LobbyStatus.values()[lobby];
+        User user = (User)session.getAttribute("user");
+        user.setLobbyStatus(newStatus);
+        users.save(user);
+        return new Response (true);
     }
 
     /*@RequestMapping(path = "/user-login.json", method = RequestMethod.POST)
@@ -56,8 +76,12 @@ public class SimplicityRestController {
     }*/
 
     @RequestMapping(path = "/user-registration.json", method = RequestMethod.POST)
-    public Response registration () {
-        return null;
+    public Response registration (@RequestBody User user) {
+        if (user != null) {
+            users.save(user);
+            return new Response(true);
+        }
+        return new Response(false);
     }
 
     @RequestMapping(path = "/new-empty-game.json", method = RequestMethod.POST)
@@ -224,6 +248,12 @@ public class SimplicityRestController {
         hardCodedList.add(new Ship("Voyager", 100, 100, "assets/destroyer.png", "Zebulon System"));
         hardCodedList.add(new Ship("Aegis", 30, 30, "assets/fighter.png", "Terran System"));
         return hardCodedList;
+    }
+
+    @RequestMapping(path = "/process-attack.json", method = RequestMethod.POST)
+    public Starship processAttack (@RequestBody Starship starship) {
+        starship.takeDamage(starship.getDamage());
+        return starship;
     }
 
     @RequestMapping(path = "/planets-info.json", method = RequestMethod.POST)

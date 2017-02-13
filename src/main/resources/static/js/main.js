@@ -71,16 +71,14 @@ simplicityApp.controller('ssgViewController', function($scope, $http) {
                 console.log("Failed to find SSG info");
             });
     };
+    $scope.goToDagobah = function () {
+        console.log("Go to the Dagobah system Luke");
+        console.log("Selected system = " + $scope.selectedSystem);
+    };
+    $scope.noSystemSelected = true;
+
     getSSGInfo();
     var scale = 30;
-    /*var starSystems = [];
-    starSystems[0] = {};
-    starSystems[0].x = 5;
-    starSystems[0].y = 2;
-
-    starSystems[1] = {};
-    starSystems[1].x = 8;
-    starSystems[1].y = 4;*/
     var xOffset = 20;
     var yOffset = 20;
     function preload () {
@@ -97,8 +95,9 @@ simplicityApp.controller('ssgViewController', function($scope, $http) {
             systemSprites[i] = game.add.sprite(starSystems[i].gridCoordX * scale + xOffset, starSystems[i].gridCoordY * scale + yOffset, 'tinysun');
             systemSprites[i].inputEnabled = true;
             systemSprites[i].anchor.setTo(0.5, 0.5);
-            systemSprites[i].events.onInputDown.add(listener, this);
+            systemSprites[i].events.onInputDown.add(systemClickListener, this);
             systemSprites[i].systemName = starSystems[i].name;
+            systemSprites[i].index = i;
         }
         for (i = 0; i < tunnels.length; i++) {
             var x1 = tunnels[i].firstSystem.gridCoordX;
@@ -110,10 +109,15 @@ simplicityApp.controller('ssgViewController', function($scope, $http) {
             graphics.lineTo(x2 * scale + xOffset, y2 * scale + yOffset);
         }
     }
-
-    function listener (sprite) {
+    function systemClickListener (systemSprite) {
         console.log("Someone clicked a system! HOORAY!");
-        $scope.selectedSystem = sprite.systemName;
+        $scope.noSystemSelected = false;
+        $scope.selectedSystem = {};
+        $scope.selectedSystem.name = systemSprite.systemName;
+        console.log(starSystems[systemSprite.index]);
+        console.log("It has " + starSystems[systemSprite.index].planets.length + " planets");
+        var index = systemSprite.index;
+        $scope.selectedSystem.planets = starSystems[index].planets;
         $scope.$apply();
     }
 
@@ -245,17 +249,20 @@ simplicityApp.controller('combatController', function($scope, $http) {
         game.load.image('enemy', 'assets/enemy_ship.png');
     }
 
+    var friendSprites = [];
+    var enemySprites = [];
+
     function create() {
         game.add.sprite(0, 0, 'stars');
 
-        var friendSprites = [];
+
         for (i = 0; i < friendShips.length; i++) {
             friendSprites[i] = game.add.sprite(50, 50 + 150*i, friendShips[i].imageString);
             friendSprites[i].inputEnabled = true;
             friendSprites[i].events.onInputDown.add(friendListener, this);
             friendSprites[i].index = i;
         }
-        var enemySprites = [];
+
         for (i = 0; i < enemyShips.length; i++) {
             enemySprites[i] = game.add.sprite(500, 50 + 100*i, enemyShips[i].imageString);
             enemySprites[i].inputEnabled = true;
@@ -263,9 +270,18 @@ simplicityApp.controller('combatController', function($scope, $http) {
             enemySprites[i].index = i;
         }
     }
-
+    var friendChosen = false;
+    var enemyChosen = false;
+    var friendSelectedIndex;
+    var enemySelectedIndex;
+    $scope.bothSelected = false;
     function friendListener (sprite) {
+        friendChosen = true;
+        if (enemyChosen) {
+            $scope.bothSelected = true;
+        }
         $scope.friendSelected = friendShips[sprite.index];
+        friendSelectedIndex = sprite.index;
         var ship = friendShips[sprite.index];
         $scope.friendSelected.healthPct = "" + (ship.health/ship.maxHealth)*100 + "%";
         $scope.friendSelected.shieldPct = "" + (ship.shieldHealth/ship.maxShieldHealth)*100 + "%";
@@ -274,7 +290,12 @@ simplicityApp.controller('combatController', function($scope, $http) {
     }
 
     function enemyListener (sprite) {
+        enemyChosen = true;
+        if (friendChosen) {
+            $scope.bothSelected = true;
+        }
         $scope.enemySelected = enemyShips[sprite.index];
+        enemySelectedIndex = sprite.index;
         var ship = enemyShips[sprite.index];
         $scope.enemySelected.healthPct = "" + (ship.health/ship.maxHealth)*100 + "%";
         $scope.enemySelected.shieldPct = "" + (ship.shieldHealth/ship.maxShieldHealth)*100 + "%";
@@ -287,8 +308,29 @@ simplicityApp.controller('combatController', function($scope, $http) {
     }
 
     $scope.fireWeapons = function () {
-        console.log("IMA FIRIN MAH LASUR");
-    }
+        var damage = $scope.friendSelected.damage;
+        var enemyShip = $scope.enemySelected;
+        var enemyShipRealDamage = enemyShip.damage;
+        //We're pulling a switcheroo so that we don't have to create a wrapper to hold the damage for the friend ship
+        enemyShip.damage = damage;
+        enemyShip.shieldsUp = true;
+        $http.post("/process-attack.json", enemyShip)
+        .then(
+            function successCallback (response) {
+                $scope.enemySelected = response.data;
+                $scope.enemySelected.damage = enemyShipRealDamage;
+                enemyShips[enemySelectedIndex] = $scope.enemySelected;
+                if ($scope.enemySelected.health <= 0) {
+                    console.log("He's dead, Jim");
+                    enemyShips[enemySelectedIndex] = null;
+                    enemySprites[enemySelectedIndex].kill();
+                }
+            },
+
+            function errorCallback (response) {
+                console.log("Unable to find combat action response");
+            });
+    };
 });
 
 simplicityApp.controller('systemController', function($scope, $http) {

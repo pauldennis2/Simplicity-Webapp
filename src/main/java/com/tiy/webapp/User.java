@@ -19,16 +19,20 @@ public class User {
     @Column (nullable = false)
     private String password;
 
-    @Column
-    private Boolean logged;
+    @Column (nullable = false)
+    private String handle;
+
+    @Column (nullable = false)
+    LobbyStatus lobbyStatus;
 
     public User () {
 
     }
 
-    public User(String email, String password) {
+    public User(String email, String password, String handle) {
         this.email = email;
         this.password = password;
+        this.handle = handle;
     }
 
     public String getEmail() {
@@ -47,11 +51,19 @@ public class User {
         this.password = password;
     }
 
-    public Boolean getLoggedIn() {
-        return logged;
+    public LobbyStatus getLobbyStatus() {
+        return lobbyStatus;
     }
 
-    public void setLoggedIn(Boolean loggedIn) {
-        this.logged = loggedIn;
+    public void setLobbyStatus(LobbyStatus lobbyStatus) {
+        this.lobbyStatus = lobbyStatus;
+    }
+
+    public String getHandle() {
+        return handle;
+    }
+
+    public void setHandle(String handle) {
+        this.handle = handle;
     }
 }

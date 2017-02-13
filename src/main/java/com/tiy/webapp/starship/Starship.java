@@ -145,11 +145,7 @@ public class Starship {
         }
     }
 
-    public void takeDamage (int damage) throws ImproperFunctionInputException {
-        if (damage < 0) {
-            throw new ImproperFunctionInputException("Cannot take negative damage");
-        }
-
+    public void takeDamage (int damage) {
         if (shieldsUp) {
             if (currentReservePower >= maxDamageAbsorb) {
                 int returnedDamage = takeShieldDamage(damage);

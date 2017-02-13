@@ -6,8 +6,8 @@ package com.tiy.webapp.starship;
 public enum ShipChassis {
     //ShipChassis Constructor:
     //smallWeap, largeWeap, fighterBerths, upgrades, fighterSlots, health, baseCost
-    FIGHTER (25, 20, 15),
-    DESTROYER (100, 90, 60),
+    FIGHTER (25, 20, 8),
+    DESTROYER (100, 90, 30),
     COLONIZER (50, 80, 0);
     //CRUISER (data),
     //BATTLESHIP (data),

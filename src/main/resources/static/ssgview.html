@@ -1,5 +1,12 @@
 <div id="phaser-canvas-container"></div>
 <div class="erro_miniview">
-    <b>{{selectedSystem}} System</b><br>
-    <button type="button">Go To System</button>
+    <div id="systemNameDiv" style="width: 200px; float: left">
+        <b>{{selectedSystem.name}} System</b><br>
+    </div>
+    <div id="planetsDiv" style="width: 400px; float: left">
+        Planets:<ul>
+        <li ng-repeat="planet in selectedSystem.planets">{{planet.name}} Size: {{planet.size}}</li>
+    </ul>
+    </div>
+    <button class="space-bg" ng-click="goToDagobah()" ng-hide="noSystemSelected" type="button" style="float:right">Go To System</button>
 </div>

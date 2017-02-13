@@ -2,6 +2,7 @@ package com.tiy.webapp.starsys;
 
 import com.tiy.webapp.Player;
 
+import javax.persistence.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -9,12 +10,23 @@ import java.util.*;
 /**
  * Created by erronius on 12/20/2016.
  */
+@Entity
+@Table(name = "star-system-graphs")
 public class StarSystemGraph {
 
+    @GeneratedValue
+    @Id
+    Integer id;
+
+    @OneToMany
     List<StarSystem> starSystems;
+
+    @Transient
     List<SpaceTunnel> tunnels;
 
+    @Transient
     Map<String, StarSystem> nameStarSystemMap;
+    @Transient
     Map<Point, StarSystem> pointStarSystemMap;
 
     public StarSystemGraph (String fileName) {

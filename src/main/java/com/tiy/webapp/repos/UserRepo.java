@@ -1,5 +1,6 @@
 package com.tiy.webapp.repos;
 
+import com.tiy.webapp.LobbyStatus;
 import com.tiy.webapp.User;
 import org.springframework.data.repository.CrudRepository;
 
@@ -10,5 +11,5 @@ import java.util.List;
  */
 public interface UserRepo extends CrudRepository<User, Integer> {
     User findFirstByEmail (String email);
-    List<User> findByLogged (boolean logged);
+    List<User> findByLobbyStatus (LobbyStatus status);
 }
