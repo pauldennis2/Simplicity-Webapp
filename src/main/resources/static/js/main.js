@@ -86,7 +86,27 @@ simplicityApp.controller('ssgViewController', function($scope, $http) {
     function preload () {
         game.load.image('stars', 'assets/starfield.png');
         game.load.image('tinysun', 'assets/tinysun.png');
+        game.load.image('caticon', 'assets/races/race1_icon.jpg');
+        game.load.image('dogicon', 'assets/races/race2_icon.jpg');
+        game.load.image('horseicon', 'assets/races/race3_icon.jpg');
+        game.load.image('snakeicon', 'assets/races/race4_icon.jpg');
     }
+    var homeSystemIconsX = [];
+    homeSystemIconsX[0] = 270;
+    homeSystemIconsX[1] = 610;
+    homeSystemIconsX[2] = 265;
+    homeSystemIconsX[3] = 25;
+    var homeSystemIconsY = [];
+    homeSystemIconsY[0] = 10;
+    homeSystemIconsY[1] = 285;
+    homeSystemIconsY[2] = 490;
+    homeSystemIconsY[3] = 220;
+
+    var homeSystemIconNames = [];
+    homeSystemIconNames[0] = 'caticon';
+    homeSystemIconNames[1] = 'dogicon';
+    homeSystemIconNames[2] = 'horseicon';
+    homeSystemIconNames[3] = 'snakeicon';
 
     function create () {
         game.add.sprite(0, 0, 'stars');
@@ -109,6 +129,9 @@ simplicityApp.controller('ssgViewController', function($scope, $http) {
 
             graphics.moveTo(x1 * scale + xOffset, y1 * scale + yOffset);
             graphics.lineTo(x2 * scale + xOffset, y2 * scale + yOffset);
+        }
+        for (i = 0; i < 4; i++) {
+            game.add.sprite(homeSystemIconsX[i], homeSystemIconsY[i], homeSystemIconNames[i]);
         }
     }
     function systemClickListener (systemSprite) {

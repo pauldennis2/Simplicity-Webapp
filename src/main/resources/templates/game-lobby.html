@@ -15,7 +15,7 @@
 {{! changing the mustache delimiter so it doesn't conflict with  }}
 {{! the default angularjs delimeters - https://mustache.github.io/mustache.5.html for more info  }}
 {{=<% %>=}}
-<h4>Main Lobby</h4><br>
+<h4>Main Lobby <a href="/main.html">Link to Main (Temporary)</a></h4><br>
 <ul class="list-group" ng-click="moveToGroup(mainLobbyUsers)" style="width: 400px">
     <li class="list-group-item trans-bg" ng-repeat="user in mainLobbyUsers" style="background-color: transparent">
         {{user.handle}}
@@ -23,7 +23,8 @@
 </ul>
 <hr>
 <ul class="list-group"  style="width: 500px;">
-    <li class="list-group-item trans-bg" ng-click="moveToGroup(alphaUsers)">Alpha Lobby <span class="badge">{{alphaUsers.length}}/4</span>
+    <li class="list-group-item trans-bg" ng-click="moveToGroup(alphaUsers)">Alpha Lobby
+        <br><input class="space-bg" type="button" value="Start Game" ng-model="alphaStart" disabled><span class="badge">{{alphaUsers.length}}/4</span>
         <ul class="list-group">
             <li class="list-group-item trans-bg" ng-repeat="user in alphaUsers">
                 {{user.handle}}
@@ -32,7 +33,8 @@
             </li>
         </ul>
     </li>
-    <li class="list-group-item trans-bg" ng-click="moveToGroup(bakerUsers)">Baker Lobby <input class="space-bg" type="button" value="Start Game" ng-model="bakerStart" disabled><span class="badge">{{bakerUsers.length}}/4</span>
+    <li class="list-group-item trans-bg" ng-click="moveToGroup(bakerUsers)">Baker Lobby
+        <br><input class="space-bg" type="button" value="Start Game" ng-model="bakerStart" disabled><span class="badge">{{bakerUsers.length}}/4</span>
         <ul class="list-group trans-bg" >
             <li class="list-group-item trans-bg" ng-repeat="user in bakerUsers" >
                 {{user.handle}}
@@ -41,7 +43,8 @@
             </li>
         </ul>
     </li>
-    <li class="list-group-item trans-bg" ng-click="moveToGroup(charlieUsers)">Charlie Lobby <span class="badge">{{charlieUsers.length}}/4</span>
+    <li class="list-group-item trans-bg" ng-click="moveToGroup(charlieUsers)">Charlie Lobby
+        <br><input class="space-bg" type="button" value="Start Game" ng-model="charlieStart" disabled><span class="badge">{{charlieUsers.length}}/4</span>
         <ul class="list-group">
             <li class="list-group-item trans-bg" ng-repeat="user in charlieUsers">
                 {{user.handle}}
@@ -50,7 +53,8 @@
             </li>
         </ul>
     </li>
-    <li class="list-group-item trans-bg" ng-click="moveToGroup(deltaUsers)">Delta Lobby <span class="badge">{{deltaUsers.length}}/4</span>
+    <li class="list-group-item trans-bg" ng-click="moveToGroup(deltaUsers)">Delta Lobby
+        <br><input class="space-bg" type="button" value="Start Game" ng-model="deltaStart" disabled><span class="badge">{{deltaUsers.length}}/4</span>
         <ul class="list-group">
             <li class="list-group-item trans-bg" ng-repeat="user in deltaUsers">
                 {{user.handle}}
@@ -68,6 +72,7 @@ Choose your "Alien Race Avatar":<br>
     <option value="horse" class="trans-bg">Horse</option>
     <option value="snake">Snake</option>
 </select>
-<img ng-src={{raceImg}}>
+<img ng-src={{raceImg}}><br><br>
+(Note: this is like your piece in Monopoly: it doesn't have any influence on the game - it's just an avatar)
 </body>
 </html>

@@ -65,7 +65,7 @@ public class SimplicityController {
     public void initializeUsers () {
         String[] emails = {"paul", "jon", "adrian", "amy", "conor", "maurice", "dom", "tj"};
         String[] handles = {"erro", "jonsnow", "adrian0615", "amypotter", "cut time", "$reece", "domiswrong", "coolshirtguy"};
-        
+
         int index = 0;
         for (String email : emails) {
             User user = users.findFirstByEmail(email);
