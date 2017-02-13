@@ -24,19 +24,17 @@ public class StarSystemGraph {
     @Column (nullable = false, unique = true)
     private String name;
 
-    @OneToMany
+    @OneToMany (cascade = CascadeType.ALL,
+                orphanRemoval = true)
     private List<StarSystem> starSystems;
 
-    @OneToMany
+    @OneToMany (cascade = CascadeType.ALL,
+                orphanRemoval = true)
     private List<SpaceTunnel> tunnels;
 
-    @Transient
-    @Autowired
-    TunnelRepo tunnelRepo;
+    public StarSystemGraph () {
 
-    @Transient
-    @Autowired
-    StarSystemRepo starSystemRepo;
+    }
 
     public StarSystemGraph (String fileName) {
         Map<String, StarSystem> nameStarSystemMap;
@@ -62,9 +60,8 @@ public class StarSystemGraph {
                 String systemName = splitInputLine[0];
                 int xCoord = Integer.parseInt(splitInputLine[1]);
                 int yCoord = Integer.parseInt(splitInputLine[2]);
-                StarSystem system = new StarSystem(systemName, xCoord, yCoord);
+                StarSystem system = new StarSystem(systemName, xCoord, yCoord, new Random());
                 starSystems.add(system);
-                starSystemRepo.save(system);
             }
             for (StarSystem starSystem : starSystems) {
                 nameStarSystemMap.put(starSystem.getName(), starSystem);
@@ -86,7 +83,6 @@ public class StarSystemGraph {
                     tunnelLength = StarSystem.calculateCartesianDistance(firstSystem, secondSystem);
                 }
                 SpaceTunnel tunnel = new SpaceTunnel(tunnelLength, firstSystem, secondSystem);
-                tunnelRepo.save(tunnel);
                 tunnels.add(tunnel);
             }
         } catch (FileNotFoundException ex) {

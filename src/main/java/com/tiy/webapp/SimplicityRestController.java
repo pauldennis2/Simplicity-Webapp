@@ -93,7 +93,7 @@ public class SimplicityRestController {
         return null;
     }
 
-    boolean ssgInit = false;
+    /*boolean ssgInit = false;
     StarSystemGraphWrapper ssg;
     @RequestMapping(path = "/ssg-main-info.json", method = RequestMethod.POST)
     public StarSystemGraphWrapper ssgMainInfo (@RequestBody IdRequestWrapper wrapper) {
@@ -104,10 +104,10 @@ public class SimplicityRestController {
             ssgInit = true;
         }
         return ssg;
-    }
+    }*/
 
-    @RequestMapping(path = "/ssg-other-info.json", method = RequestMethod.POST)
-    public StarSystemGraph ssgOtherInfo (@RequestBody IdRequestWrapper wrapper) {
+    @RequestMapping(path = "/ssg-info.json", method = RequestMethod.POST)
+    public StarSystemGraph ssgInfo (@RequestBody IdRequestWrapper wrapper) {
         StarSystemGraph deltaQuadrant = ssGraphs.findFirstByName("Delta Quadrant");
         if (deltaQuadrant == null) {
             deltaQuadrant = new StarSystemGraph("4p_med_ring_map.txt");
@@ -115,10 +115,6 @@ public class SimplicityRestController {
             ssGraphs.save(deltaQuadrant);
         }
         return deltaQuadrant;
-    }
-
-    public void initializeSsg () {
-        ssg = new StarSystemGraphWrapper("4p_med_ring_map.txt");
     }
 
     @RequestMapping(path = "/system-info.json", method = RequestMethod.POST)

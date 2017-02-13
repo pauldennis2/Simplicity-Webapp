@@ -57,8 +57,7 @@ simplicityApp.controller('ssgViewController', function($scope, $http) {
     getSSGInfo = function () {
         console.log("Getting ssg info");
         var wrapper = {"gameId": 1, "playerId":2};
-        //$http.post("/ssg-main-info.json", wrapper)
-        $http.post("/ssg-other-info.json", wrapper)
+        $http.post("/ssg-info.json", wrapper)
         .then(
             function successCallback (response) {
                 console.log("Found info");
@@ -66,6 +65,7 @@ simplicityApp.controller('ssgViewController', function($scope, $http) {
                 console.log("starSystems = " + starSystems);
                 tunnels = response.data.tunnels;
                 console.log("tunnels = " + tunnels);
+                create();
             },
 
             function errorCallback (response) {
