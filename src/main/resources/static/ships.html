@@ -1,19 +1,13 @@
-<!--<div ng-repeat="ship in ships">
-    <img ng-src={{ship.imageString}}>
-    {{ship.name}}<br>
-    Location: {{ship.location}} <br>
-    Health: {{ship.health}}/{{ship.maxHealth}}
-</div>-->
 
-<ul class="media-list" style="width: 800px;">
-    <li class="media" ng-repeat="ship in ships">
-        <div class="media-left">
-            <img class="media-object" ng-src={{ship.imageString}} alt="spaceship?">
+<div class="star-bg" style="width: 800px; overflow-y:scroll; height:600px;">
+    <div ng-repeat="ship in ships">
+        <div style="width: 200px; float: left; height: 120px">
+            <img ng-src={{ship.imageString}} style="padding: 15%">
         </div>
-        <div class="media-body">
-            <h4 class="media-heading">{{ship.name}}</h4>
+        <div style="width: 600px; float: left; height: 120px">
+            <h4>{{ship.name}}</h4>
             Location: {{ship.location}} <br>
             Health: {{ship.health}}/{{ship.maxHealth}}
         </div>
-    </li>
-</ul>
+    </div>
+</div>

@@ -4,17 +4,17 @@
 <div id="allied_info" style="width: 390px; float: left; background: black; color:white;">
     <b>{{friendSelected.name}}</b>
     (Damage: {{friendSelected.damage}})<br>
-    <div class="progress" style="background: black">
+    <div class="progress space-bg">
         <div class="progress-bar progress-bar-success" role="progressbar" style="width: {{friendSelected.healthPct}}">
             Health {{friendSelected.health}} / {{friendSelected.maxHealth}}
         </div>
     </div>
-    <div class="progress" style="background: black">
+    <div class="progress space-bg">
         <div class="progress-bar progress-bar-info" role="progressbar" style="width: {{friendSelected.shieldPct}}">
             Shield {{friendSelected.shieldHealth}} / {{friendSelected.maxShieldHealth}}
         </div>
     </div>
-    <div class="progress" style="background: black">
+    <div class="progress space-bg">
         <div class="progress-bar progress-bar-warning" role="progressbar" style="width: {{friendSelected.energyPct}}">
             Energy {{friendSelected.currentReservePower}} / {{friendSelected.maxReservePower}}
         </div>
@@ -27,20 +27,23 @@
 <div id="enemy_info" style="width: 390px; float: left; background: black; color:white">
     <b>{{enemySelected.name}}</b>
      (Damage: {{enemySelected.damage}})<br>
-    <div class="progress" style="background: black">
+    <div class="progress space-bg">
         <div class="progress-bar progress-bar-success" role="progressbar" style="width: {{enemySelected.healthPct}}">
             Health {{enemySelected.health}} / {{enemySelected.maxHealth}}
         </div>
     </div>
-    <div class="progress" style="background: black">
+    <div class="progress space-bg">
         <div class="progress-bar progress-bar-info" role="progressbar" style="width: {{enemySelected.shieldPct}}">
             Shield {{enemySelected.shieldHealth}} / {{enemySelected.maxShieldHealth}}
         </div>
     </div>
-    <div class="progress" style="background: black">
+    <div class="progress space-bg">
         <div class="progress-bar progress-bar-warning" role="progressbar" style="width: {{enemySelected.energyPct}}">
             Energy {{enemySelected.currentReservePower}} / {{enemySelected.maxReservePower}}
         </div>
     </div>
 </div>
-<button type="button" ng-click="fireWeapons()" ng-if="bothSelected">Fire</button>
+<center>
+    <button class="space-bg" style="color:red" type="button" ng-click="fireWeapons()"
+            ng-if="bothSelected"><h4>Fire Weapons</h4></button>
+</center>

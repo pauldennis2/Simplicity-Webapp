@@ -4,16 +4,18 @@
     <meta charset="UTF-8">
     <title>Simplicity Login</title>
     <link rel="icon" href="assets/game_icon.png">
+    <link rel="stylesheet" imageString="text/css" href="../css/main.css">
 </head>
 <body>
 <body background="assets/space.png" style="color:white">
 <h3>Welcome to Simplicity 4x App</h3><br>
 <h4>Please log in:</h4><br>
 <form action="/login" method="post">
-    <input type="text" placeholder="Email" name="email" required><br>
-    <input type="password" placeholder="password" name="password" required><br>
-    <button type="submit">Login</button>
+    <input type="text" class="trans-bg" placeholder="Email" name="email" style="color:white;" required><br><br>
+    <input type="password" class="trans-bg" placeholder="password" name="password" style="color:white" required><br><br>
+    <button type="submit" class="trans-bg" style="color:white">Login</button>
 </form>
-Not signed up? <a href="/registration.html">Register</a>
+<br>
+Not signed up? <a href="/registration.html" style="color:white">Register</a>
 </body>
 </html>

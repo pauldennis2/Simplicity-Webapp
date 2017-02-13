@@ -1,5 +1,6 @@
 .erronav {
     float: right;
+    background-image: url("/assets/starfield.png");
 }
 
 body {
@@ -19,4 +20,8 @@ body {
 
 .trans-bg {
     background-color: transparent;
+}
+
+.star-bg {
+    background-image: url("/assets/starfield.png");
 }

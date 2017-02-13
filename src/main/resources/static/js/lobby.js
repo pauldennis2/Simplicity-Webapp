@@ -68,9 +68,9 @@ simplicityLobbyApp.controller('lobbyController', function($scope, $http) {
     getLobbyUsers();
         window.setInterval(function(){
           getLobbyUsers();
-        }, 5000);
+        }, 1000);
 
-    $scope.raceImg = "../assets/1.jpg";
+    $scope.raceImg = "../assets/races/race1.jpg";
 
     $scope.moveToGroup = function (group) {
         if (group === $scope.alphaUsers) {
@@ -94,7 +94,7 @@ simplicityLobbyApp.controller('lobbyController', function($scope, $http) {
             var charlieIndex = $scope.charlieUsers.indexOf(myUser);
             var deltaIndex = $scope.deltaUsers.indexOf(myUser);
             var mainIndex = $scope.mainLobbyUsers.indexOf(myUser);
-            console.log("a = " + alphaIndex + ", b = " + bakerIndex + ", c = " + charlieIndex + ", d = " + deltaIndex)
+            //console.log("a = " + alphaIndex + ", b = " + bakerIndex + ", c = " + charlieIndex + ", d = " + deltaIndex)
             //Remove the user from the group they were in
             if (alphaIndex > -1) {
                 //$scope.alphaUsers.shift();
@@ -117,7 +117,7 @@ simplicityLobbyApp.controller('lobbyController', function($scope, $http) {
                 $scope.mainLobbyUsers.splice(mainIndex, 1);
             }
             //Add the user to the selected group
-            group.push(myUser);
+            //group.push(myUser);
             //update leader status
             if (myUser.leader) {
                 if (alphaIndex > -1) {

@@ -65,6 +65,7 @@ simplicityApp.controller('ssgViewController', function($scope, $http) {
                 console.log("starSystems = " + starSystems);
                 tunnels = response.data.tunnels;
                 console.log("tunnels = " + tunnels);
+                preload();
                 create();
             },
 
@@ -222,11 +223,12 @@ simplicityApp.controller('optionsController', function($scope, $http) {
 
 simplicityApp.controller('combatController', function($scope, $http) {
     console.log("Initializing combatController");
-    var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-canvas-container',
+    var game = new Phaser.Game(800, 550, Phaser.AUTO, 'phaser-canvas-container',
      { preload: preload, create: create, update: update });
     var friendShips = [];
     var enemyShips = [];
 
+    var enemiesRemaining;
     getCombatInfo = function () {
         $http.post("/combat-info.json")
         .then(
@@ -236,6 +238,7 @@ simplicityApp.controller('combatController', function($scope, $http) {
                 enemyShips = response.data.enemyShips;
                 console.log(friendShips);
                 console.log(enemyShips);
+                enemiesRemaining = enemyShips.length;
             },
 
             function errorCallback (response) {
@@ -248,6 +251,7 @@ simplicityApp.controller('combatController', function($scope, $http) {
         game.load.image('stars', 'assets/starfield.png');
         game.load.image('destroyer', 'assets/ships/destroyerblue.png');
         game.load.image('enemy', 'assets/ships/enemy_ship.png');
+        game.load.spritesheet('destruction_explosion', 'assets/anims/destruction_explosion.png');
     }
 
     var friendSprites = [];
@@ -270,7 +274,23 @@ simplicityApp.controller('combatController', function($scope, $http) {
             enemySprites[i].events.onInputDown.add(enemyListener, this);
             enemySprites[i].index = i;
         }
+
+        explosions = game.add.group();
+        explosions.createMultiple(4, 'destruction_explosion');
+        setupExplosions();
+        //explosions.forEach(setupInvader, this);
     }
+
+    function setupInvader (invader) {
+        invader.animations.add('destruction_explosion');
+    }
+
+    function setupExplosions () {
+        for (i = 0; i < enemySprites.length; i++) {
+            enemySprites[i].animations.add('destruction_explosion');
+        }
+    }
+
     var friendChosen = false;
     var enemyChosen = false;
     var friendSelectedIndex;
@@ -309,7 +329,15 @@ simplicityApp.controller('combatController', function($scope, $http) {
     }
 
     $scope.fireWeapons = function () {
+        $scope.friendSelected.currentReservePower
         var damage = $scope.friendSelected.damage;
+        if ($scope.friendSelected.currentReservePower < damage) {
+            damage = $scope.friendSelected.currentReservePower;
+            $scope.friendSelected.currentReservePower = 0;
+        } else {
+            $scope.friendSelected.currentReservePower -= damage;
+        }
+        $scope.friendSelected.energyPct = "" + ($scope.friendSelected.currentReservePower/$scope.friendSelected.maxReservePower)*100 + "%";
         var enemyShip = $scope.enemySelected;
         var enemyShipRealDamage = enemyShip.damage;
         //We're pulling a switcheroo so that we don't have to create a wrapper to hold the damage for the friend ship
@@ -318,6 +346,26 @@ simplicityApp.controller('combatController', function($scope, $http) {
         $http.post("/process-attack.json", enemyShip)
         .then(
             function successCallback (response) {
+                enemyShips[enemySelectedIndex] = response.data;
+                enemyShips[enemySelectedIndex].damage = enemyShipRealDamage;
+                $scope.enemySelected = enemyShips[enemySelectedIndex];
+                $scope.enemySelected.healthPct = "" + (enemyShips[enemySelectedIndex].health/enemyShips[enemySelectedIndex].maxHealth)*100 + "%";
+                $scope.enemySelected.shieldPct = "" + (enemyShips[enemySelectedIndex].shieldHealth/enemyShips[enemySelectedIndex].maxShieldHealth)*100 + "%";
+                $scope.enemySelected.energyPct = "" + (enemyShips[enemySelectedIndex].currentReservePower/enemyShips[enemySelectedIndex].maxReservePower)*100 + "%";
+                if ($scope.enemySelected.health <= 0) {
+                    console.log("He's dead, Jim");
+                    enemyShips[enemySelectedIndex] = null;
+                    enemySprites[enemySelectedIndex].kill();
+                    var explosion = explosions.getFirstExists(false);
+                    explosion.reset(20, 20);
+                    explosion.play('destruction_explosion', 30, false, true);
+                    enemiesRemaining--;
+                    if (enemiesRemaining == 0) {
+                        alert("Combat is over! You win");
+                    }
+                }
+            },
+            /*function successCallback (response) {
                 $scope.enemySelected = response.data;
                 $scope.enemySelected.damage = enemyShipRealDamage;
                 enemyShips[enemySelectedIndex] = $scope.enemySelected;
@@ -326,7 +374,7 @@ simplicityApp.controller('combatController', function($scope, $http) {
                     enemyShips[enemySelectedIndex] = null;
                     enemySprites[enemySelectedIndex].kill();
                 }
-            },
+            },*/
 
             function errorCallback (response) {
                 console.log("Unable to find combat action response");

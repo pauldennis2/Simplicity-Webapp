@@ -255,9 +255,21 @@ public class SimplicityRestController {
         Integer playerId = wrapper.getPlayerId();
 
         List<Ship> hardCodedList = new ArrayList<>();
-        hardCodedList.add(new Ship("Defiant", 25, 30, "assets/ships/fighter.png", "Zebulon System"));
-        hardCodedList.add(new Ship("Voyager", 100, 100, "assets/ships/destroyer.png", "Zebulon System"));
-        hardCodedList.add(new Ship("Aegis", 30, 30, "assets/ships/fighter.png", "Terran System"));
+        hardCodedList.add(new Ship("Defiant", 25, 30, "assets/ships/fighterblue.png", "Zebulon System"));
+        hardCodedList.add(new Ship("Voyager", 100, 100, "assets/ships/destroyerblue.png", "Zebulon System"));
+        hardCodedList.add(new Ship("Aegis", 30, 30, "assets/ships/fighterblue.png", "Terran System"));
+
+        if (false) {
+            hardCodedList.add(new Ship("Defiant", 25, 30, "assets/ships/fighterblue.png", "Zebulon System"));
+            hardCodedList.add(new Ship("Voyager", 100, 100, "assets/ships/destroyerblue.png", "Zebulon System"));
+            hardCodedList.add(new Ship("Aegis", 30, 30, "assets/ships/fighterblue.png", "Terran System"));
+            hardCodedList.add(new Ship("Defiant", 25, 30, "assets/ships/fighterblue.png", "Zebulon System"));
+            hardCodedList.add(new Ship("Voyager", 100, 100, "assets/ships/destroyerblue.png", "Zebulon System"));
+            hardCodedList.add(new Ship("Aegis", 30, 30, "assets/ships/fighterblue.png", "Terran System"));
+            hardCodedList.add(new Ship("Defiant", 25, 30, "assets/ships/fighterblue.png", "Zebulon System"));
+            hardCodedList.add(new Ship("Voyager", 100, 100, "assets/ships/destroyerblue.png", "Zebulon System"));
+            hardCodedList.add(new Ship("Aegis", 30, 30, "assets/ships/fighterblue.png", "Terran System"));
+        }
         return hardCodedList;
     }
 
