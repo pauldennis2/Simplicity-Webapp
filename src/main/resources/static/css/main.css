@@ -1,6 +1,7 @@
 .erronav {
-    float: right;
     background-image: url("/assets/starfield.png");
+    float: left;
+    height: 600px;
 }
 
 body {
