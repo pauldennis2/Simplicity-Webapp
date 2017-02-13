@@ -1,4 +1,4 @@
-package com.tiy.webapp;
+package com.tiy.webapp.wrappers;
 
 /**
  * Created by Paul Dennis on 2/5/2017.

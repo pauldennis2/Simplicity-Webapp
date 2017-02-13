@@ -1,4 +1,4 @@
-package com.tiy.webapp;
+package com.tiy.webapp.wrappers;
 
 import com.tiy.webapp.starship.Starship;
 

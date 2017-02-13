@@ -17,7 +17,7 @@ public class PlayerTemp {
         this.name = name;
         this.imageFile = imageFile;
         if (population == 0) {
-            this.imageFile = imageFile.substring(0, 8) + "g" + ".jpg";
+            this.imageFile = imageFile.substring(0, 18) + "_extinct.jpg";
         }
     }
 

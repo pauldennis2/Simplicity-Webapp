@@ -1,6 +1,9 @@
 package com.tiy.webapp.starsys;
 
 import com.tiy.webapp.Player;
+import com.tiy.webapp.repos.StarSystemRepo;
+import com.tiy.webapp.repos.TunnelRepo;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
 import java.io.File;
@@ -11,25 +14,33 @@ import java.util.*;
  * Created by erronius on 12/20/2016.
  */
 @Entity
-@Table(name = "star-system-graphs")
+@Table(name = "star_system_graphs")
 public class StarSystemGraph {
 
     @GeneratedValue
     @Id
-    Integer id;
+    private Integer id;
+
+    @Column (nullable = false, unique = true)
+    private String name;
 
     @OneToMany
-    List<StarSystem> starSystems;
+    private List<StarSystem> starSystems;
+
+    @OneToMany
+    private List<SpaceTunnel> tunnels;
 
     @Transient
-    List<SpaceTunnel> tunnels;
+    @Autowired
+    TunnelRepo tunnelRepo;
 
     @Transient
-    Map<String, StarSystem> nameStarSystemMap;
-    @Transient
-    Map<Point, StarSystem> pointStarSystemMap;
+    @Autowired
+    StarSystemRepo starSystemRepo;
 
     public StarSystemGraph (String fileName) {
+        Map<String, StarSystem> nameStarSystemMap;
+        Map<Point, StarSystem> pointStarSystemMap;
         starSystems = new ArrayList<StarSystem>();
         nameStarSystemMap = new HashMap<String, StarSystem>();
         pointStarSystemMap = new HashMap<Point, StarSystem>();
@@ -51,7 +62,9 @@ public class StarSystemGraph {
                 String systemName = splitInputLine[0];
                 int xCoord = Integer.parseInt(splitInputLine[1]);
                 int yCoord = Integer.parseInt(splitInputLine[2]);
-                starSystems.add(new StarSystem(systemName, xCoord, yCoord));
+                StarSystem system = new StarSystem(systemName, xCoord, yCoord);
+                starSystems.add(system);
+                starSystemRepo.save(system);
             }
             for (StarSystem starSystem : starSystems) {
                 nameStarSystemMap.put(starSystem.getName(), starSystem);
@@ -72,11 +85,9 @@ public class StarSystemGraph {
                 } else {
                     tunnelLength = StarSystem.calculateCartesianDistance(firstSystem, secondSystem);
                 }
-                /*SpaceTunnel tunnel = new SpaceTunnel(tunnelLength);
+                SpaceTunnel tunnel = new SpaceTunnel(tunnelLength, firstSystem, secondSystem);
+                tunnelRepo.save(tunnel);
                 tunnels.add(tunnel);
-                firstSystem.addTunnel(tunnel);
-                secondSystem.addTunnel(tunnel);*/
-                throw new AssertionError("Fix");
             }
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
@@ -91,7 +102,27 @@ public class StarSystemGraph {
         return tunnels;
     }
 
-    public Map<String, StarSystem> getNameStarSystemMap () {
-        return nameStarSystemMap;
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setStarSystems(List<StarSystem> starSystems) {
+        this.starSystems = starSystems;
+    }
+
+    public void setTunnels(List<SpaceTunnel> tunnels) {
+        this.tunnels = tunnels;
     }
 }

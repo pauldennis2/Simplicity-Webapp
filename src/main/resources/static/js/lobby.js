@@ -11,11 +11,9 @@ simplicityLobbyApp.controller('lobbyController', function($scope, $http) {
     $scope.mainLobbyUsers = [];
     var myUser = {};
     getMyUser = function () {
-        console.log("Looking for my user");
         $http.get("/my-user.json")
         .then(
             function successCallback (response) {
-                console.log ("Found my user");
                 myUser = response.data;
                 console.log(response.data);
             },
@@ -27,16 +25,16 @@ simplicityLobbyApp.controller('lobbyController', function($scope, $http) {
 
     $scope.raceChange = function () {
         if ($scope.race_selection == "cat") {
-            $scope.raceImg = "../assets/1.jpg";
+            $scope.raceImg = "../assets/races/race1.jpg";
         }
         if ($scope.race_selection == "dog") {
-            $scope.raceImg = "../assets/2.jpg";
+            $scope.raceImg = "../assets/races/race2.jpg";
         }
         if ($scope.race_selection == "horse") {
-            $scope.raceImg = "../assets/3.jpg";
+            $scope.raceImg = "../assets/races/race3.jpg";
         }
         if ($scope.race_selection == "snake") {
-            $scope.raceImg = "../assets/4.jpg";
+            $scope.raceImg = "../assets/races/race4.jpg";
         }
     }
 
@@ -55,8 +53,6 @@ simplicityLobbyApp.controller('lobbyController', function($scope, $http) {
         $http.get("/users.json")
         .then(
             function successCallback (response) {
-                console.log("Found users");
-                console.log(response.data);
                 $scope.alphaUsers = response.data.alphaUsers;
                 $scope.bakerUsers = response.data.bakerUsers;
                 $scope.charlieUsers = response.data.charlieUsers;
@@ -65,6 +61,7 @@ simplicityLobbyApp.controller('lobbyController', function($scope, $http) {
             },
 
             function errorCallback (response) {
+                console.log("Could not find users");
             });
     };
     currentUserIndex = 1;

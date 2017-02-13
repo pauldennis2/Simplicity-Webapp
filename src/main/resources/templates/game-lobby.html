@@ -17,42 +17,42 @@
 {{=<% %>=}}
 <h4>Main Lobby</h4><br>
 <ul class="list-group" ng-click="moveToGroup(mainLobbyUsers)" style="width: 400px">
-    <li class="list-group-item space-bg" ng-repeat="user in mainLobbyUsers">
+    <li class="list-group-item trans-bg" ng-repeat="user in mainLobbyUsers" style="background-color: transparent">
         {{user.handle}}
     </li>
 </ul>
 <hr>
-<ul class="list-group"  style="width: 500px; background:red">
-    <li class="list-group-item space-bg" ng-click="moveToGroup(alphaUsers)">Alpha Lobby <span class="badge">{{alphaUsers.length}}/4</span>
+<ul class="list-group"  style="width: 500px;">
+    <li class="list-group-item trans-bg" ng-click="moveToGroup(alphaUsers)">Alpha Lobby <span class="badge">{{alphaUsers.length}}/4</span>
         <ul class="list-group">
-            <li class="list-group-item space-bg" ng-repeat="user in alphaUsers">
+            <li class="list-group-item trans-bg" ng-repeat="user in alphaUsers">
                 {{user.handle}}
                 <span class="glyphicon glyphicon-tower" aria-hidden="true" ng-if="user.leader"></span>
                 | Ready: <input type="checkbox">
             </li>
         </ul>
     </li>
-    <li class="list-group-item space-bg" ng-click="moveToGroup(bakerUsers)">Baker Lobby <input class="space-bg" type="button" value="Start Game" ng-model="bakerStart" disabled><span class="badge">{{bakerUsers.length}}/4</span>
-        <ul class="list-group space-bg">
-            <li class="list-group-item space-bg" ng-repeat="user in bakerUsers" style="background: black">
+    <li class="list-group-item trans-bg" ng-click="moveToGroup(bakerUsers)">Baker Lobby <input class="space-bg" type="button" value="Start Game" ng-model="bakerStart" disabled><span class="badge">{{bakerUsers.length}}/4</span>
+        <ul class="list-group trans-bg" >
+            <li class="list-group-item trans-bg" ng-repeat="user in bakerUsers" >
                 {{user.handle}}
                 <span class="glyphicon glyphicon-tower" aria-hidden="true" ng-if="user.leader"></span>
                 | Ready: <input type="checkbox">
             </li>
         </ul>
     </li>
-    <li class="list-group-item space-bg" ng-click="moveToGroup(charlieUsers)">Charlie Lobby <span class="badge">{{charlieUsers.length}}/4</span>
+    <li class="list-group-item trans-bg" ng-click="moveToGroup(charlieUsers)">Charlie Lobby <span class="badge">{{charlieUsers.length}}/4</span>
         <ul class="list-group">
-            <li class="list-group-item space-bg" ng-repeat="user in charlieUsers">
+            <li class="list-group-item trans-bg" ng-repeat="user in charlieUsers">
                 {{user.handle}}
                 <span class="glyphicon glyphicon-tower" aria-hidden="true" ng-if="user.leader"></span>
                 | Ready: <input type="checkbox">
             </li>
         </ul>
     </li>
-    <li class="list-group-item space-bg" ng-click="moveToGroup(deltaUsers)">Delta Lobby <span class="badge">{{deltaUsers.length}}/4</span>
+    <li class="list-group-item trans-bg" ng-click="moveToGroup(deltaUsers)">Delta Lobby <span class="badge">{{deltaUsers.length}}/4</span>
         <ul class="list-group">
-            <li class="list-group-item space-bg" ng-repeat="user in deltaUsers">
+            <li class="list-group-item trans-bg" ng-repeat="user in deltaUsers">
                 {{user.handle}}
                 <span class="glyphicon glyphicon-tower" aria-hidden="true" ng-if="user.leader"></span>
                 | Ready: <input type="checkbox">
@@ -63,9 +63,9 @@
 <span class="glyphicon glyphicon-tower" aria-hidden="true"></span> = Leader <br>
 Choose your "Alien Race Avatar":<br>
 <select class="space-bg" ng-model="race_selection" ng-change="raceChange()">
-    <option value="cat">Cat</option>
+    <option value="cat" class="trans-bg">Cat</option>
     <option value="dog">Dog</option>
-    <option value="horse">Horse</option>
+    <option value="horse" class="trans-bg">Horse</option>
     <option value="snake">Snake</option>
 </select>
 <img ng-src={{raceImg}}>

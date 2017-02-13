@@ -1,13 +1,10 @@
 package com.tiy.webapp.starship;
 
 
-import com.tiy.webapp.IllegalMoveException;
-import com.tiy.webapp.ImproperFunctionInputException;
 import com.tiy.webapp.starsys.SpaceTunnel;
 import com.tiy.webapp.starsys.StarSystem;
 
 import javax.persistence.*;
-import java.util.List;
 
 /**
  * Created by erronius on 12/20/2016.
@@ -134,7 +131,7 @@ public class Starship {
         }
     }
 
-    public void enterTunnel (SpaceTunnel tunnel, StarSystem destination) throws IllegalMoveException {
+    public void enterTunnel (SpaceTunnel tunnel, StarSystem destination) {
         starSystem = destination;
         turnsToDestination = tunnel.getLength();
     }

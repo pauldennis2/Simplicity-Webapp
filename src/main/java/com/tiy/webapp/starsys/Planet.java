@@ -1,7 +1,5 @@
 package com.tiy.webapp.starsys;
 
-import com.tiy.webapp.ImproperFunctionInputException;
-
 import javax.persistence.*;
 
 /**

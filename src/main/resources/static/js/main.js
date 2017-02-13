@@ -57,7 +57,8 @@ simplicityApp.controller('ssgViewController', function($scope, $http) {
     getSSGInfo = function () {
         console.log("Getting ssg info");
         var wrapper = {"gameId": 1, "playerId":2};
-        $http.post("/ssg-main-info.json", wrapper)
+        //$http.post("/ssg-main-info.json", wrapper)
+        $http.post("/ssg-other-info.json", wrapper)
         .then(
             function successCallback (response) {
                 console.log("Found info");
@@ -245,8 +246,8 @@ simplicityApp.controller('combatController', function($scope, $http) {
 
     function preload() {
         game.load.image('stars', 'assets/starfield.png');
-        game.load.image('destroyer', 'assets/destroyerblue.png');
-        game.load.image('enemy', 'assets/enemy_ship.png');
+        game.load.image('destroyer', 'assets/ships/destroyerblue.png');
+        game.load.image('enemy', 'assets/ships/enemy_ship.png');
     }
 
     var friendSprites = [];
@@ -368,13 +369,13 @@ simplicityApp.controller('systemController', function($scope, $http) {
     function preload() {
         game.load.image('stars', 'assets/starfield.png');
         game.load.image('sun', 'assets/smallsun.png');
-        game.load.image('earth', 'assets/earth.png');
-        game.load.image('zebulon', 'assets/zebulon.png');
-        game.load.image('destroyer', 'assets/destroyerblue.png');
-        game.load.image('fighter', 'assets/fighter.png');
+        game.load.image('earth', 'assets/planets/earth.png');
+        game.load.image('zebulon', 'assets/planets/zebulon.png');
+        game.load.image('destroyer', 'assets/ships/destroyerblue.png');
+        game.load.image('fighter', 'assets/ships/fighter.png');
         game.load.image('tunnel', 'assets/green_wormhole_small_clear.png');
-        game.load.spritesheet('kaboom', 'assets/explode.png', 128, 128);
-        game.load.spritesheet('wormhole', 'assets/black_wormhole.png', 128, 128);
+        game.load.spritesheet('kaboom', 'assets/anims/explode.png', 128, 128);
+        game.load.spritesheet('wormhole', 'assets/anims/black_wormhole.png', 128, 128);
     }
 
     function create() {

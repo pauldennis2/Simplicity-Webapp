@@ -1,6 +1,9 @@
-package com.tiy.webapp.starsys;
+package com.tiy.webapp.wrappers;
 
 import com.tiy.webapp.repos.TunnelRepo;
+import com.tiy.webapp.starsys.Point;
+import com.tiy.webapp.starsys.SpaceTunnel;
+import com.tiy.webapp.starsys.StarSystem;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
@@ -62,14 +65,9 @@ public class StarSystemGraphWrapper {
                     tunnelLength = StarSystem.calculateCartesianDistance(firstSystem, secondSystem);
                 }
                 SpaceTunnel tunnel = new SpaceTunnel(tunnelLength, firstSystem, secondSystem);
-                /*
-                Good morning or whatever it is. You were working on this past midnight and not sure if this was the
-                right director to continue in. Do we need a bidirectional relationship here? We need to be able to give
-                the angular-js a List of tunnels somehow attached to the SSG. what's the best way to do this?
-                 */
-                throw new AssertionError("See comment above");
-                //tunnelRepo.save(tunnel);
-                //tunnels.add(tunnel);
+
+                tunnelRepo.save(tunnel);
+                tunnels.add(tunnel);
             }
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();

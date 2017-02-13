@@ -16,3 +16,7 @@ body {
 .space-bg {
     background: black;
 }
+
+.trans-bg {
+    background-color: transparent;
+}

@@ -4,6 +4,7 @@ import com.tiy.webapp.repos.*;
 import com.tiy.webapp.starship.ShipChassis;
 import com.tiy.webapp.starship.Starship;
 import com.tiy.webapp.starsys.*;
+import com.tiy.webapp.wrappers.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +33,9 @@ public class SimplicityRestController {
 
     @Autowired
     PlanetRepo planets;
+
+    @Autowired
+    StarSystemGraphRepo ssGraphs;
 
     boolean initialized = false;
 
@@ -100,6 +104,17 @@ public class SimplicityRestController {
             ssgInit = true;
         }
         return ssg;
+    }
+
+    @RequestMapping(path = "/ssg-other-info.json", method = RequestMethod.POST)
+    public StarSystemGraph ssgOtherInfo (@RequestBody IdRequestWrapper wrapper) {
+        StarSystemGraph deltaQuadrant = ssGraphs.findFirstByName("Delta Quadrant");
+        if (deltaQuadrant == null) {
+            deltaQuadrant = new StarSystemGraph("4p_med_ring_map.txt");
+            deltaQuadrant.setName("Delta Quadrant");
+            ssGraphs.save(deltaQuadrant);
+        }
+        return deltaQuadrant;
     }
 
     public void initializeSsg () {
@@ -224,10 +239,10 @@ public class SimplicityRestController {
         Integer gameId = wrapper.getGameId();
         Integer playerId = wrapper.getPlayerId();
         List<PlayerTemp> hardCodedList = new ArrayList<>();
-        hardCodedList.add(new PlayerTemp(10, "Kitties", "assets/1.jpg"));
-        hardCodedList.add(new PlayerTemp(15, "Doges", "assets/2.jpg"));
-        hardCodedList.add(new PlayerTemp(0, "Horsies", "assets/3.jpg"));
-        hardCodedList.add(new PlayerTemp(1, "Sssnakesss", "assets/4.jpg"));
+        hardCodedList.add(new PlayerTemp(10, "Kitties", "assets/races/race1.jpg"));
+        hardCodedList.add(new PlayerTemp(15, "Doges", "assets/races/race2.jpg"));
+        hardCodedList.add(new PlayerTemp(0, "Horsies", "assets/races/race3.jpg"));
+        hardCodedList.add(new PlayerTemp(1, "Sssnakesss", "assets/races/race4.jpg"));
         int total = 0;
         for (PlayerTemp playerTemp : hardCodedList) {
             total += playerTemp.getPopulation();
@@ -244,9 +259,9 @@ public class SimplicityRestController {
         Integer playerId = wrapper.getPlayerId();
 
         List<Ship> hardCodedList = new ArrayList<>();
-        hardCodedList.add(new Ship("Defiant", 25, 30, "assets/fighter.png", "Zebulon System"));
-        hardCodedList.add(new Ship("Voyager", 100, 100, "assets/destroyer.png", "Zebulon System"));
-        hardCodedList.add(new Ship("Aegis", 30, 30, "assets/fighter.png", "Terran System"));
+        hardCodedList.add(new Ship("Defiant", 25, 30, "assets/ships/fighter.png", "Zebulon System"));
+        hardCodedList.add(new Ship("Voyager", 100, 100, "assets/ships/destroyer.png", "Zebulon System"));
+        hardCodedList.add(new Ship("Aegis", 30, 30, "assets/ships/fighter.png", "Terran System"));
         return hardCodedList;
     }
 
@@ -257,13 +272,13 @@ public class SimplicityRestController {
     }
 
     @RequestMapping(path = "/planets-info.json", method = RequestMethod.POST)
-    public List<PlanetTemp> planetsInfo (@RequestBody IdRequestWrapper wrapper) {
+    public List<Planet> planetsInfo (@RequestBody IdRequestWrapper wrapper) {
         Integer gameId = wrapper.getGameId();
         Integer playerId = wrapper.getPlayerId();
-        List<PlanetTemp> hardCodedList = new ArrayList<>();
-        hardCodedList.add(new PlanetTemp("Earth", "Terran", 12, "assets/earth.png"));
-        hardCodedList.add(new PlanetTemp("Zebulon IV", "Zebulon", 5, "assets/zebulon.png"));
-        hardCodedList.add(new PlanetTemp("Alpha Centauri III", "Alpha Centauri", 3, "assets/alpha_centauri.png"));
+        List<Planet> hardCodedList = new ArrayList<>();
+        hardCodedList.add(new Planet("Earth", 12, "assets/planets/earth.png"));
+        hardCodedList.add(new Planet("Zebulon IV", 5, "assets/planets/zebulon.png"));
+        hardCodedList.add(new Planet("Alpha Centauri III", 3, "assets/planets/alpha_centauri.png"));
         return hardCodedList;
     }
 

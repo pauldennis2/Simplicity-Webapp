@@ -1,6 +1,8 @@
-package com.tiy.webapp.starsys;
+package com.tiy.webapp.wrappers;
 
 import com.tiy.webapp.starship.Starship;
+import com.tiy.webapp.starsys.SpaceTunnel;
+import com.tiy.webapp.starsys.StarSystem;
 
 import java.util.List;
 

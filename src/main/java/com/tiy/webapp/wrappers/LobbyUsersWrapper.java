@@ -1,4 +1,6 @@
-package com.tiy.webapp;
+package com.tiy.webapp.wrappers;
+
+import com.tiy.webapp.User;
 
 import java.util.List;
 
