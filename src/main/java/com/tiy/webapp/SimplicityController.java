@@ -63,23 +63,18 @@ public class SimplicityController {
     }
 
     public void initializeUsers () {
-        User paul = users.findFirstByEmail("paul");
-        User jon = users.findFirstByEmail("jon");
-        User adrian = users.findFirstByEmail("adrian");
-        if (paul == null) {
-            paul = new User("paul", "1234", "erro");
+        String[] emails = {"paul", "jon", "adrian", "amy", "conor", "maurice", "dom", "tj"};
+        String[] handles = {"erro", "jonsnow", "adrian0615", "amypotter", "cut time", "$reece", "domiswrong", "coolshirtguy"};
+        
+        int index = 0;
+        for (String email : emails) {
+            User user = users.findFirstByEmail(email);
+            if (user == null) {
+                user = new User(email, "1234", handles[index]);
+            }
+            user.setLobbyStatus(LobbyStatus.LOGGED_OUT);
+            users.save(user);
+            index++;
         }
-        if (jon == null) {
-            jon = new User("jon", "1234", "jonsnow");
-        }
-        if (adrian == null) {
-            adrian = new User("adrian", "1234", "adrian0615");
-        }
-        paul.setLobbyStatus(LobbyStatus.LOGGED_OUT);
-        users.save(paul);
-        jon.setLobbyStatus(LobbyStatus.LOGGED_OUT);
-        users.save(jon);
-        adrian.setLobbyStatus(LobbyStatus.LOGGED_OUT);
-        users.save(adrian);
     }
 }

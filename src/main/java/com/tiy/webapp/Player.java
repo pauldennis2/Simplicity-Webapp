@@ -31,6 +31,9 @@ public class Player {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
+    private AlienRace race;
+
     public Player () {
 
     }
@@ -127,5 +130,13 @@ public class Player {
 
     public void setTotalResearch(Integer totalResearch) {
         this.totalResearch = totalResearch;
+    }
+
+    public AlienRace getRace() {
+        return race;
+    }
+
+    public void setRace(AlienRace race) {
+        this.race = race;
     }
 }

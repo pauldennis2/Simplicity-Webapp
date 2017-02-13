@@ -2,23 +2,68 @@ package com.tiy.webapp;
 
 import com.tiy.webapp.starsys.StarSystemGraph;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.List;
 
 /**
  * Created by Paul Dennis on 2/9/2017.
  */
-//@Entity
-//@Table (name = "games")
+@Entity
+@Table (name = "games")
 public class Game {
 
     @GeneratedValue
     @Id
-    Integer id;
+    private Integer id;
 
-    List<Player> players;
-    StarSystemGraph starSystemGraph;
+    @Column (nullable = false, unique = true)
+    private String name;
+
+    @OneToMany
+    private List<Player> players;
+
+    @OneToOne
+    private StarSystemGraph starSystemGraph;
+
+    public Game () {
+
+    }
+
+    public Game (String name, List<Player> players, StarSystemGraph starSystemGraph) {
+        this.name = name;
+        this.players = players;
+        this.starSystemGraph = starSystemGraph;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<Player> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(List<Player> players) {
+        this.players = players;
+    }
+
+    public StarSystemGraph getStarSystemGraph() {
+        return starSystemGraph;
+    }
+
+    public void setStarSystemGraph(StarSystemGraph starSystemGraph) {
+        this.starSystemGraph = starSystemGraph;
+    }
 }
