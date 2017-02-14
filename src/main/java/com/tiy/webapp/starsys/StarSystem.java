@@ -16,7 +16,7 @@ public class StarSystem {
     @Id
     private Integer id;
 
-    @Column (nullable = false, unique = true)
+    @Column (nullable = false)
     private String name;
 
     @OneToMany (cascade = CascadeType.ALL)

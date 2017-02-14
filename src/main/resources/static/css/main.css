@@ -10,7 +10,7 @@ body {
 }
 
 .erro_miniview {
-    height: 100px;
+    height: 150px;
     border-style: solid;
     border-color: grey;
 }
@@ -25,4 +25,86 @@ body {
 
 .star-bg {
     background-image: url("/assets/starfield.png");
+}
+
+.art-bg {
+    background-image: url("/assets/space.png");
+}
+
+.red-text {
+    color: red;
+}
+
+.white-text {
+    color: white;
+}
+
+.padding10 {
+    padding: 10px;
+}
+
+.w200 {
+    width: 200px;
+    float: left;
+}
+
+.w390 {
+    width: 390px;
+    float: left;
+}
+
+.w400 {
+    width: 400px;
+    float: left;
+}
+
+.w600 {
+    width 600px;
+    float: left;
+}
+
+.w800 {
+    width: 800px;
+}
+
+.h40 {
+    height: 40px;
+}
+
+.h100 {
+    height: 100px;
+}
+
+.h120 {
+    height: 120px;
+}
+
+.h560 {
+    height: 560px;
+}
+
+.h600 {
+    height: 600px;
+}
+
+
+
+.left {
+    float: left;
+}
+
+.right {
+    float: right;
+}
+
+.no-border {
+    border: none;
+}
+
+.clear-both  {
+    clear: both;
+}
+
+v-scroll {
+    overflow-y:scroll;
 }

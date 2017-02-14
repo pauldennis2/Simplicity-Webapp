@@ -6,7 +6,7 @@
     <link rel="icon" href="assets/game_icon.png">
     <link rel="stylesheet" imageString="text/css" href="../css/main.css">
 </head>
-<body background="assets/space.png" style="color:white; margin: 5px; padding:5px">
+<body class="art-bg white-text">
 Welcome to Simplicity 4x Registration. Registration is quick and <del>painful</del> painless. A few notes before you
 get started:
 <ul>
@@ -20,15 +20,17 @@ get started:
     </li>
     <li>
         (For now) Your "email" does not have to be your e-mail; it is just a unique identifier for you. You can use any
-        email/username not already taken by another user.
+        email/username not already taken by another user. If your email is not an email, <del>it's a jar</del> I will
+        not be able to contact you about bug reports. You decide if that's a feature or a bug!
     </li>
 </ul>
 <form action="/register" method="post">
-    <input class="trans-bg" type="text" placeholder="Email" style="color:white" required> E-mail <br>
-    <input class="trans-bg" type="text" placeholder="Handle*" style="color:white"required> Handle <br>
-    <input class="trans-bg" type="password" placeholder="password" style="color:white"required> Password (CLEAR TEXT)<br>
-    <button type="submit" class="trans-bg" style="color:white">Create Account</button>
+    <input class="trans-bg white-text" type="text" placeholder="Email" required> E-mail <br><br>
+    <input class="trans-bg white-text" type="text" placeholder="Handle*" required> Handle <br><br>
+    <input class="trans-bg white-text" type="password" placeholder="password" required> Password (CLEAR TEXT)<br><br>
+    <button type="submit" class="trans-bg white-text">Create Account</button>
 </form>
+<br>
 *Your "Handle" is how other users will see you. You will use your email (which must be unique) for login. Your handle
 will be your "display name".
 </body>

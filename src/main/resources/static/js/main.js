@@ -75,7 +75,8 @@ simplicityApp.controller('ssgViewController', function($scope, $http) {
     };
     $scope.goToDagobah = function () {
         console.log("Go to the Dagobah system Luke");
-        console.log("Selected system = " + $scope.selectedSystem);
+        console.log("Selected system = " + $scope.selectedSystem.name);
+        window.location.href = "/main.html#/help";
     };
     $scope.noSystemSelected = true;
 
@@ -84,6 +85,7 @@ simplicityApp.controller('ssgViewController', function($scope, $http) {
     var xOffset = 20;
     var yOffset = 20;
     function preload () {
+        console.log("In preload");
         game.load.image('stars', 'assets/starfield.png');
         game.load.image('tinysun', 'assets/tinysun.png');
         game.load.image('caticon', 'assets/races/race1_icon.jpg');
@@ -109,6 +111,7 @@ simplicityApp.controller('ssgViewController', function($scope, $http) {
     homeSystemIconNames[3] = 'snakeicon';
 
     function create () {
+        console.log("in Create");
         game.add.sprite(0, 0, 'stars');
         var graphics = game.add.graphics(0, 0);
         graphics.lineStyle(3, 0x002266, 1);
@@ -217,6 +220,15 @@ simplicityApp.controller('shipsController', function($scope, $http) {
             });
     };
     getShipInfo();
+
+    $scope.unlockedShips = [];
+    $scope.unlockedShips[0] = "Colonizer";
+    $scope.unlockedShips[1] = "Fighter";
+    $scope.unlockedShips[2] = "Destroyer";
+
+    $scope.addToQueue = function () {
+        console.log("Aye aye we will totally make that ship for you - NOT!");
+    }
 });
 
 simplicityApp.controller('researchController', function($scope, $http) {
@@ -238,6 +250,29 @@ simplicityApp.controller('researchController', function($scope, $http) {
             });
     };
     getResearchInfo();
+});
+
+simplicityApp.controller('mainController', function($scope, $http, $rootScope) {
+    console.log("Initializing mainController");
+    $scope.currentTurn = 0;
+    $scope.advanceTurn = function () {
+        console.log("Seasons change... time passes by...");
+        $scope.currentTurn++;
+        $http.post("/process-turn.json")
+        .then(
+            function successCallback (response) {
+                console.log("Got turn process response");
+                $rootScope.researchAmt = response.data.researchAmt;
+                $rootScope.productionAmt = response.data.productionAmt;
+
+                $rootScope.researchTotal += response.data.researchAmt;
+                $rootScope.productionTotal;
+            },
+
+            function errorCallback (response) {
+                console.log("Could not find turn info");
+            });
+    };
 });
 
 simplicityApp.controller('optionsController', function($scope, $http) {
@@ -321,9 +356,7 @@ simplicityApp.controller('combatController', function($scope, $http) {
     $scope.bothSelected = false;
     function friendListener (sprite) {
         friendChosen = true;
-        if (enemyChosen) {
-            $scope.bothSelected = true;
-        }
+        $scope.bothSelected = friendChosen && enemyChosen;
         $scope.friendSelected = friendShips[sprite.index];
         friendSelectedIndex = sprite.index;
         var ship = friendShips[sprite.index];
@@ -335,9 +368,7 @@ simplicityApp.controller('combatController', function($scope, $http) {
 
     function enemyListener (sprite) {
         enemyChosen = true;
-        if (friendChosen) {
-            $scope.bothSelected = true;
-        }
+        $scope.bothSelected = friendChosen && enemyChosen;
         $scope.enemySelected = enemyShips[sprite.index];
         enemySelectedIndex = sprite.index;
         var ship = enemyShips[sprite.index];
@@ -379,6 +410,8 @@ simplicityApp.controller('combatController', function($scope, $http) {
                     console.log("He's dead, Jim");
                     enemyShips[enemySelectedIndex] = null;
                     enemySprites[enemySelectedIndex].kill();
+                    $scope.enemySelected = null;
+                    $scope.bothSelected = false;
                     var explosion = explosions.getFirstExists(false);
                     explosion.reset(20, 20);
                     explosion.play('destruction_explosion', 30, false, true);
@@ -500,8 +533,6 @@ simplicityApp.controller('systemController', function($scope, $http) {
             //ships[i].elementName = $scope.starSystemInfo.ships[i].name;
         }
 
-        fighter = game.add.sprite(500, 20, 'fighter');
-
         /*for (i = 0; i < $scope.starSystemInfo.ships.length; i++) {
             game.add.sprite(20, 20 + i*100, 'destroyer');
         }
@@ -583,20 +614,35 @@ simplicityApp.controller('systemController', function($scope, $http) {
         explosion.play('kaboom', frameRate, false, true);
         //explosion.play(10);
     }
-
+    $scope.planetSelected = false;
+    $scope.shipSelected = false;
+    $scope.tunnelSelected = false;
     function listener (sprite) {
+        $scope.shipSelected = false;
+        $scope.planetSelected = false;
+        $scope.tunnelSelected = false;
         console.log("Element name = " + sprite.elementName);
         $scope.selectedElement = {};
         $scope.selectedElement.name = sprite.elementName;
         //$scope.selectedElement.health = sprite.shipHealth;
         //$scope.selectedElement.maxHealth = sprite.maxHealth;
         if (sprite.shipHealth != null) {
+            $scope.shipSelected = true;
+            $scope.selectedElement.icon = "assets/races/race1_icon.jpg";
             $scope.selectedElement.health = sprite.shipHealth + "/" + sprite.maxHealth;
         }
         if (sprite.population != null) {
+            $scope.planetSelected = true;
+            $scope.outputSlider = 60;
+            $scope.selectedElement.icon = "assets/races/race2_icon.jpg";
             $scope.selectedElement.population = "Population: " + sprite.population;
         }
-        $scope.selectedElement.travelTime = sprite.travelTime;
+        if (sprite.travelTime != null) {
+            $scope.tunnelSelected = true;
+            $scope.selectedElement.icon = "assets/wormhole_icon.png";
+            $scope.selectedElement.travelTime = sprite.travelTime;
+        }
+
         $scope.$apply();
     }
 
@@ -609,5 +655,21 @@ simplicityApp.controller('systemController', function($scope, $http) {
                 sprite.kill();
             }
         }
+    }
+
+    $scope.enterTunnel = function () {
+        console.log("Entering tunnel. Swoosh!");
+    }
+
+    $scope.enterCombat = function () {
+        console.log("EVERYBODY WAS KUNG FU FITING");
+    }
+
+    $scope.colonize = function () {
+        console.log("Colonizing a planet. Feeling very Bri'ish");
+    }
+
+    $scope.changeOutput = function () {
+        console.log("The outputs they are a changin'");
     }
 });

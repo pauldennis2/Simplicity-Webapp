@@ -366,4 +366,9 @@ public class SimplicityRestController {
     public Response returnCombatResult () {
         return null;
     }
+
+    @RequestMapping(path = "/process-turn.json", method = RequestMethod.POST)
+    public TurnInfoWrapper processTurn () {
+        return new TurnInfoWrapper(5, 10);
+    }
 }

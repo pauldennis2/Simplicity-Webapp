@@ -1,20 +1,18 @@
-
-<div class="star-bg" style="height:600px">
-    <div class="row" ng-repeat="playerTemp in players" style="float:left;">
+<div class="star-bg h600">
+    <div class="row left" ng-repeat="playerTemp in players">
         <div class="col-sm-10 col-md-70">
-            <div class="thumbnail" style="background: black; border: none">
+            <div class="thumbnail trans-bg no-border" >
                 <img ng-src={{playerTemp.imageFile}} alt="player picture">
                 <div class="caption" style="color: white">
                     <h4>{{playerTemp.name}}</h4><br>
                     Population: {{playerTemp.population}}<br>
                     Percentage of Total: {{playerTemp.percentOfTotalPop}}
-                    <p><button class="btn btn-primary" role="button" disabled>Diplomacy</button></p>
+                    <p><button class="trans-bg" role="button" disabled>Diplomacy</button></p>
                 </div>
             </div>
         </div>
-
     </div>
-    <div id="goalPct" style="clear: both">
+    <div class="clear-both" id="goalPct">
     Required Percent to Win: {{requiredPct}}
     </div>
 </div>

@@ -12,13 +12,16 @@
     <script type="text/javascript" src="js/phaser.min.js"></script>
     <link rel="icon" href="assets/game_icon.png">
 </head>
-<body style="background: black; color: white">
-<div ng-view style = "float: left; width: 800px"></div>
+<body ng-controller="mainController" class="space-bg white-text">
+<div ng-view class="w800 left"></div>
 <div class="erronav">
     <h3>
     <ul class="nav nav-pills nav-stacked">
         <li role="presentation">
-            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span> Advance Turn
+            Current Turn: {{currentTurn}}
+        </li>
+        <li role="presentation"><button type="button" class="trans-bg no-border white-text" ng-click="advanceTurn()">
+            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span> Advance Turn</button>
         </li>
         <li role="presentation"><a href="#/">
             <span class="glyphicon glyphicon-home" aria-hidden="true"></span> Go Home</a>

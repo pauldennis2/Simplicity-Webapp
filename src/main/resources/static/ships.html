@@ -1,13 +1,39 @@
 
-<div class="star-bg" style="width: 800px; overflow-y:scroll; height:600px;">
-    <div ng-repeat="ship in ships">
-        <div style="width: 200px; float: left; height: 120px">
-            <img ng-src={{ship.imageString}} style="padding: 15%">
+<div class="h40">
+    <div class="star-bg w400">
+        <center><h4>Your Ships</h4></center>
+    </div>
+    <div class="star-bg w400">
+        <center><h4>Shipyard</h4></center>
+    </div>
+</div>
+<div>
+    <!--These in-line styles are left as an excercise for the reader. No, I mean, I'm coming back here anyway. TODO-->
+    <div id="shipInfoDiv" class="star-bg w400" style="overflow-y:scroll; overflow-x: hidden; height:560px;">
+        <div ng-repeat="ship in ships">
+            <div class="w200 h120">
+                <img ng-src={{ship.imageString}} style="padding: 15%">
+            </div>
+            <div class="w600 h120">
+                <h4>{{ship.name}}</h4>
+                Location: {{ship.location}} <br>
+                Health: {{ship.health}}/{{ship.maxHealth}}
+            </div>
         </div>
-        <div style="width: 600px; float: left; height: 120px">
-            <h4>{{ship.name}}</h4>
-            Location: {{ship.location}} <br>
-            Health: {{ship.health}}/{{ship.maxHealth}}
+    </div>
+    <div id="shipyardDiv" class="star-bg w400 h560 padding10">
+        <select class="space-bg">
+            <option ng-repeat="option in unlockedShips">{{option}}</option>
+        </select>
+        <br>
+        <input type="radio" name="group1" value="Top of Queue">Top of Queue<br>
+        <input type="radio" name="group1" value="Bottom of Queue">Bottom of Queue
+        <button type="button" class="space-bg" ng-click="addToQueue()">Add to Queue</button>
+        <br><br>
+        Total Production Accumulated: {{totalProduction}}
+
+        <div ng-repeat="ship in productionQueue">
+
         </div>
     </div>
 </div>

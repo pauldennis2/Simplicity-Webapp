@@ -1,49 +1,49 @@
 <div id="phaser-canvas-container">
 </div>
 
-<div id="allied_info" style="width: 390px; float: left; background: black; color:white;">
+<div class="padding10 w390" id="allied_info">
     <b>{{friendSelected.name}}</b>
-    (Damage: {{friendSelected.damage}})<br>
+    <span ng-if="friendSelected">(Damage: {{friendSelected.damage}})</span><br>
     <div class="progress space-bg">
         <div class="progress-bar progress-bar-success" role="progressbar" style="width: {{friendSelected.healthPct}}">
-            Health {{friendSelected.health}} / {{friendSelected.maxHealth}}
+            <span ng-if="friendSelected">Health {{friendSelected.health}} / {{friendSelected.maxHealth}}</span>
         </div>
     </div>
     <div class="progress space-bg">
         <div class="progress-bar progress-bar-info" role="progressbar" style="width: {{friendSelected.shieldPct}}">
-            Shield {{friendSelected.shieldHealth}} / {{friendSelected.maxShieldHealth}}
+            <span ng-if="friendSelected">Shield {{friendSelected.shieldHealth}} / {{friendSelected.maxShieldHealth}}</span>
         </div>
     </div>
     <div class="progress space-bg">
         <div class="progress-bar progress-bar-warning" role="progressbar" style="width: {{friendSelected.energyPct}}">
-            Energy {{friendSelected.currentReservePower}} / {{friendSelected.maxReservePower}}
+            <span ng-if="friendSelected">Energy {{friendSelected.currentReservePower}} / {{friendSelected.maxReservePower}}</span>
         </div>
     </div>
 
 </div>
-<div id = "spacer" style="width: 20px; float: left; background: black; color: black">
-|<br>|<br>|<br>|<br>|<br>|<br>|<br>
-</div>
-<div id="enemy_info" style="width: 390px; float: left; background: black; color:white">
+<!--The reason we are putting the ng-ifs on each line of text is to preserve the cool animation of the progress bars
+showing up. If we put an ng-if on the container div it works but the progress bars appear suddenly. #coolness_factor-->
+<div class="padding10 w390" id="enemy_info">
     <b>{{enemySelected.name}}</b>
-     (Damage: {{enemySelected.damage}})<br>
+    <span ng-if="enemySelected">(Damage: {{enemySelected.damage}})</span><br>
     <div class="progress space-bg">
         <div class="progress-bar progress-bar-success" role="progressbar" style="width: {{enemySelected.healthPct}}">
-            Health {{enemySelected.health}} / {{enemySelected.maxHealth}}
+            <span ng-if="enemySelected">Health {{enemySelected.health}} / {{enemySelected.maxHealth}} </span>
         </div>
     </div>
     <div class="progress space-bg">
         <div class="progress-bar progress-bar-info" role="progressbar" style="width: {{enemySelected.shieldPct}}">
-            Shield {{enemySelected.shieldHealth}} / {{enemySelected.maxShieldHealth}}
+            <span ng-if="enemySelected">Shield {{enemySelected.shieldHealth}} / {{enemySelected.maxShieldHealth}}</span>
         </div>
     </div>
     <div class="progress space-bg">
         <div class="progress-bar progress-bar-warning" role="progressbar" style="width: {{enemySelected.energyPct}}">
-            Energy {{enemySelected.currentReservePower}} / {{enemySelected.maxReservePower}}
+            <span ng-if="enemySelected">Energy {{enemySelected.currentReservePower}} / {{enemySelected.maxReservePower}}</span>
         </div>
     </div>
 </div>
 <center>
-    <button class="space-bg" style="color:red" type="button" ng-click="fireWeapons()"
-            ng-if="bothSelected"><h4>Fire Weapons</h4></button>
+    <button class="space-bg red-text" type="button" ng-click="fireWeapons()"ng-if="bothSelected">
+        <h4>Fire Weapons</h4>
+    </button>
 </center>

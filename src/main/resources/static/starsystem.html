@@ -1,8 +1,28 @@
 <div id="phaser-canvas-container">
 </div>
 <div class="erro_miniview">
-    <b>{{selectedElement.name}}</b><br>
-    {{selectedElement.health}}
-    {{selectedElement.population}}
-    {{selectedElement.travelTime}}
+    <div id="infoDiv" style="float: left; width: 250px">
+        <img ng-src={{selectedElement.icon}} style="padding: 4px">
+        <b>{{selectedElement.name}}</b><br>
+        {{selectedElement.health}}
+        {{selectedElement.population}}
+        {{selectedElement.travelTime}}
+    </div>
+    <div id="shipActionDiv" ng-hide="!shipSelected" style="float: right; width: 395px">
+        <button class="space-bg" type="button" ng-click="enterTunnel()" style="width: 120px">Enter Tunnel</button><br>
+        <button class="space-bg" type="button" ng-click="enterCombat()" style="width: 120px">Enter Combat</button> <br>
+        <button class="space-bg" type="button" ng-click="colonize()" style="width: 120px">Colonize</button><br>
+        <button class="space-bg" type="button" ng-click="scrapShip()" style="width: 120px">Scrap</button>
+    </div>
+    <div id="planetActionDiv" ng-hide="!planetSelected" style="float:right; width: 545px">
+        <div style="float: left; clear: both">Change Planet Output Priorities </div>
+        <div style="float: left; clear: both">
+            <span style="float: left">Research</span>
+            <input class="w120" type="range" value="10" ng-model="outputSlider">
+            <span style="float: left">Production</span>
+        </div>
+        <div class="left clear-both padding10">
+            <button class="space-bg" type="button" ng-click="changeOutput()">Confirm</button>
+        </div>
+    </div>
 </div>
