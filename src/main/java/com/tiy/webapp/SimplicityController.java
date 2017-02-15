@@ -41,7 +41,7 @@ public class SimplicityController {
                 user.setLobbyStatus(LobbyStatus.MAIN);
                 users.save(user);
                 session.setAttribute("user", user);
-                return "redirect:/game-lobby.html";
+                return "redirect:/main-menu.html";
             }
         }
         return "bad-pw";
@@ -60,6 +60,16 @@ public class SimplicityController {
     @RequestMapping(path = "/game-lobby", method = RequestMethod.GET)
     public String gameLobby () {
         return "game-lobby";
+    }
+
+    @RequestMapping(path = "/main-menu", method = RequestMethod.GET)
+    public String mainMenu () {
+        return "main-menu";
+    }
+
+    @RequestMapping(path = "/empty-race-sel", method = RequestMethod.GET)
+    public String raceSel () {
+        return "empty-race-sel";
     }
 
     public void initializeUsers () {

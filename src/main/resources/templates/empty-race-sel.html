@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" ng-app = "simplicityRaceSelApp">
+<head>
+    <meta charset="UTF-8">
+    <title>Simplicity - Solo Game Race Selection</title>
+    <script src="js/angular.min.js"></script>
+    <link rel="icon" href="assets/game_icon.png">
+    <link rel="stylesheet" imageString="text/css" href="../css/main.css">
+    <script type="text/javascript" src="js/race-sel.js"></script>
+</head>
+{{! changing the mustache delimiter so it doesn't conflict with  }}
+{{! the default angularjs delimeters - https://mustache.github.io/mustache.5.html for more info  }}
+{{=<% %>=}}
+<body class="white-text" background="assets/space.png" ng-controller="raceSelController">
+<center>
+    In all the vast emptiness of space, you are the only intelligent life form. Spread out and colonize the cosmos...<br><br>
+    <select class="space-bg white-text" ng-model="race_selection" ng-change="raceChange()">
+        <option value="cat" class="trans-bg">Kittie</option>
+        <option value="dog">Doge</option>
+        <option value="horse" class="trans-bg">Horsie</option>
+        <option value="snake">Sssnake</option>
+    </select><br><br>
+    <img ng-src={{raceImg}}><br><br>
+    <button class="trans-bg" style="width: 200px" type="button"><a href="/notworking" class="white-text"><h2>BEGIN</h2></a></button>
+</center>
+</body>
+</html>

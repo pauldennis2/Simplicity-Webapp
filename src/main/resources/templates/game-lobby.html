@@ -11,13 +11,13 @@
     <link rel="stylesheet" imageString="text/css" href="../css/main.css">
 </head>
 
-<body background="assets/space.png" ng-controller="lobbyController" style="color: white">
+<body class="white-text" background="assets/space.png" ng-controller="lobbyController">
 {{! changing the mustache delimiter so it doesn't conflict with  }}
 {{! the default angularjs delimeters - https://mustache.github.io/mustache.5.html for more info  }}
 {{=<% %>=}}
-<h4>Main Lobby <a href="/main.html">Link to Main (Temporary)</a></h4><br>
+<h4>Main Lobby <a href="/main-menu">Return To Main Menu</a></h4><br>
 <ul class="list-group" ng-click="moveToGroup(mainLobbyUsers)" style="width: 400px">
-    <li class="list-group-item trans-bg" ng-repeat="user in mainLobbyUsers" style="background-color: transparent">
+    <li class="list-group-item trans-bg" ng-repeat="user in mainLobbyUsers">
         {{user.handle}}
     </li>
 </ul>
@@ -67,10 +67,10 @@
 <span class="glyphicon glyphicon-tower" aria-hidden="true"></span> = Leader (Functionality currently disabled)<br>
 Choose your "Alien Race Avatar":<br>
 <select class="space-bg" ng-model="race_selection" ng-change="raceChange()">
-    <option value="cat" class="trans-bg">Cat</option>
-    <option value="dog">Dog</option>
-    <option value="horse" class="trans-bg">Horse</option>
-    <option value="snake">Snake</option>
+    <option value="cat" class="trans-bg">Kittie</option>
+    <option value="dog">Doge</option>
+    <option value="horse" class="trans-bg">Horsie</option>
+    <option value="snake">Sssnake</option>
 </select>
 <img ng-src={{raceImg}}><br><br>
 (Note: this is like your piece in Monopoly: it doesn't have any influence on the game - it's just an avatar)
