@@ -524,21 +524,22 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
         game.load.image('planet10', 'assets/planets/planet10.png');
     }
     var tunnels = [];
+    var graphics;
+    var colonizeGraphics;
+    var planetCoordsX = [];
+    var planetCoordsY = [];
     function create() {
         game.physics.startSystem(Phaser.Physics.ARCADE);
-        var ringCenterX = 300;
-        var ringCenterY = 200;
+        var ringCenterX = 400;
+        var ringCenterY = 300;
         //  A simple background for our game
         game.add.sprite(0, 0, 'stars');
         game.add.sprite(350, 250, 'sun');
-
-        var planetCoordsX = [];
 
         planetCoordsX[0] = 430;
         planetCoordsX[1] = 350;
         planetCoordsX[2] = 525;
 
-        var planetCoordsY = [];
         planetCoordsY[0] = 205;
         planetCoordsY[1] = 105;
         planetCoordsY[2] = 360;
@@ -553,7 +554,8 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
         tunnelCoordsY[1] = 400;
         tunnelCoordsY[2] = 490;
 
-        var graphics = game.add.graphics(100, 100);
+        graphics = game.add.graphics(0, 0);
+        colonizeGraphics = game.add.graphics(0, 0);
         var planets = [];
         graphics.lineStyle(1, 0x6C6C6C, 1);
         for(i = 0; i < $scope.starSystemInfo.starSystem.planets.length; i++) {
@@ -564,6 +566,28 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
             planets[i].events.onInputDown.add(listener, this);
             planets[i].elementName = $scope.starSystemInfo.starSystem.planets[i].name;
             planets[i].population = $scope.starSystemInfo.starSystem.planets[i].size;
+            var ownerRaceNum = $scope.starSystemInfo.starSystem.planets[i].ownerRaceNum;
+            switch (ownerRaceNum) {
+                case -1:
+                    planets[i].icon = "assets/races/norace_icon.png";
+                    break;
+
+                case 0:
+                    planets[i].icon = "assets/races/race1_icon.jpg";
+                    break;
+
+                case 1:
+                    planets[i].icon = "assets/races/race2_icon.jpg";
+                    break;
+
+                case 2:
+                    planets[i].icon = "assets/races/race3_icon.jpg";
+                    break;
+
+                case 3:
+                    planets[i].icon = "assets/races/race4_icon.jpg";
+                    break;
+            }
         }
 
         if (addAnimations) {
@@ -615,6 +639,7 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
             ships[i].shipHealth = $scope.starSystemInfo.ships[i].health;
             ships[i].maxHealth = $scope.starSystemInfo.ships[i].maxHealth;
             ships[i].shipId = $scope.starSystemInfo.ships[i].id;
+            ships[i].type = $scope.starSystemInfo.ships[i].chassis;
         }
     }
 
@@ -635,7 +660,6 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
         $scope.shipSelected = false;
         $scope.planetSelected = false;
         $scope.tunnelSelected = false;
-        console.log("Element name = " + sprite.elementName);
         $scope.selectedElement = {};
         $scope.selectedElement.name = sprite.elementName;
         if (sprite.shipHealth != null) {
@@ -646,7 +670,8 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
         if (sprite.population != null) {
             $scope.planetSelected = true;
             $scope.outputSlider = 60;
-            $scope.selectedElement.icon = "assets/races/race2_icon.jpg";
+            $scope.selectedElement.icon = sprite.icon;
+
             $scope.selectedElement.population = "Population: " + sprite.population;
         }
         if (sprite.travelTime != null) {
@@ -663,23 +688,23 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
 
         var x = pointer.x;
         var y = pointer.y;
-        var nearTunnelIndex = -1;
-        if (x > 0 && x < 130) {
-            if (y > 365 && y < 495) {
-                nearTunnelIndex = 0;
-            }
-        } else  if (x > 580 && x < 720) {
-            if (y > 350 && y < 480) {
-                nearTunnelIndex = 1;
-            }
-        } else if (x > 300 && x < 450) {
-            if (y > 450 && y < 580) {
-                nearTunnelIndex = 2;
-            }
-        }
-        console.log("nearTunnelIndex = " + nearTunnelIndex);
         if ($scope.tunnelsOpen) {
-            console.log("tunnels open");
+            var nearTunnelIndex = -1;
+            if (x > 0 && x < 130) {
+                if (y > 365 && y < 495) {
+                    nearTunnelIndex = 0;
+                }
+            }
+            if (x > 580 && x < 720) {
+                if (y > 350 && y < 480) {
+                    nearTunnelIndex = 1;
+                }
+            }
+            if (x > 300 && x < 450) {
+                if (y > 450 && y < 580) {
+                    nearTunnelIndex = 2;
+                }
+            }
             if ($scope.starSystemInfo.tunnels[nearTunnelIndex] != null) { //If there is a tunnel there
                 console.log("Entering tunnel " + nearTunnelIndex);
                 console.log($scope.starSystemInfo.tunnels[nearTunnelIndex]);
@@ -700,6 +725,45 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
                 }
             }
         }
+
+        if (colonizeModeActive) {
+            var nearPlanetIndex = -1;
+            if (x > 350 && x < 500) {
+                if (y > 180 && y < 260) {
+                    nearPlanetIndex = 0;
+                }
+            }
+            if (x > 330 && x < 410) {
+                if (y > 80 && y < 150) {
+                    nearPlanetIndex = 1;
+                }
+            }
+            if (x > 480 && x < 585) {
+                if (y > 325 && y < 410) {
+                    nearPlanetIndex = 2;
+                }
+            }
+            var planet = $scope.starSystemInfo.starSystem.planets[nearPlanetIndex];
+            if (planet != null) {
+                if (sprite.type === "COLONIZER") {
+                    console.log("We are a colonizer. So we can colonize that planet");
+                    if (planet.ownerRaceNum > -1) {
+                        console.log("But it's taken");
+                    } else {
+                        console.log("And it's free!");
+                    }
+
+                } else {
+                    console.log("Selected ship is not a colonizer");
+                    if (planet.ownerRaceNum > -1) {
+                        console.log("But the planet was already taken anyway");
+                    } else {
+                        console.log("Too bad because that planet was free");
+                    }
+                }
+            }
+        }
+
     }
 
     enterTunnel = function (destinationId, tunnelId, shipId) {
@@ -724,15 +788,15 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
     $scope.openTunnels = function () {
         $scope.tunnelsOpen = !$scope.tunnelsOpen;
         if ($scope.tunnelsOpen) {
-            console.log("Space tunnels now open");
             for (i = 0; i < $scope.starSystemInfo.tunnels.length; i++) {
                 wormholeAnims[i].alpha = 1.0;
+                tunnels[i].alpha = 0.0;
             }
             $scope.tunnelToggle = "Close Tunnels";
         } else {
-            console.log("Space tunnels now closed");
             for (i = 0; i < $scope.starSystemInfo.tunnels.length; i++) {
                 wormholeAnims[i].alpha = 0.0;
+                tunnels[i].alpha = 1.0;
             }
             $scope.tunnelToggle = "Open Tunnels";
         }
@@ -742,9 +806,33 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
         console.log("EVERYBODY WAS KUNG FU FITING");
     }
 
-    $scope.colonize = function () {
+    var colonizeModeActive = false;
+    var greenLine;
+    $scope.colonizeMode = function () {
         console.log("Colonizing a planet. Feeling very Bri'ish");
+        var planets = $scope.starSystemInfo.starSystem.planets;
+        colonizeModeActive = !colonizeModeActive;
+        if (colonizeModeActive) {
+            if (greenLine == null) {
+                colonizeGraphics.lineStyle(5, 0x009933, 1);
+                greenLine = colonizeGraphics.drawCircle(100, 100, 30);
+                for (i = 0; i < planets.length; i++) {
+                    if (planets[i].ownerRaceNum == -1) {
+                        colonizeGraphics.drawCircle(planetCoordsX[i] + 44, planetCoordsY[i] + 44, 30);
+                    }
+                }
+            }
+            greenLine.alpha = 1.0;
+        } else {
+            if (greenLine != null) {
+                greenLine.alpha = 0.0;
+            }
+        }
     }
+
+    /*graphics.lineStyle(1, 0x6C6C6C, 1);
+            for(i = 0; i < $scope.starSystemInfo.starSystem.planets.length; i++) {
+                graphics.drawCircle(ringCenterX, ringCenterY, 100 + i*50);*/
 
     $scope.changeOutput = function () {
         console.log("The outputs they are a changin'");

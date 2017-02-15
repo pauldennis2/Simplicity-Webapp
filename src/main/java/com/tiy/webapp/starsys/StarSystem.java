@@ -51,8 +51,23 @@ public class StarSystem {
         this.gridCoordX = gridCoordX;
         this.gridCoordY = gridCoordY;
         //decide how many planets to create, 0-3
-        int numPlanets = random.nextInt(MAX_PLANETS);
+        int numPlanets;
+        if (name.contains("Home")) {
+            numPlanets = 1;
+        } else if (name.contains("Gate")) {
+            numPlanets = 1 + random.nextInt(MAX_PLANETS - 1);
+        } else {
+            numPlanets = random.nextInt(MAX_PLANETS);
+        }
         int imageStringNum;
+        //Make 1 and 2 planet systems more common
+        boolean disallowZeroAndThree = random.nextBoolean();
+        if (numPlanets == 0 && disallowZeroAndThree) {
+            numPlanets = 1;
+        }
+        if (numPlanets == 3 && disallowZeroAndThree) {
+            numPlanets = 2;
+        }
         for (int index = 0; index < numPlanets; index++) {
             imageStringNum = random.nextInt(NUM_PLANET_IMAGES) + 1;
             int size = random.nextInt(3);

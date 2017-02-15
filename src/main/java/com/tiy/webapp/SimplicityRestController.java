@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by Paul Dennis on 2/6/2017.
@@ -158,14 +159,20 @@ public class SimplicityRestController {
         StarSystem starSystem = starSystems.findOne(systemId);
         List<Starship> shipList = ships.findByStarSystem(starSystem);
         for (Starship ship : shipList) {
-            if (ship == null) {
-                throw new AssertionError("WTF JPA");
-            }
             if (ship.getTurnsToDestination() != null) {
                 if (ship.getTurnsToDestination() > 0) {
                     shipList.remove(ship);
                 }
             }
+        }
+        Random random = new Random();
+        for (Planet planet : starSystem.getPlanets()) {
+            if (random.nextBoolean()) {
+                planet.setOwnerRaceNum(-1);
+            } else {
+                planet.setOwnerRaceNum(random.nextInt(4));
+            }
+            //todo fix to actually set correctly
         }
         List<SpaceTunnel> spaceTunnels = tunnels.findByFirstSystem(starSystem);
         spaceTunnels.addAll(tunnels.findBySecondSystem(starSystem));
@@ -421,6 +428,7 @@ public class SimplicityRestController {
 
     public void initializeShips () {
         Starship ship = ships.findFirstByName("P2 Gate Defender");
+
         StarSystem p2gate = starSystems.findFirstByName("P2 Gate");
         if (p2gate == null) {
             throw new AssertionError("It's null");
@@ -428,6 +436,11 @@ public class SimplicityRestController {
         if (ship == null) {
             ship = new Starship(p2gate, ShipChassis.DESTROYER, "P2 Gate Defender", "default");
             ships.save(ship);
+        }
+        Starship colonizer = ships.findFirstByName("Colonizer");
+        if (colonizer == null) {
+            colonizer = new Starship(p2gate, ShipChassis.COLONIZER, "Colonizer", "default");
+            ships.save(colonizer);
         }
     }
 

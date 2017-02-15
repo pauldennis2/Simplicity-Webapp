@@ -85,16 +85,20 @@ public class Starship {
         maxHealth = chassis.getHealth();
 
         Shield shield = chassis.getShield();
-        maxDamageAbsorb = shield.getMaxDamageAbsorb();
-        shieldHealth = shield.getShieldHealth();
-        maxShieldHealth = shield.getMaxShieldHealth();
-        regenRate = shield.getRegenRate();
+        if (shield != null) {
+            maxDamageAbsorb = shield.getMaxDamageAbsorb();
+            shieldHealth = shield.getShieldHealth();
+            maxShieldHealth = shield.getMaxShieldHealth();
+            regenRate = shield.getRegenRate();
+        }
         damage = chassis.getDamage();
 
         Generator generator = chassis.getGenerator();
-        powerPerTurn = generator.getPowerPerTurn();
-        maxReservePower = generator.getMaxReservePower();
-        currentReservePower = maxReservePower;
+        if (generator != null) {
+            powerPerTurn = generator.getPowerPerTurn();
+            maxReservePower = generator.getMaxReservePower();
+            currentReservePower = maxReservePower;
+        }
         this.imageString = imageString;
 
         isComplete = true;
