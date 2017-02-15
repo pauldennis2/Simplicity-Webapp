@@ -6,9 +6,15 @@ package com.tiy.webapp;
 public class Response {
 
     private boolean success;
+    private Integer id;
 
     public Response (boolean success) {
         this.success = success;
+    }
+
+    public Response(boolean success, Integer id) {
+        this.success = success;
+        this.id = id;
     }
 
     public boolean isSuccess() {
@@ -18,4 +24,13 @@ public class Response {
     public void setSuccess(boolean success) {
         this.success = success;
     }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
 }

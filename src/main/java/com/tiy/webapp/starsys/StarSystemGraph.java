@@ -36,6 +36,16 @@ public class StarSystemGraph {
 
     }
 
+    @Transient
+    public StarSystem findByName (String name) {
+        for (StarSystem system : starSystems) {
+            if (system.getName().equals(name)) {
+                return system;
+            }
+        }
+        return null;
+    }
+
     public StarSystemGraph (String fileName) {
         Map<String, StarSystem> nameStarSystemMap;
         Map<Point, StarSystem> pointStarSystemMap;

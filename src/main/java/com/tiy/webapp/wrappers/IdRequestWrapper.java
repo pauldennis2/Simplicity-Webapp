@@ -13,6 +13,8 @@ public class IdRequestWrapper {
     private Integer tunnelId;
     private Integer techId;
 
+    private Integer raceId;
+
     public IdRequestWrapper () {
 
     }
@@ -71,5 +73,13 @@ public class IdRequestWrapper {
 
     public void setTechId(Integer techId) {
         this.techId = techId;
+    }
+
+    public Integer getRaceId() {
+        return raceId;
+    }
+
+    public void setRaceId(Integer raceId) {
+        this.raceId = raceId;
     }
 }

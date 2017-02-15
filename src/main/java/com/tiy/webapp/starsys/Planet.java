@@ -35,7 +35,7 @@ public class Planet {
     @Column(nullable = true)
     private Integer turnsToGrowth;
 
-    @Transient
+    @Column
     private int ownerRaceNum;
 
     public static final double BASE_GROWTH_RATE = 1.05; //Planets grow by 5% per turn
@@ -219,12 +219,10 @@ public class Planet {
         this.turnsToGrowth = turnsToGrowth;
     }
 
-    @Transient
     public int getOwnerRaceNum() {
         return ownerRaceNum;
     }
 
-    @Transient
     public void setOwnerRaceNum(int ownerRaceNum) {
         this.ownerRaceNum = ownerRaceNum;
     }

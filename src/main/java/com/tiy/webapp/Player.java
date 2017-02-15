@@ -19,10 +19,12 @@ public class Player {
     @Id
     private Integer id;
 
-    @OneToMany
+    @OneToMany (cascade = CascadeType.ALL,
+            orphanRemoval = true)
     private List<Planet> planets;
 
-    @OneToMany
+    @OneToMany (cascade = CascadeType.ALL,
+            orphanRemoval = true)
     private List<Starship> ships;
 
     @Column
@@ -38,11 +40,12 @@ public class Player {
 
     }
 
-    public Player(String name) {
+    public Player(String name, AlienRace alienRace) {
         planets = new ArrayList<>();
         ships = new ArrayList<>();
         totalResearch = 0;
         this.name = name;
+        this.race = alienRace;
     }
 
     public void addShip (Starship starship) {

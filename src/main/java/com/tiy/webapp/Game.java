@@ -19,10 +19,12 @@ public class Game {
     @Column (nullable = false, unique = true)
     private String name;
 
-    @OneToMany
+    @OneToMany (cascade = CascadeType.ALL,
+            orphanRemoval = true)
     private List<Player> players;
 
-    @OneToOne
+    @OneToOne (cascade = CascadeType.ALL,
+            orphanRemoval = true)
     private StarSystemGraph starSystemGraph;
 
     @Column (nullable = false)

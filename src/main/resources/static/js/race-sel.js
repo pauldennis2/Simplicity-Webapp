@@ -21,6 +21,34 @@ simplicityRaceSelApp.controller('raceSelController', function($scope, $http) {
     }
 
     $scope.raceImg = "../assets/races/race1.jpg";
+    $scope.newGame = function () {
+        console.log("Starting new game");
+        var raceId;
+        console.log($scope.race_selection);
+        if ($scope.race_selection == "cat") {
+            raceId = 0;
+        }
+        if ($scope.race_selection == "dog") {
+            raceId = 1;
+        }
+        if ($scope.race_selection == "horse") {
+            raceId = 2;
+        }
+        if ($scope.race_selection == "snake") {
+            raceId = 3;
+        }
+        console.log("raceId = " + raceId);
+        var wrapper = {"raceId": raceId};
+        console.log(wrapper);
+        $http.post("/new-empty-game.json", wrapper)
+        .then(
+            function successCallback (response) {
+                console.log("Successfully started a new game. So sayeth the wise Alaundo");
+                console.log(response.data);
+            },
 
-
+            function errorCallback (response) {
+                console.log("Unable to start a new game at this time.");
+            });
+    };
 });

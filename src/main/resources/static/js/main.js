@@ -565,7 +565,7 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
             planets[i].inputEnabled = true;
             planets[i].events.onInputDown.add(listener, this);
             planets[i].elementName = $scope.starSystemInfo.starSystem.planets[i].name;
-            planets[i].population = $scope.starSystemInfo.starSystem.planets[i].size;
+            planets[i].size = $scope.starSystemInfo.starSystem.planets[i].size;
             var ownerRaceNum = $scope.starSystemInfo.starSystem.planets[i].ownerRaceNum;
             switch (ownerRaceNum) {
                 case -1:
@@ -667,12 +667,12 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
             $scope.selectedElement.icon = "assets/races/race1_icon.jpg";
             $scope.selectedElement.health = sprite.shipHealth + "/" + sprite.maxHealth;
         }
-        if (sprite.population != null) {
+        if (sprite.size != null) {
             $scope.planetSelected = true;
             $scope.outputSlider = 60;
             $scope.selectedElement.icon = sprite.icon;
 
-            $scope.selectedElement.population = "Population: " + sprite.population;
+            $scope.selectedElement.size = "Size: " + sprite.size;
         }
         if (sprite.travelTime != null) {
             $scope.tunnelSelected = true;

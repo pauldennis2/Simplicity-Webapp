@@ -38,6 +38,9 @@ public class SimplicityRestController {
     @Autowired
     StarSystemGraphRepo ssGraphs;
 
+    @Autowired
+    GameRepo games;
+
     boolean initialized = false;
 
     @Autowired
@@ -90,8 +93,45 @@ public class SimplicityRestController {
     }
 
     @RequestMapping(path = "/new-empty-game.json", method = RequestMethod.POST)
-    public Response newEmptyGame () {
-        return null;
+    public Response newEmptyGame (@RequestBody IdRequestWrapper wrapper) {
+        Integer raceId = wrapper.getRaceId();
+        AlienRace race;
+        switch (raceId) {
+            case 0:
+                race = AlienRace.KITTY;
+                break;
+            case 1:
+                race = AlienRace.DOGE;
+                break;
+            case 2:
+                race = AlienRace.HORSIE;
+                break;
+            case 3:
+                race = AlienRace.SSSNAKE;
+                break;
+            default:
+                throw new AssertionError("Race id is bad");
+        }
+        Player player = new Player("Default Leader", race);
+
+        List<Player> players = new ArrayList<>();
+        players.add(player);
+        double d = Math.random() * Math.PI + 239 * Math.random();
+
+
+
+        StarSystemGraph ssgraph = new StarSystemGraph("4p_med_ring_map.txt");
+        StarSystem homeSystem = ssgraph.findByName("P" + (1 + raceId) + " Home");
+        Planet homePlanet = homeSystem.getPlanets().get(0);
+        homePlanet.setOwnerRaceNum(raceId);
+        homePlanet.setPopulation(8);
+        ssgraph.setName("Map " + d);
+        String name = "Game " + d;
+        player.addShip(new Starship( homeSystem, ShipChassis.FIGHTER, "Fighter", "default"));
+        Game game = new Game(name, players, ssgraph);
+        games.save(game);
+
+        return new Response(true, game.getId());
     }
 
     /*boolean ssgInit = false;
@@ -469,6 +509,6 @@ public class SimplicityRestController {
         systemInfo( null);
         combatInfo();
         registration(null);
-        newEmptyGame();
+        newEmptyGame(null);
     }
 }
