@@ -25,12 +25,17 @@ simplicityApp.config(function($routeProvider) {
             templateUrl: "ships.html",
             controller: "shipsController"
         })
-        .when("/system", {
+        .when("/system/:param", {
+            templateUrl: "starsystem.html",
+            controller: "systemController"
+        })
+        .when("/example-system", {
             templateUrl: "starsystem.html",
             controller: "systemController"
         })
         .when("/help", {
-            templateUrl: "help.html"
+            templateUrl: "help.html",
+            controller: "helpController"
         })
         .when("/options", {
             templateUrl: "options.html",
@@ -40,7 +45,7 @@ simplicityApp.config(function($routeProvider) {
             templateUrl: "research.html",
             controller: "researchController"
         })
-        .when("/combat", {
+        .when("/combat/:param", {
             templateUrl: "combat.html",
             controller: "combatController"
         })
@@ -76,7 +81,7 @@ simplicityApp.controller('ssgViewController', function($scope, $http) {
     $scope.goToDagobah = function () {
         console.log("Go to the Dagobah system Luke");
         console.log("Selected system = " + $scope.selectedSystem.name);
-        window.location.href = "/main.html#/help";
+        window.location.href = "/main.html#/system/" + selectedSystemId;
     };
     $scope.noSystemSelected = true;
 
@@ -137,13 +142,14 @@ simplicityApp.controller('ssgViewController', function($scope, $http) {
             game.add.sprite(homeSystemIconsX[i], homeSystemIconsY[i], homeSystemIconNames[i]);
         }
     }
+    var selectedSystemId;
     function systemClickListener (systemSprite) {
-        console.log("Someone clicked a system! HOORAY!");
         $scope.noSystemSelected = false;
         $scope.selectedSystem = {};
         $scope.selectedSystem.name = systemSprite.systemName;
         console.log(starSystems[systemSprite.index]);
-        console.log("It has " + starSystems[systemSprite.index].planets.length + " planets");
+        console.log("id of system = " + starSystems[systemSprite.index].id);
+        selectedSystemId = starSystems[systemSprite.index].id;
         var index = systemSprite.index;
         $scope.selectedSystem.planets = starSystems[index].planets;
         $scope.$apply();
@@ -257,16 +263,19 @@ simplicityApp.controller('mainController', function($scope, $http, $rootScope) {
     $scope.currentTurn = 0;
     $scope.advanceTurn = function () {
         console.log("Seasons change... time passes by...");
-        $scope.currentTurn++;
+
         $http.post("/process-turn.json")
         .then(
             function successCallback (response) {
-                console.log("Got turn process response");
                 $rootScope.researchAmt = response.data.researchAmt;
                 $rootScope.productionAmt = response.data.productionAmt;
 
                 $rootScope.researchTotal += response.data.researchAmt;
-                $rootScope.productionTotal;
+                $rootScope.productionTotal += response.data.productionAmt;
+
+                console.log("total research = " + $rootScope.researchTotal);
+                console.log("total production = " + $rootScope.productionTotal);
+                $scope.currentTurn++;
             },
 
             function errorCallback (response) {
@@ -277,6 +286,10 @@ simplicityApp.controller('mainController', function($scope, $http, $rootScope) {
 
 simplicityApp.controller('optionsController', function($scope, $http) {
     console.log("Initializing optionsController");
+});
+
+simplicityApp.controller('helpController', function($scope, $http) {
+    console.log("Initializing helpController");
 });
 
 simplicityApp.controller('combatController', function($scope, $http) {
@@ -438,9 +451,8 @@ simplicityApp.controller('combatController', function($scope, $http) {
     };
 });
 
-simplicityApp.controller('systemController', function($scope, $http) {
+simplicityApp.controller('systemController', function($scope, $http, $routeParams) {
     console.log("Initializing systemController");
-
     var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-canvas-container',
                                       { preload: preload, create: create, update: update });
 
@@ -462,29 +474,58 @@ simplicityApp.controller('systemController', function($scope, $http) {
             });
     };
 
-    getStarSystemInfo();
+    getSpecificStarSystemInfo = function (systemId) {
+        console.log("Getting *specific* star system info");
+        var wrapper = {"systemId": systemId};
+        console.log("For system with id = " + systemId);
+        $http.post("/specific-system-info.json", wrapper)
+        .then(
+            function successCallback (response) {
+                console.log("Found specific system info");
+                console.log(response.data);
+                $scope.starSystemInfo = response.data;
+            },
+
+            function errorCallback (response) {
+                console.log("Unable to find system info");
+            });
+    }
+    console.log("$routeParams.param = " + $routeParams.param);
+    if ($routeParams.param != null) {
+        getSpecificStarSystemInfo($routeParams.param);
+    } else {
+        getStarSystemInfo();
+    }
     $scope.selected = "Nothing";
     var explosions;
     var wormholes;
-    var wormhole;
-    var addAnimations = false;
+    var wormholeAnims = [];
+    var addAnimations = true;
     var systemText;
 
     function preload() {
         game.load.image('stars', 'assets/starfield.png');
-        game.load.image('sun', 'assets/smallsun.png');
-        game.load.image('earth', 'assets/planets/earth.png');
-        game.load.image('zebulon', 'assets/planets/zebulon.png');
+        game.load.image('sun', 'assets/smallsun.png');;
         game.load.image('destroyer', 'assets/ships/destroyerblue.png');
-        game.load.image('fighter', 'assets/ships/fighter.png');
-        game.load.image('tunnel', 'assets/green_wormhole_small_clear.png');
+        game.load.image('tunnel', 'assets/single_wormhole.png');
         game.load.spritesheet('kaboom', 'assets/anims/explode.png', 128, 128);
-        game.load.spritesheet('wormhole', 'assets/anims/black_wormhole.png', 128, 128);
-    }
+        game.load.spritesheet('wormhole', 'assets/anims/Effect117.png', 128, 128);
 
+        game.load.image('planet1', 'assets/planets/planet1.png');
+        game.load.image('planet2', 'assets/planets/planet2.png');
+        game.load.image('planet3', 'assets/planets/planet3.png');
+        game.load.image('planet4', 'assets/planets/planet4.png');
+        game.load.image('planet5', 'assets/planets/planet5.png');
+
+        game.load.image('planet6', 'assets/planets/planet6.png');
+        game.load.image('planet7', 'assets/planets/planet7.png');
+        game.load.image('planet8', 'assets/planets/planet8.png');
+        game.load.image('planet9', 'assets/planets/planet9.png');
+        game.load.image('planet10', 'assets/planets/planet10.png');
+    }
+    var tunnels = [];
     function create() {
         game.physics.startSystem(Phaser.Physics.ARCADE);
-
         var ringCenterX = 300;
         var ringCenterY = 200;
         //  A simple background for our game
@@ -492,53 +533,38 @@ simplicityApp.controller('systemController', function($scope, $http) {
         game.add.sprite(350, 250, 'sun');
 
         var planetCoordsX = [];
-        planetCoordsX[0] = 350;
-        planetCoordsX[1] = 430;
+
+        planetCoordsX[0] = 430;
+        planetCoordsX[1] = 350;
         planetCoordsX[2] = 525;
 
         var planetCoordsY = [];
-        planetCoordsY[0] = 105;
-        planetCoordsY[1] = 205;
+        planetCoordsY[0] = 205;
+        planetCoordsY[1] = 105;
         planetCoordsY[2] = 360;
 
         var tunnelCoordsX = [];
         tunnelCoordsX[0] = 20;
-        tunnelCoordsX[1] = 600;
+        tunnelCoordsX[1] = 620;
         tunnelCoordsX[2] = 350;
 
         var tunnelCoordsY = [];
         tunnelCoordsY[0] = 400;
         tunnelCoordsY[1] = 400;
-        tunnelCoordsY[2] = 475;
-
-        var planetNames = [];
-        planetNames[0] = 'earth';
-        planetNames[1] = 'zebulon';
-        planetNames[2] = 'earth';
+        tunnelCoordsY[2] = 490;
 
         var graphics = game.add.graphics(100, 100);
         var planets = [];
         graphics.lineStyle(1, 0x6C6C6C, 1);
         for(i = 0; i < $scope.starSystemInfo.starSystem.planets.length; i++) {
-        //for (i = 0; i < $scope.starSystemInfo.numPlanets; i++) {
             graphics.drawCircle(ringCenterX, ringCenterY, 100 + i*50);
-            //game.add.sprite(planetCoordsX[i], planetCoordsY[i], planetNames[i]);
             //Todo fix to use the image string coming in
             planets[i] = game.add.sprite(planetCoordsX[i], planetCoordsY[i], $scope.starSystemInfo.starSystem.planets[i].imageString);
             planets[i].inputEnabled = true;
             planets[i].events.onInputDown.add(listener, this);
             planets[i].elementName = $scope.starSystemInfo.starSystem.planets[i].name;
             planets[i].population = $scope.starSystemInfo.starSystem.planets[i].size;
-            //ships[i].events.onInputDown.add(listener, this);
-            //ships[i].elementName = $scope.starSystemInfo.ships[i].name;
         }
-
-        /*for (i = 0; i < $scope.starSystemInfo.ships.length; i++) {
-            game.add.sprite(20, 20 + i*100, 'destroyer');
-        }
-        for (i = 0; i < $scope.starSystemInfo.starSystem.tunnels.length; i++) {
-            game.add.sprite(20, 400 + i*80, 'tunnel')
-        }*/
 
         if (addAnimations) {
             var tunnel = game.add.sprite(20, 400, 'tunnel');
@@ -552,30 +578,30 @@ simplicityApp.controller('systemController', function($scope, $http) {
         systemText = game.add.text(200 , 25, $scope.starSystemInfo.starSystem.name + " System" , { font: '28px Arial', fill: '#fff' });
         systemText.visible = true;
 
-        var tunnels = [];
+
         for (i = 0; i < $scope.starSystemInfo.tunnels.length; i++) {
             tunnels[i] = game.add.sprite(tunnelCoordsX[i], tunnelCoordsY[i], 'tunnel');
             tunnels[i].inputEnabled = true;
             tunnels[i].events.onInputDown.add(listener, this);
             tunnels[i].elementName = "Tunnel: " + $scope.starSystemInfo.tunnels[i].name;
             tunnels[i].travelTime = $scope.starSystemInfo.tunnels[i].length + " turns journey";
+            tunnels[i].index = i;
         }
 
         if (addAnimations) {
             wormholes = game.add.group();
-            wormholes.createMultiple(10, 'wormhole');
+            wormholes.createMultiple(3, 'wormhole');
             //tunnel.animations.add('wormhole');
             wormholes.forEach(setupDiamond, this);
-            wormhole = wormholes.getFirstExists(false);
-            wormhole.reset(20, 400);
-            wormhole.play('wormhole', 20, true, false);
+
+            for (i = 0; i < $scope.starSystemInfo.tunnels.length; i++) {
+                wormholeAnims[i] = wormholes.getFirstExists(false);
+                wormholeAnims[i].reset(tunnelCoordsX[i], tunnelCoordsY[i]);
+                wormholeAnims[i].play('wormhole', 20, true, false);
+                wormholeAnims[i].alpha = 0.0;
+            }
         }
 
-        /*var destroyer = game.add.sprite(20, 20, 'destroyer');
-        destroyer.inputEnabled = true;
-        destroyer.input.enableDrag();
-        destroyer.events.onDragStop.add(onDragStop, this);
-        destroyer.events.onInputDown.add(listener, this);*/
         var ships = [];
         explosions = game.add.group();
         explosions.createMultiple(10, 'kaboom');
@@ -588,8 +614,7 @@ simplicityApp.controller('systemController', function($scope, $http) {
             ships[i].elementName = $scope.starSystemInfo.ships[i].name;
             ships[i].shipHealth = $scope.starSystemInfo.ships[i].health;
             ships[i].maxHealth = $scope.starSystemInfo.ships[i].maxHealth;
-            ships[i].events.onKilled.add(onKill, this);
-            ships[i].animations.add('kaboom');
+            ships[i].shipId = $scope.starSystemInfo.ships[i].id;
         }
     }
 
@@ -603,17 +628,6 @@ simplicityApp.controller('systemController', function($scope, $http) {
         //Called every frame
     }
 
-    function onKill() {
-        var explosionX = 200;
-        var explosionY = 200;
-        var frameRate = 10;
-        console.log("He's dead, Jim");
-        var explosion = explosions.getFirstExists(false);
-        explosion.reset(explosionX, explosionY);
-        //Last two args are loop, kill on complete
-        explosion.play('kaboom', frameRate, false, true);
-        //explosion.play(10);
-    }
     $scope.planetSelected = false;
     $scope.shipSelected = false;
     $scope.tunnelSelected = false;
@@ -624,8 +638,6 @@ simplicityApp.controller('systemController', function($scope, $http) {
         console.log("Element name = " + sprite.elementName);
         $scope.selectedElement = {};
         $scope.selectedElement.name = sprite.elementName;
-        //$scope.selectedElement.health = sprite.shipHealth;
-        //$scope.selectedElement.maxHealth = sprite.maxHealth;
         if (sprite.shipHealth != null) {
             $scope.shipSelected = true;
             $scope.selectedElement.icon = "assets/races/race1_icon.jpg";
@@ -648,17 +660,82 @@ simplicityApp.controller('systemController', function($scope, $http) {
 
     function onDragStop (sprite, pointer) {
         console.log("Location: " + pointer.x + ", " + pointer.y);
-        //sun is at 350 250, if we drop it there kill
-        if (pointer.x > 375 && pointer.x < 450) {
-            if (pointer.y > 250 && pointer.y < 325) {
-                console.log("The ship is in the sun. DESTWOY IT");
-                sprite.kill();
+
+        var x = pointer.x;
+        var y = pointer.y;
+        var nearTunnelIndex = -1;
+        if (x > 0 && x < 130) {
+            if (y > 365 && y < 495) {
+                nearTunnelIndex = 0;
+            }
+        } else  if (x > 580 && x < 720) {
+            if (y > 350 && y < 480) {
+                nearTunnelIndex = 1;
+            }
+        } else if (x > 300 && x < 450) {
+            if (y > 450 && y < 580) {
+                nearTunnelIndex = 2;
+            }
+        }
+        console.log("nearTunnelIndex = " + nearTunnelIndex);
+        if ($scope.tunnelsOpen) {
+            console.log("tunnels open");
+            if ($scope.starSystemInfo.tunnels[nearTunnelIndex] != null) { //If there is a tunnel there
+                console.log("Entering tunnel " + nearTunnelIndex);
+                console.log($scope.starSystemInfo.tunnels[nearTunnelIndex]);
+                //Figure out if we are "firstSystem" or "secondSystem" in the tunnel
+                var firstSystemName = $scope.starSystemInfo.tunnels[nearTunnelIndex].firstSystem.name;
+                var secondSystemName = $scope.starSystemInfo.tunnels[nearTunnelIndex].secondSystem.name;
+                var tunnelId = $scope.starSystemInfo.tunnels[nearTunnelIndex].id;
+                if ($scope.starSystemInfo.starSystem.name === firstSystemName) {
+                    console.log("We are the 1st system. Sending ship to the 2nd system which is " + secondSystemName);
+                    enterTunnel($scope.starSystemInfo.tunnels[nearTunnelIndex].secondSystem.id, tunnelId, sprite.shipId);
+                    sprite.kill();
+                } else if ($scope.starSystemInfo.starSystem.name === secondSystemName) {
+                    console.log("We are the 2nd system. Sending ship to the 1st system which is " + firstSystemName);
+                    enterTunnel($scope.starSystemInfo.tunnels[nearTunnelIndex].firstSystem.id, tunnelId, sprite.shipId);
+                    sprite.kill();
+                } else {
+                    console.log("I am so confused. Please help!");
+                }
             }
         }
     }
 
-    $scope.enterTunnel = function () {
-        console.log("Entering tunnel. Swoosh!");
+    enterTunnel = function (destinationId, tunnelId, shipId) {
+        console.log("Attempting to enter tunnel using the following ids:");
+        console.log("destinationId = " + destinationId + " , tunnelId = " + tunnelId + ", shipId = " + shipId);
+        var wrapper = {"systemId": destinationId, "tunnelId": tunnelId, "shipId": shipId};
+        $http.post("/enter-tunnel.json", wrapper)
+        .then(
+            function successCallback (response) {
+                console.log("Got response");
+                console.log(response.data);
+            },
+
+            function errorCallback (response) {
+                console.log("Error callback for enter tunnel");
+            });
+    }
+    $scope.tunnelsOpen = false;
+
+    $scope.tunnelToggle = "Open Tunnels";
+
+    $scope.openTunnels = function () {
+        $scope.tunnelsOpen = !$scope.tunnelsOpen;
+        if ($scope.tunnelsOpen) {
+            console.log("Space tunnels now open");
+            for (i = 0; i < $scope.starSystemInfo.tunnels.length; i++) {
+                wormholeAnims[i].alpha = 1.0;
+            }
+            $scope.tunnelToggle = "Close Tunnels";
+        } else {
+            console.log("Space tunnels now closed");
+            for (i = 0; i < $scope.starSystemInfo.tunnels.length; i++) {
+                wormholeAnims[i].alpha = 0.0;
+            }
+            $scope.tunnelToggle = "Open Tunnels";
+        }
     }
 
     $scope.enterCombat = function () {

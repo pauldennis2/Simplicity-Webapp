@@ -118,7 +118,7 @@ public class SimplicityRestController {
     }
 
     @RequestMapping(path = "/system-info.json", method = RequestMethod.POST)
-    public StarSystemInfoWrapper systemInfo (HttpSession session, @RequestBody IdRequestWrapper wrapper) {
+    public StarSystemInfoWrapper systemInfo (@RequestBody IdRequestWrapper wrapper) {
         initializeSystemInfo();
         //Integer gameId = wrapper.getGameId();
         //Integer playerId = wrapper.getPlayerId();
@@ -135,10 +135,10 @@ public class SimplicityRestController {
         ships.add(new Starship(null, ShipChassis.DESTROYER, "Enterprise"));
         ships.add(new Starship(null, ShipChassis.FIGHTER, "Voyager"));
         return new StarSystemInfoWrapper(hardCodedSystem, ships, null);*/
-        User user = (User) session.getAttribute("user");
+        /*User user = (User) session.getAttribute("user");
         if (user == null) {
             //throw new AssertionError("Must be logged in to view content");
-        }
+        }*/
         StarSystem zebulon = starSystems.findFirstByName("Zebulon");
         //List<SpaceTunnel> zebulonTunnels = tunnels.findByFirstSystemOrSecondSystem(zebulon);
         List<SpaceTunnel> zebulonTunnels = new ArrayList<>();
@@ -149,60 +149,27 @@ public class SimplicityRestController {
         return new StarSystemInfoWrapper(zebulon, ships, zebulonTunnels);
     }
 
-    public void initializeSystemInfo () {
-        if (!initialized) {
-            if (starSystems == null || ships == null || tunnels == null || planets == null) {
-                throw new AssertionError("One of the repos is null");
+    @RequestMapping(path = "/specific-system-info.json", method = RequestMethod.POST)
+    public StarSystemInfoWrapper specificSystemInfo (@RequestBody IdRequestWrapper wrapper) {
+        Integer systemId = wrapper.getSystemId();
+        if (systemId == null) {
+            throw new AssertionError("Slow your roll there speedster");
+        }
+        StarSystem starSystem = starSystems.findOne(systemId);
+        List<Starship> shipList = ships.findByStarSystem(starSystem);
+        for (Starship ship : shipList) {
+            if (ship == null) {
+                throw new AssertionError("WTF JPA");
             }
-            initializePlanets();
-            initializeSystems();
-            initializeTunnels();
-            initialized = true;
+            if (ship.getTurnsToDestination() != null) {
+                if (ship.getTurnsToDestination() > 0) {
+                    shipList.remove(ship);
+                }
+            }
         }
-    }
-
-    public void initializePlanets () {
-        Planet zebulon1 = planets.findFirstByName("Zebulon I");
-        Planet zebulon2 = planets.findFirstByName("Zebulon II");
-        if (zebulon1 == null) {
-            zebulon1 = new Planet("Zebulon I", 10, "zebulon");
-            planets.save(zebulon1);
-        }
-        if (zebulon2 == null) {
-            zebulon2 = new Planet("Zebulon II", 8, "earth");
-            planets.save(zebulon2);
-        }
-        Planet avalon1 = planets.findFirstByName("Avalon I");
-        Planet avalon2 = planets.findFirstByName("Avalon II");
-        if (avalon1 == null) {
-            avalon1 = new Planet("Avalon I", 12, "alpha_centauri");
-            planets.save(avalon1);
-        }
-        if (avalon2 == null) {
-            avalon2 = new Planet("Avalon II", 6, "bleh");
-            planets.save(avalon2);
-        }
-    }
-
-    public void initializeSystems () {
-        StarSystem zebulon = starSystems.findFirstByName("Zebulon");
-        StarSystem avalon = starSystems.findFirstByName("Avalon");
-        if (zebulon == null) {
-            zebulon = new StarSystem("Zebulon", 0, 5);
-            List<Planet> zebulonPlanets = new ArrayList<>();
-            zebulonPlanets.add(planets.findFirstByName("Zebulon I"));
-            zebulonPlanets.add(planets.findFirstByName("Zebulon II"));
-            zebulon.setPlanets(zebulonPlanets);
-            starSystems.save(zebulon);
-        }
-        if (avalon == null) {
-            avalon = new StarSystem("Avalon", 2, 2);
-            List<Planet> avalonPlanets = new ArrayList<>();
-            avalonPlanets.add(planets.findFirstByName("Avalon I"));
-            avalonPlanets.add(planets.findFirstByName("Avalon II"));
-            avalon.setPlanets(avalonPlanets);
-            starSystems.save(avalon);
-        }
+        List<SpaceTunnel> spaceTunnels = tunnels.findByFirstSystem(starSystem);
+        spaceTunnels.addAll(tunnels.findBySecondSystem(starSystem));
+        return new StarSystemInfoWrapper(starSystem, shipList, spaceTunnels);
     }
 
     public void initializeTunnels () {
@@ -334,11 +301,27 @@ public class SimplicityRestController {
 
     @RequestMapping(path = "/enter-tunnel.json", method = RequestMethod.POST)
     public Response enterTunnel (@RequestBody IdRequestWrapper wrapper) {
-        Integer gameId = wrapper.getGameId();
-        Integer playerId = wrapper.getPlayerId();
         Integer shipId = wrapper.getShipId();
+        Integer destinationId = wrapper.getSystemId();
         Integer tunnelId = wrapper.getTunnelId();
-        return null;
+        SpaceTunnel tunnel = tunnels.findOne(tunnelId);
+        if (tunnel == null) {
+            throw new AssertionError("Tunnel cannot be null");
+        }
+        StarSystem destination = starSystems.findOne(destinationId);
+        if (destination == null) {
+            throw new AssertionError("Destination cannot be null");
+        }
+        Starship ship = ships.findOne(shipId);
+        if (ship == null) {
+            throw new AssertionError("Ship cannot be null");
+        }
+
+        ship.setStarSystem(destination);
+        ship.setTurnsToDestination(tunnel.getLength());
+        ships.save(ship);
+
+        return new Response(true);
     }
 
     @RequestMapping(path = "/change-output.json", method = RequestMethod.POST)
@@ -369,6 +352,110 @@ public class SimplicityRestController {
 
     @RequestMapping(path = "/process-turn.json", method = RequestMethod.POST)
     public TurnInfoWrapper processTurn () {
+        Iterable<Starship> shipList = ships.findAll();
+        for (Starship ship : shipList) {
+            ship.moveToDestination();
+            ships.save(ship);
+        }
+        System.out.println("!!Alert!!: We are advancing ALL ships. This is OK for now because we only have one game.");
+        System.out.println("This will need to be fixed by using the game object and repo.");
         return new TurnInfoWrapper(5, 10);
+    }
+
+    public void initializeSystemInfo () {
+        if (!initialized) {
+            if (starSystems == null || ships == null || tunnels == null || planets == null) {
+                throw new AssertionError("One of the repos is null");
+            }
+            initializePlanets();
+            initializeSystems();
+            initializeTunnels();
+            initializeShips();
+            initialized = true;
+        }
+    }
+
+    public void initializePlanets () {
+        Planet zebulon1 = planets.findFirstByName("Zebulon I");
+        Planet zebulon2 = planets.findFirstByName("Zebulon II");
+        if (zebulon1 == null) {
+            zebulon1 = new Planet("Zebulon I", 10, "zebulon");
+            planets.save(zebulon1);
+        }
+        if (zebulon2 == null) {
+            zebulon2 = new Planet("Zebulon II", 8, "earth");
+            planets.save(zebulon2);
+        }
+        Planet avalon1 = planets.findFirstByName("Avalon I");
+        Planet avalon2 = planets.findFirstByName("Avalon II");
+        if (avalon1 == null) {
+            avalon1 = new Planet("Avalon I", 12, "alpha_centauri");
+            planets.save(avalon1);
+        }
+        if (avalon2 == null) {
+            avalon2 = new Planet("Avalon II", 6, "bleh");
+            planets.save(avalon2);
+        }
+    }
+
+    public void initializeSystems () {
+        StarSystem zebulon = starSystems.findFirstByName("Zebulon");
+        StarSystem avalon = starSystems.findFirstByName("Avalon");
+        if (zebulon == null) {
+            zebulon = new StarSystem("Zebulon", 0, 5);
+            List<Planet> zebulonPlanets = new ArrayList<>();
+            zebulonPlanets.add(planets.findFirstByName("Zebulon I"));
+            zebulonPlanets.add(planets.findFirstByName("Zebulon II"));
+            zebulon.setPlanets(zebulonPlanets);
+            starSystems.save(zebulon);
+        }
+        if (avalon == null) {
+            avalon = new StarSystem("Avalon", 2, 2);
+            List<Planet> avalonPlanets = new ArrayList<>();
+            avalonPlanets.add(planets.findFirstByName("Avalon I"));
+            avalonPlanets.add(planets.findFirstByName("Avalon II"));
+            avalon.setPlanets(avalonPlanets);
+            starSystems.save(avalon);
+        }
+    }
+
+    public void initializeShips () {
+        Starship ship = ships.findFirstByName("P2 Gate Defender");
+        StarSystem p2gate = starSystems.findFirstByName("P2 Gate");
+        if (p2gate == null) {
+            throw new AssertionError("It's null");
+        }
+        if (ship == null) {
+            ship = new Starship(p2gate, ShipChassis.DESTROYER, "P2 Gate Defender", "default");
+            ships.save(ship);
+        }
+    }
+
+    //In order to get intellij to think these functions are "getting called"
+    private void makeFunctionsBlack () {
+        processTurn();
+        returnCombatResult();
+        changeOutput(null);
+        changeResearch(null);
+        enterTunnel(null);
+        updateProductionQueue();
+        scrapShip(null);
+        colonizePlanet(null);
+        simpleInfo(null);
+        researchInfo(null);
+        planetsInfo(null);
+        getUsers();
+        getMyUser(null);
+        changeUsersLobby(null, null);
+        shipsInfo(null);
+        diplomacyInfo(null);
+        processAttack(null);
+        shipyardInfo(null);
+        endTurn();
+        ssgInfo(null);
+        systemInfo( null);
+        combatInfo();
+        registration(null);
+        newEmptyGame();
     }
 }

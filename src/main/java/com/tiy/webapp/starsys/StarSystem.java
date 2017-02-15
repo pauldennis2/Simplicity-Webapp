@@ -32,6 +32,8 @@ public class StarSystem {
     public static final String[] ROMAN_NUMERALS = {"I", "II", "III", "IV", "V"};
     public static final int DEFAULT_PLANET_SIZE = 10;
 
+    public static final int NUM_PLANET_IMAGES = 10;
+
     public StarSystem () {
 
     }
@@ -50,11 +52,16 @@ public class StarSystem {
         this.gridCoordY = gridCoordY;
         //decide how many planets to create, 0-3
         int numPlanets = random.nextInt(MAX_PLANETS);
+        int imageStringNum;
         for (int index = 0; index < numPlanets; index++) {
+            imageStringNum = random.nextInt(NUM_PLANET_IMAGES) + 1;
             int size = random.nextInt(3);
-            planets.add(new Planet(name + " " + ROMAN_NUMERALS[index], DEFAULT_PLANET_SIZE + size, "default"));
+            planets.add(new Planet(name + " " + ROMAN_NUMERALS[index],
+                    DEFAULT_PLANET_SIZE + size, "planet" + imageStringNum));
         }
     }
+
+
 
 
     public Integer getId() {

@@ -12,4 +12,6 @@ import java.util.List;
 public interface TunnelRepo extends CrudRepository<SpaceTunnel, Integer> {
     SpaceTunnel findFirstByName (String name);
     //List<SpaceTunnel> findByFirstSystemOrSecondSystem (StarSystem system);
+    List<SpaceTunnel> findByFirstSystem (StarSystem starSystem);
+    List<SpaceTunnel> findBySecondSystem (StarSystem starSystem);
 }

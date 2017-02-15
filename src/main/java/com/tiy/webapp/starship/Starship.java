@@ -23,7 +23,7 @@ public class Starship {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     Integer damage;
 
     @Column(nullable = false)
@@ -32,34 +32,34 @@ public class Starship {
     @Column(nullable = false)
     private Integer maxHealth;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Integer turnsToDestination;
 
     @Column(nullable = false)
     private Boolean isDestroyed;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Integer maxDamageAbsorb;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Integer shieldHealth;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Integer maxShieldHealth;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Integer regenRate;
 
-    @Column (nullable = false)
+    @Column (nullable = true)
     private Integer currentReservePower;
 
-    @Column (nullable = false)
+    @Column (nullable = true)
     private Integer maxReservePower;
 
-    @Column (nullable = false)
+    @Column (nullable = true)
     private Integer powerPerTurn;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Boolean shieldsUp;
 
     @Column (nullable = false)
@@ -68,7 +68,7 @@ public class Starship {
     @Column (nullable = false)
     private Boolean isComplete;
 
-    @Column (nullable = false)
+    @Column (nullable = true)
     private Integer productionRemaining;
 
     private String imageString;
@@ -137,9 +137,11 @@ public class Starship {
     }
 
     public void moveToDestination () {
+        System.out.println("turns to destination before = " + turnsToDestination);
         if (turnsToDestination > 0) {
             turnsToDestination--;
         }
+        System.out.println("turns to destination after = " + turnsToDestination);
     }
 
     public void takeDamage (int damage) {

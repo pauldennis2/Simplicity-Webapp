@@ -25,6 +25,9 @@ public class Game {
     @OneToOne
     private StarSystemGraph starSystemGraph;
 
+    @Column (nullable = false)
+    private Integer turnNumber;
+
     public Game () {
 
     }
@@ -33,6 +36,7 @@ public class Game {
         this.name = name;
         this.players = players;
         this.starSystemGraph = starSystemGraph;
+        turnNumber = 0;
     }
 
     public Integer getId() {
@@ -65,5 +69,13 @@ public class Game {
 
     public void setStarSystemGraph(StarSystemGraph starSystemGraph) {
         this.starSystemGraph = starSystemGraph;
+    }
+
+    public Integer getTurnNumber() {
+        return turnNumber;
+    }
+
+    public void setTurnNumber(Integer turnNumber) {
+        this.turnNumber = turnNumber;
     }
 }
