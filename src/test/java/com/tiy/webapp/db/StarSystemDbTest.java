@@ -45,7 +45,7 @@ public class StarSystemDbTest {
         System.out.println("Setup");
         testSystem = new StarSystem("Beetlejuice", 4, 5);
         systems.save(testSystem);
-        destroyer = new Starship(testSystem, ShipChassis.DESTROYER, "Test", null);
+        destroyer = new Starship(testSystem, ShipChassis.DESTROYER, "Test", null, null);
         shipId = ships.save(destroyer).getId();
 
         testSystem2 = new StarSystem("Omega", 2, 2);

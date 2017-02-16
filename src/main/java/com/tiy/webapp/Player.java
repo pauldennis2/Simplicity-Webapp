@@ -27,25 +27,33 @@ public class Player {
             orphanRemoval = true)
     private List<Starship> ships;
 
-    @Column
-    private Integer totalResearch;
-
-    @Column(nullable = false)
+    @Column (nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column (nullable = false)
     private AlienRace race;
+
+    @Column (nullable = false)
+    private Integer productionPoolTotal;
+
+    @Column
+    private Integer researchPoolTotal;
+
+    @OneToOne
+    private StarSystem homeSystem;
 
     public Player () {
 
     }
 
-    public Player(String name, AlienRace alienRace) {
+    public Player(String name, AlienRace alienRace, StarSystem homeSystem) {
         planets = new ArrayList<>();
         ships = new ArrayList<>();
-        totalResearch = 0;
         this.name = name;
         this.race = alienRace;
+        this.homeSystem = homeSystem;
+        productionPoolTotal = 0;
+        researchPoolTotal = 0;
     }
 
     public void addShip (Starship starship) {
@@ -53,31 +61,7 @@ public class Player {
     }
 
     public void addPlanet (Planet planet) {
-        /*if (planet.getOwner().equals(this)) {
-            planets.add(planet);
-        } else {
-            throw new AssertionError("Attempted to add a planet I don't own.");
-        }*/
-        throw new AssertionError("Fix");
-    }
-
-    public void doTurn () {
-        /*int production = 0;
-        int research = 0;
-        for (Planet planet : planets) {
-            production += planet.produceProduction();
-            research += planet.produceResearch();
-            planet.growPopulation();
-        }
-        System.out.println("Adding " + research + " research to pool.");
-        totalResearch += research;
-        System.out.println("Adding " + production + " production to " + shipyard.getName() + " Shipyard.");
-        shipyard.addProductionToCurrentProject(production);
-        if (totalResearch > tech.getResearchCost()) {
-            tech.setComplete(true);
-        }*/
-        throw new AssertionError("Fix");
-
+        planets.add(planet);
     }
 
     public void moveShips () {
@@ -111,14 +95,6 @@ public class Player {
         this.ships = ships;
     }
 
-    public int getTotalResearch() {
-        return totalResearch;
-    }
-
-    public void setTotalResearch(int totalResearch) {
-        this.totalResearch = totalResearch;
-    }
-
     public void setName(String name) {
         this.name = name;
     }
@@ -131,9 +107,6 @@ public class Player {
         this.id = id;
     }
 
-    public void setTotalResearch(Integer totalResearch) {
-        this.totalResearch = totalResearch;
-    }
 
     public AlienRace getRace() {
         return race;
@@ -142,4 +115,30 @@ public class Player {
     public void setRace(AlienRace race) {
         this.race = race;
     }
+
+    public Integer getProductionPoolTotal() {
+        return productionPoolTotal;
+    }
+
+    public void setProductionPoolTotal(Integer productionPoolTotal) {
+        this.productionPoolTotal = productionPoolTotal;
+    }
+
+    public Integer getResearchPoolTotal() {
+        return researchPoolTotal;
+    }
+
+    public void setResearchPoolTotal(Integer researchPoolTotal) {
+        this.researchPoolTotal = researchPoolTotal;
+    }
+
+    public StarSystem getHomeSystem() {
+        return homeSystem;
+    }
+
+    public void setHomeSystem(StarSystem homeSystem) {
+        this.homeSystem = homeSystem;
+    }
+
+
 }

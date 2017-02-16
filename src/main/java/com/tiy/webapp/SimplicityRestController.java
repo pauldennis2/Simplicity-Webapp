@@ -46,6 +46,11 @@ public class SimplicityRestController {
     @Autowired
     UserRepo users;
 
+    @Autowired
+    PlayerRepo players;
+
+    public static final int NEW_PLANET_POP = 2;
+
 
     @RequestMapping(path = "/users.json", method = RequestMethod.GET)
     public LobbyUsersWrapper getUsers () {
@@ -71,18 +76,6 @@ public class SimplicityRestController {
         return new Response (true);
     }
 
-    /*@RequestMapping(path = "/user-login.json", method = RequestMethod.POST)
-    public Response login (@RequestBody User user) {
-        User retrievedUser = users.findFirstByEmail(user.getEmail());
-        if (retrievedUser != null) {
-            if (retrievedUser.getPassword().equals(user.getPassword())) {
-                usersInSession.add(retrievedUser);
-                return new Response(true);
-            }
-        }
-        return new Response(false);
-    }*/
-
     @RequestMapping(path = "/user-registration.json", method = RequestMethod.POST)
     public Response registration (@RequestBody User user) {
         if (user != null) {
@@ -92,8 +85,10 @@ public class SimplicityRestController {
         return new Response(false);
     }
 
+
+
     @RequestMapping(path = "/new-empty-game.json", method = RequestMethod.POST)
-    public Response newEmptyGame (@RequestBody IdRequestWrapper wrapper) {
+    public Response newEmptyGame (@RequestBody IdRequestWrapper wrapper, HttpSession session) {
         Integer raceId = wrapper.getRaceId();
         AlienRace race;
         switch (raceId) {
@@ -112,82 +107,35 @@ public class SimplicityRestController {
             default:
                 throw new AssertionError("Race id is bad");
         }
-        Player player = new Player("Default Leader", race);
 
-        List<Player> players = new ArrayList<>();
-        players.add(player);
         double d = Math.random() * Math.PI + 239 * Math.random();
-
-
 
         StarSystemGraph ssgraph = new StarSystemGraph("4p_med_ring_map.txt");
         StarSystem homeSystem = ssgraph.findByName("P" + (1 + raceId) + " Home");
+
+        Player player = new Player("Default Leader", race, homeSystem);
+
+        List<Player> players = new ArrayList<>();
+        players.add(player);
+
         Planet homePlanet = homeSystem.getPlanets().get(0);
         homePlanet.setOwnerRaceNum(raceId);
         homePlanet.setPopulation(8);
+        player.addPlanet(homePlanet);
         ssgraph.setName("Map " + d);
         String name = "Game " + d;
-        player.addShip(new Starship( homeSystem, ShipChassis.FIGHTER, "Fighter", "default"));
+        player.addShip(new Starship(homeSystem, ShipChassis.FIGHTER, "Fighter", "assets/ships/destroyerblue.png", raceId));
         Game game = new Game(name, players, ssgraph);
         games.save(game);
-
+        session.setAttribute("gameId", game.getId());
+        session.setAttribute("playerId", player.getId());
         return new Response(true, game.getId());
     }
 
-    /*boolean ssgInit = false;
-    StarSystemGraphWrapper ssg;
-    @RequestMapping(path = "/ssg-main-info.json", method = RequestMethod.POST)
-    public StarSystemGraphWrapper ssgMainInfo (@RequestBody IdRequestWrapper wrapper) {
-        Integer gameId = wrapper.getGameId();
-        Integer playerId = wrapper.getPlayerId();
-        if (!ssgInit) {
-            initializeSsg();
-            ssgInit = true;
-        }
-        return ssg;
-    }*/
-
     @RequestMapping(path = "/ssg-info.json", method = RequestMethod.POST)
-    public StarSystemGraph ssgInfo (@RequestBody IdRequestWrapper wrapper) {
-        StarSystemGraph deltaQuadrant = ssGraphs.findFirstByName("Delta Quadrant");
-        if (deltaQuadrant == null) {
-            deltaQuadrant = new StarSystemGraph("4p_med_ring_map.txt");
-            deltaQuadrant.setName("Delta Quadrant");
-            ssGraphs.save(deltaQuadrant);
-        }
-        return deltaQuadrant;
-    }
-
-    @RequestMapping(path = "/system-info.json", method = RequestMethod.POST)
-    public StarSystemInfoWrapper systemInfo (@RequestBody IdRequestWrapper wrapper) {
-        initializeSystemInfo();
-        //Integer gameId = wrapper.getGameId();
-        //Integer playerId = wrapper.getPlayerId();
-        //Integer systemId = wrapper.getSystemId();
-        /*StarSystem hardCodedSystem = new StarSystem();
-        List<SpaceTunnel> tunnels = new ArrayList<>();
-        tunnels.add(new SpaceTunnel());
-        tunnels.add(new SpaceTunnel());
-        List<Planet> planets = new ArrayList<>();
-        planets.add(new Planet("Awesome I", 10, "earth"));
-        planets.add(new Planet("Awesome II", 8, "zebulon"));
-        hardCodedSystem.setPlanets(planets);
-        List<Starship> ships = new ArrayList<>();
-        ships.add(new Starship(null, ShipChassis.DESTROYER, "Enterprise"));
-        ships.add(new Starship(null, ShipChassis.FIGHTER, "Voyager"));
-        return new StarSystemInfoWrapper(hardCodedSystem, ships, null);*/
-        /*User user = (User) session.getAttribute("user");
-        if (user == null) {
-            //throw new AssertionError("Must be logged in to view content");
-        }*/
-        StarSystem zebulon = starSystems.findFirstByName("Zebulon");
-        //List<SpaceTunnel> zebulonTunnels = tunnels.findByFirstSystemOrSecondSystem(zebulon);
-        List<SpaceTunnel> zebulonTunnels = new ArrayList<>();
-        zebulonTunnels.add(tunnels.findFirstByName("Avalon - Zebulon"));
-        List<Starship> ships = new ArrayList<>();
-        ships.add(new Starship(null, ShipChassis.DESTROYER, "Enterprise", "default"));
-        ships.add(new Starship(null, ShipChassis.FIGHTER, "Voyager", "default"));
-        return new StarSystemInfoWrapper(zebulon, ships, zebulonTunnels);
+    public StarSystemGraph ssgInfo (HttpSession session) {
+        Integer gameId = (Integer) session.getAttribute("gameId");
+        return games.findOne(gameId).getStarSystemGraph();
     }
 
     @RequestMapping(path = "/specific-system-info.json", method = RequestMethod.POST)
@@ -205,36 +153,9 @@ public class SimplicityRestController {
                 }
             }
         }
-        Random random = new Random();
-        for (Planet planet : starSystem.getPlanets()) {
-            if (random.nextBoolean()) {
-                planet.setOwnerRaceNum(-1);
-            } else {
-                planet.setOwnerRaceNum(random.nextInt(4));
-            }
-            //todo fix to actually set correctly
-        }
         List<SpaceTunnel> spaceTunnels = tunnels.findByFirstSystem(starSystem);
         spaceTunnels.addAll(tunnels.findBySecondSystem(starSystem));
         return new StarSystemInfoWrapper(starSystem, shipList, spaceTunnels);
-    }
-
-    public void initializeTunnels () {
-        StarSystem zebulon = starSystems.findFirstByName("Zebulon");
-        StarSystem avalon = starSystems.findFirstByName("Avalon");
-        SpaceTunnel avazeb = tunnels.findFirstByName("Avalon - Zebulon");
-        if (avazeb == null) {
-            avazeb = new SpaceTunnel(2, avalon, zebulon);
-            tunnels.save(avazeb);
-        }
-    }
-
-    @RequestMapping(path = "/simple-system-info.json", method = RequestMethod.POST)
-    public StarSystemTemp simpleInfo (@RequestBody IdRequestWrapper wrapper) {
-        List<Ship> ships = new ArrayList<>();
-        ships.add(new Ship("Enterprise", 300, 300, null, null));
-        ships.add(new Ship("Voyager", 180, 180, null, null));
-        return new StarSystemTemp(2, 2, ships);
     }
 
     @RequestMapping(path = "/research-info.json", method = RequestMethod.POST)
@@ -264,27 +185,9 @@ public class SimplicityRestController {
     }
 
     @RequestMapping(path = "/ships-info.json", method = RequestMethod.POST)
-    public List<Ship> shipsInfo (@RequestBody IdRequestWrapper wrapper) {
-        Integer gameId = wrapper.getGameId();
-        Integer playerId = wrapper.getPlayerId();
-
-        List<Ship> hardCodedList = new ArrayList<>();
-        hardCodedList.add(new Ship("Defiant", 25, 30, "assets/ships/fighterblue.png", "Zebulon System"));
-        hardCodedList.add(new Ship("Voyager", 100, 100, "assets/ships/destroyerblue.png", "Zebulon System"));
-        hardCodedList.add(new Ship("Aegis", 30, 30, "assets/ships/fighterblue.png", "Terran System"));
-
-        if (false) {
-            hardCodedList.add(new Ship("Defiant", 25, 30, "assets/ships/fighterblue.png", "Zebulon System"));
-            hardCodedList.add(new Ship("Voyager", 100, 100, "assets/ships/destroyerblue.png", "Zebulon System"));
-            hardCodedList.add(new Ship("Aegis", 30, 30, "assets/ships/fighterblue.png", "Terran System"));
-            hardCodedList.add(new Ship("Defiant", 25, 30, "assets/ships/fighterblue.png", "Zebulon System"));
-            hardCodedList.add(new Ship("Voyager", 100, 100, "assets/ships/destroyerblue.png", "Zebulon System"));
-            hardCodedList.add(new Ship("Aegis", 30, 30, "assets/ships/fighterblue.png", "Terran System"));
-            hardCodedList.add(new Ship("Defiant", 25, 30, "assets/ships/fighterblue.png", "Zebulon System"));
-            hardCodedList.add(new Ship("Voyager", 100, 100, "assets/ships/destroyerblue.png", "Zebulon System"));
-            hardCodedList.add(new Ship("Aegis", 30, 30, "assets/ships/fighterblue.png", "Terran System"));
-        }
-        return hardCodedList;
+    public List<Starship> shipsInfo (HttpSession session) {
+        Integer playerId = (Integer) session.getAttribute("playerId");
+        return players.findOne(playerId).getShips();
     }
 
     @RequestMapping(path = "/process-attack.json", method = RequestMethod.POST)
@@ -294,21 +197,9 @@ public class SimplicityRestController {
     }
 
     @RequestMapping(path = "/planets-info.json", method = RequestMethod.POST)
-    public List<Planet> planetsInfo (@RequestBody IdRequestWrapper wrapper) {
-        Integer gameId = wrapper.getGameId();
-        Integer playerId = wrapper.getPlayerId();
-        List<Planet> hardCodedList = new ArrayList<>();
-        hardCodedList.add(new Planet("Earth", 12, "assets/planets/earth.png"));
-        hardCodedList.add(new Planet("Zebulon IV", 5, "assets/planets/zebulon.png"));
-        hardCodedList.add(new Planet("Alpha Centauri III", 3, "assets/planets/alpha_centauri.png"));
-        return hardCodedList;
-    }
-
-    @RequestMapping(path = "/shipyard-info.json", method = RequestMethod.POST)
-    public Response shipyardInfo (@RequestBody IdRequestWrapper wrapper) {
-        Integer gameId = wrapper.getGameId();
-        Integer playerId = wrapper.getPlayerId();
-        return null;
+    public List<Planet> planetsInfo (@RequestBody IdRequestWrapper wrapper, HttpSession session) {
+        Integer playerId = (Integer) session.getAttribute("playerId");
+        return players.findOne(playerId).getPlanets();
     }
 
     @RequestMapping(path = "/end-turn.json", method = RequestMethod.POST)
@@ -317,24 +208,45 @@ public class SimplicityRestController {
     }
 
     @RequestMapping(path = "/colonize-planet.json", method = RequestMethod.POST)
-    public Response colonizePlanet (@RequestBody IdRequestWrapper wrapper) {
-        Integer gameId = wrapper.getGameId();
-        Integer playerId = wrapper.getPlayerId();
+    public Response colonizePlanet (@RequestBody IdRequestWrapper wrapper, HttpSession session) {
         Integer shipId = wrapper.getShipId();
         Integer planetId = wrapper.getPlanetId();
-        return null;
+        Integer playerId = (Integer) session.getAttribute("playerId");
+
+        Starship ship = ships.findOne(shipId);
+        Planet planet = planets.findOne(planetId);
+        Player player = players.findOne(playerId);
+
+        Integer raceId = getRaceId(player.getRace());
+
+        if (ship == null || player == null || planet == null) {
+            throw new AssertionError("one is null");
+        }
+        if (ship.getChassis() != ShipChassis.COLONIZER) {
+            throw new AssertionError("Not a colonizer");
+        }
+        if (planet.getOwnerRaceNum() > -1) {
+            throw new AssertionError("planet already owned");
+        }
+        planet.setPopulation(NEW_PLANET_POP);
+        planet.setOwnerRaceNum(raceId);
+        player.addPlanet(planet);
+        player.removeShip(ship);
+        ships.delete(ship);
+        players.save(player);
+        return new Response(true);
     }
 
     @RequestMapping(path = "/combat-info.json", method = RequestMethod.POST)
     public CombatInfoWrapper combatInfo () {
         List<Starship> friendShips = new ArrayList<>();
         List<Starship> enemyShips = new ArrayList<>();
-        friendShips.add(new Starship(null, ShipChassis.DESTROYER, "Defiant", "destroyer"));
-        friendShips.add(new Starship(null, ShipChassis.DESTROYER, "Valiant", "destroyer"));
-        enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Tempest", "enemy"));
-        enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Earthquake", "enemy"));
-        enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Hurricane", "enemy"));
-        enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Landslide", "enemy"));
+        friendShips.add(new Starship(null, ShipChassis.DESTROYER, "Defiant", "destroyer", null));
+        friendShips.add(new Starship(null, ShipChassis.DESTROYER, "Valiant", "destroyer", null));
+        enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Tempest", "enemy", null));
+        enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Earthquake", "enemy", null));
+        enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Hurricane", "enemy", null));
+        enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Landslide", "enemy", null));
         return new CombatInfoWrapper(friendShips, enemyShips);
     }
 
@@ -387,9 +299,34 @@ public class SimplicityRestController {
         return null;
     }
 
-    @RequestMapping(path = "/update-production-queue.json", method = RequestMethod.POST)
-    public Response updateProductionQueue () {
+    @RequestMapping(path = "/create-ship.json", method = RequestMethod.POST)
+    public Starship createShip (@RequestBody Starship ship, HttpSession session) {
+        Integer playerId = (Integer) session.getAttribute("playerId");
+        Player player = players.findOne(playerId);
+        Integer raceId = getRaceId(player.getRace());
+        Integer productionAvailable = player.getProductionPoolTotal();
+        if (productionAvailable >= ship.getChassis().getBaseProductionCost()) {
+            player.setProductionPoolTotal(player.getProductionPoolTotal() - ship.getChassis().getBaseProductionCost());
+            Starship createdShip = new Starship(player.getHomeSystem(), ship.getChassis(), ship.getName(), "assets/ships/destroyerblue.png", raceId);
+            player.addShip(createdShip);
+            players.save(player);
+            return createdShip;
+        }
         return null;
+    }
+
+    @RequestMapping(path = "/get-turn-number.json", method = RequestMethod.POST)
+    public Integer getTurnNumber (HttpSession session) {
+        Integer gameId = (Integer) session.getAttribute("gameId");
+        return games.findOne(gameId).getTurnNumber();
+    }
+
+    @RequestMapping(path = "/shipyard-info.json", method = RequestMethod.POST)
+    public ShipyardInfoWrapper shipyardInfo (HttpSession session) {
+        Integer playerId = (Integer) session.getAttribute("playerId");
+        Player player = players.findOne(playerId);
+
+        return new ShipyardInfoWrapper(player.getProductionPoolTotal());
     }
 
     @RequestMapping(path = "/return-combat-result.json", method = RequestMethod.POST)
@@ -398,117 +335,42 @@ public class SimplicityRestController {
     }
 
     @RequestMapping(path = "/process-turn.json", method = RequestMethod.POST)
-    public TurnInfoWrapper processTurn () {
-        Iterable<Starship> shipList = ships.findAll();
-        for (Starship ship : shipList) {
-            ship.moveToDestination();
-            ships.save(ship);
-        }
-        System.out.println("!!Alert!!: We are advancing ALL ships. This is OK for now because we only have one game.");
-        System.out.println("This will need to be fixed by using the game object and repo.");
-        return new TurnInfoWrapper(5, 10);
-    }
-
-    public void initializeSystemInfo () {
-        if (!initialized) {
-            if (starSystems == null || ships == null || tunnels == null || planets == null) {
-                throw new AssertionError("One of the repos is null");
+    public TurnInfoWrapper processTurn (HttpSession session) {
+        Integer gameId = (Integer) session.getAttribute("gameId");
+        Game game = games.findOne(gameId);
+        List<Player> players = game.getPlayers();
+        int productionAmt = 0;
+        int researchAmt = 0;
+        for (Player player : players) {
+            List<Starship> shipList = player.getShips();
+            for (Starship ship : shipList) {
+                ship.moveToDestination();
             }
-            initializePlanets();
-            initializeSystems();
-            initializeTunnels();
-            initializeShips();
-            initialized = true;
+
+            for(Planet planet : player.getPlanets()) {
+                productionAmt += planet.getProductionPct() * planet.getPopulation();
+                researchAmt += planet.getResearchPct() * planet.getPopulation();
+                planet.growPop();
+            }
+            player.setProductionPoolTotal(player.getProductionPoolTotal() + productionAmt);
+            player.setResearchPoolTotal(player.getResearchPoolTotal() + researchAmt);
         }
+        games.save(game);
+
+        return new TurnInfoWrapper(researchAmt, productionAmt);
     }
 
-    public void initializePlanets () {
-        Planet zebulon1 = planets.findFirstByName("Zebulon I");
-        Planet zebulon2 = planets.findFirstByName("Zebulon II");
-        if (zebulon1 == null) {
-            zebulon1 = new Planet("Zebulon I", 10, "zebulon");
-            planets.save(zebulon1);
+    public static Integer getRaceId (AlienRace race) {
+        switch (race) {
+            case KITTY:
+                return 0;
+            case DOGE:
+                return 1;
+            case HORSIE:
+                return 2;
+            case SSSNAKE:
+                return 3;
         }
-        if (zebulon2 == null) {
-            zebulon2 = new Planet("Zebulon II", 8, "earth");
-            planets.save(zebulon2);
-        }
-        Planet avalon1 = planets.findFirstByName("Avalon I");
-        Planet avalon2 = planets.findFirstByName("Avalon II");
-        if (avalon1 == null) {
-            avalon1 = new Planet("Avalon I", 12, "alpha_centauri");
-            planets.save(avalon1);
-        }
-        if (avalon2 == null) {
-            avalon2 = new Planet("Avalon II", 6, "bleh");
-            planets.save(avalon2);
-        }
-    }
-
-    public void initializeSystems () {
-        StarSystem zebulon = starSystems.findFirstByName("Zebulon");
-        StarSystem avalon = starSystems.findFirstByName("Avalon");
-        if (zebulon == null) {
-            zebulon = new StarSystem("Zebulon", 0, 5);
-            List<Planet> zebulonPlanets = new ArrayList<>();
-            zebulonPlanets.add(planets.findFirstByName("Zebulon I"));
-            zebulonPlanets.add(planets.findFirstByName("Zebulon II"));
-            zebulon.setPlanets(zebulonPlanets);
-            starSystems.save(zebulon);
-        }
-        if (avalon == null) {
-            avalon = new StarSystem("Avalon", 2, 2);
-            List<Planet> avalonPlanets = new ArrayList<>();
-            avalonPlanets.add(planets.findFirstByName("Avalon I"));
-            avalonPlanets.add(planets.findFirstByName("Avalon II"));
-            avalon.setPlanets(avalonPlanets);
-            starSystems.save(avalon);
-        }
-    }
-
-    public void initializeShips () {
-        Starship ship = ships.findFirstByName("P2 Gate Defender");
-
-        StarSystem p2gate = starSystems.findFirstByName("P2 Gate");
-        if (p2gate == null) {
-            throw new AssertionError("It's null");
-        }
-        if (ship == null) {
-            ship = new Starship(p2gate, ShipChassis.DESTROYER, "P2 Gate Defender", "default");
-            ships.save(ship);
-        }
-        Starship colonizer = ships.findFirstByName("Colonizer");
-        if (colonizer == null) {
-            colonizer = new Starship(p2gate, ShipChassis.COLONIZER, "Colonizer", "default");
-            ships.save(colonizer);
-        }
-    }
-
-    //In order to get intellij to think these functions are "getting called"
-    private void makeFunctionsBlack () {
-        processTurn();
-        returnCombatResult();
-        changeOutput(null);
-        changeResearch(null);
-        enterTunnel(null);
-        updateProductionQueue();
-        scrapShip(null);
-        colonizePlanet(null);
-        simpleInfo(null);
-        researchInfo(null);
-        planetsInfo(null);
-        getUsers();
-        getMyUser(null);
-        changeUsersLobby(null, null);
-        shipsInfo(null);
-        diplomacyInfo(null);
-        processAttack(null);
-        shipyardInfo(null);
-        endTurn();
-        ssgInfo(null);
-        systemInfo( null);
-        combatInfo();
-        registration(null);
-        newEmptyGame(null);
+        return -1;
     }
 }

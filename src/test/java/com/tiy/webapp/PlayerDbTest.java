@@ -41,7 +41,7 @@ public class PlayerDbTest {
 
     @Test
     public void testPlayersAndShips () {
-        Player player = new Player("Tester", null);
+        Player player = new Player("Tester", null, null);
         players.save(player);
 //        player.get
     }

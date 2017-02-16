@@ -16,24 +16,17 @@
             </div>
             <div class="w600 h120">
                 <h4>{{ship.name}}</h4>
-                Location: {{ship.location}} <br>
+                Location: {{ship.starSystem.name}} <br>
                 Health: {{ship.health}}/{{ship.maxHealth}}
             </div>
         </div>
     </div>
     <div id="shipyardDiv" class="star-bg w400 h560 padding10">
-        <select class="space-bg">
+        Total Production Accumulated: {{totalProduction}}<br>
+        <select class="space-bg" ng-model="shipTypeSelection">
             <option ng-repeat="option in unlockedShips">{{option}}</option>
         </select>
-        <br>
-        <input type="radio" name="group1" value="Top of Queue">Top of Queue<br>
-        <input type="radio" name="group1" value="Bottom of Queue">Bottom of Queue
-        <button type="button" class="space-bg" ng-click="addToQueue()">Add to Queue</button>
-        <br><br>
-        Total Production Accumulated: {{totalProduction}}
-
-        <div ng-repeat="ship in productionQueue">
-
-        </div>
+        <input type="text" class="trans-bg" ng-model="shipName" placeholder="Name your ship.">
+        <button type="button" class="space-bg" ng-click="purchaseShip()">Purchase Ship</button>
     </div>
 </div>

@@ -198,6 +198,10 @@ simplicityApp.controller('planetsController', function($scope, $http) {
                 console.log("Found planets");
                 console.log(response.data);
                 $scope.planets = response.data;
+                for (i = 0; i < $scope.planets.length; i++) {
+                    $scope.planets[i].imageString = "assets/planets/" + $scope.planets[i].imageString + ".png";
+                    console.log($scope.planets[i].imageString);
+                }
             },
 
             function errorCallback (response) {
@@ -209,11 +213,11 @@ simplicityApp.controller('planetsController', function($scope, $http) {
 
 simplicityApp.controller('shipsController', function($scope, $http) {
     console.log("Initializing shipsController");
+
     getShipInfo = function () {
         console.log("Getting ship info");
-        var wrapper = {"gameId": 1, "playerId":2};
         $scope.ships = [];
-        $http.post("/ships-info.json", wrapper)
+        $http.post("/ships-info.json")
         .then(
             function successCallback (response) {
                 console.log("Found ships");
@@ -225,15 +229,78 @@ simplicityApp.controller('shipsController', function($scope, $http) {
                 console.log("No ships");
             });
     };
-    getShipInfo();
+    var chassisNames = [];
+    var chassisCosts = [];
+    getShipyardInfo = function () {
+        console.log("Getting shipyard info");
 
+        $http.post("/shipyard-info.json")
+        .then(
+            function successCallback (response) {
+                console.log("Found info");
+                console.log(response.data);
+                chassisNames = response.data.possibleShips;
+                chassisCosts = response.data.possibleShipCosts;
+                $scope.totalProduction = response.data.productionAvailable;
+                for (i = 0; i < chassisNames.length; i++) {
+                    $scope.unlockedShips[i] = chassisNames[i] + "(" + chassisCosts[i] + ")";
+                }
+            },
+
+            function errorCallback (response) {
+                console.log("Unable to find shipyard data");
+            });
+    }
+
+    createShip = function (starship) {
+        console.log("Attempting to create the following ship:");
+        console.log(starship);
+
+        $http.post("/create-ship.json", starship)
+        .then(
+            function successCallback (response) {
+                console.log("Ship created I guess");
+                $scope.ships.push(response.data);
+            },
+
+            function errorCallback (response) {
+                console.log("Failed to create ship");
+            });
+    }
     $scope.unlockedShips = [];
-    $scope.unlockedShips[0] = "Colonizer";
-    $scope.unlockedShips[1] = "Fighter";
-    $scope.unlockedShips[2] = "Destroyer";
+    getShipInfo();
+    getShipyardInfo();
 
-    $scope.addToQueue = function () {
-        console.log("Aye aye we will totally make that ship for you - NOT!");
+    console.log("****$scope.unlockedShips = ");
+    console.log($scope.unlockedShips);
+
+    $scope.purchaseShip = function () {
+        var newShip = {};
+        var index;
+
+        if ($scope.shipTypeSelection === $scope.unlockedShips[0]) {
+            index = 0;
+        } else if ($scope.shipTypeSelection === $scope.unlockedShips[1]) {
+            index = 1;
+        } else if ($scope.shipTypeSelection === $scope.unlockedShips[2]) {
+            index = 2;
+        } else {
+            console.log("Some kind of error");
+        }
+
+        if ($scope.shipName === "" || $scope.shipName == null) {
+            console.log("No name selected; defaulting to ship type");
+            newShip.name = chassisNames[index];
+        } else {
+            newShip.name = $scope.shipName;
+        }
+
+        if ($scope.totalProduction > chassisCosts[index]) {
+            $scope.totalProduction -= chassisCosts[index];
+            console.log("Producing a " + chassisNames[index]);
+            newShip.chassis = chassisNames[index];
+            createShip(newShip);
+        }
     }
 });
 
@@ -258,23 +325,28 @@ simplicityApp.controller('researchController', function($scope, $http) {
     getResearchInfo();
 });
 
-simplicityApp.controller('mainController', function($scope, $http, $rootScope) {
+simplicityApp.controller('mainController', function($scope, $http) {
     console.log("Initializing mainController");
     $scope.currentTurn = 0;
+
+    getCurrentTurn = function () {
+        $http.post("/get-turn-number.json")
+        .then(
+            function successCallback (response) {
+                $scope.currentTurn = response.data;
+            },
+
+            function errorCallback (response) {
+                console.log("Unable to find turn number");
+            });
+    }
+    getCurrentTurn();
     $scope.advanceTurn = function () {
         console.log("Seasons change... time passes by...");
 
         $http.post("/process-turn.json")
         .then(
             function successCallback (response) {
-                $rootScope.researchAmt = response.data.researchAmt;
-                $rootScope.productionAmt = response.data.productionAmt;
-
-                $rootScope.researchTotal += response.data.researchAmt;
-                $rootScope.productionTotal += response.data.productionAmt;
-
-                console.log("total research = " + $rootScope.researchTotal);
-                console.log("total production = " + $rootScope.productionTotal);
                 $scope.currentTurn++;
             },
 
@@ -456,26 +528,7 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
     var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-canvas-container',
                                       { preload: preload, create: create, update: update });
 
-    getStarSystemInfo = function () {
-        console.log("Getting star system info");
-        var wrapper = {"gameId": 1, "playerId":2};
-
-        //$http.post("/simple-system-info.json", wrapper)
-        $http.post("/system-info.json", wrapper)
-        .then(
-            function successCallback (response) {
-                console.log("Found system info");
-                console.log(response.data);
-                $scope.starSystemInfo = response.data;
-            },
-
-            function errorCallback (response) {
-                console.log("No sys info");
-            });
-    };
-
     getSpecificStarSystemInfo = function (systemId) {
-        console.log("Getting *specific* star system info");
         var wrapper = {"systemId": systemId};
         console.log("For system with id = " + systemId);
         $http.post("/specific-system-info.json", wrapper)
@@ -490,13 +543,26 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
                 console.log("Unable to find system info");
             });
     }
-    console.log("$routeParams.param = " + $routeParams.param);
+
+    colonizePlanet = function (planet, ship) {
+        var wrapper = {"planetId": planet.id, "shipId": ship.id};
+        console.log(wrapper);
+        $http.post("/colonize-planet.json", wrapper)
+        .then(
+            function successCallback (response) {
+                console.log("Colonization successful I guess");
+                console.log(response.data)
+                ship.kill();
+            },
+
+            function errorCallback (response) {
+                console.log("Unable to colonize planet?");
+            });
+    }
+
     if ($routeParams.param != null) {
         getSpecificStarSystemInfo($routeParams.param);
-    } else {
-        getStarSystemInfo();
     }
-    $scope.selected = "Nothing";
     var explosions;
     var wormholes;
     var wormholeAnims = [];
@@ -567,6 +633,7 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
             planets[i].elementName = $scope.starSystemInfo.starSystem.planets[i].name;
             planets[i].size = $scope.starSystemInfo.starSystem.planets[i].size;
             var ownerRaceNum = $scope.starSystemInfo.starSystem.planets[i].ownerRaceNum;
+            planets[i].icon = "";
             switch (ownerRaceNum) {
                 case -1:
                     planets[i].icon = "assets/races/norace_icon.png";
@@ -588,6 +655,7 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
                     planets[i].icon = "assets/races/race4_icon.jpg";
                     break;
             }
+            console.log("planet[" + i + "].icon = " + planets[i].icon);
         }
 
         if (addAnimations) {
@@ -640,6 +708,29 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
             ships[i].maxHealth = $scope.starSystemInfo.ships[i].maxHealth;
             ships[i].shipId = $scope.starSystemInfo.ships[i].id;
             ships[i].type = $scope.starSystemInfo.ships[i].chassis;
+            ships[i].id = $scope.starSystemInfo.ships[i].id;
+            ships[i].icon = "";
+            switch (ownerRaceNum) {
+                case -1:
+                    ships[i].icon = "assets/races/norace_icon.png";
+                    break;
+
+                case 0:
+                    ships[i].icon = "assets/races/race1_icon.jpg";
+                    break;
+
+                case 1:
+                    ships[i].icon = "assets/races/race2_icon.jpg";
+                    break;
+
+                case 2:
+                    ships[i].icon = "assets/races/race3_icon.jpg";
+                    break;
+
+                case 3:
+                    ships[i].icon = "assets/races/race4_icon.jpg";
+                    break;
+            }
         }
     }
 
@@ -656,6 +747,7 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
     $scope.planetSelected = false;
     $scope.shipSelected = false;
     $scope.tunnelSelected = false;
+    
     function listener (sprite) {
         $scope.shipSelected = false;
         $scope.planetSelected = false;
@@ -664,7 +756,7 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
         $scope.selectedElement.name = sprite.elementName;
         if (sprite.shipHealth != null) {
             $scope.shipSelected = true;
-            $scope.selectedElement.icon = "assets/races/race1_icon.jpg";
+            $scope.selectedElement.icon = sprite.icon;
             $scope.selectedElement.health = sprite.shipHealth + "/" + sprite.maxHealth;
         }
         if (sprite.size != null) {
@@ -751,6 +843,7 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
                         console.log("But it's taken");
                     } else {
                         console.log("And it's free!");
+                        colonizePlanet(planet, sprite);
                     }
 
                 } else {
@@ -806,6 +899,7 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
         console.log("EVERYBODY WAS KUNG FU FITING");
     }
 
+    $scope.colonizeToggle = "Colonize Mode: OFF";
     var colonizeModeActive = false;
     var greenLine;
     $scope.colonizeMode = function () {
@@ -815,18 +909,17 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
         if (colonizeModeActive) {
             if (greenLine == null) {
                 colonizeGraphics.lineStyle(5, 0x009933, 1);
-                greenLine = colonizeGraphics.drawCircle(100, 100, 30);
                 for (i = 0; i < planets.length; i++) {
                     if (planets[i].ownerRaceNum == -1) {
                         colonizeGraphics.drawCircle(planetCoordsX[i] + 44, planetCoordsY[i] + 44, 30);
                     }
                 }
             }
-            greenLine.alpha = 1.0;
+            colonizeGraphics.alpha = 1.0;
+            $scope.colonizeToggle = "Colonize Mode: ON";
         } else {
-            if (greenLine != null) {
-                greenLine.alpha = 0.0;
-            }
+            colonizeGraphics.alpha = 0.0;
+            $scope.colonizeToggle = "Colonize Mode: OFF";
         }
     }
 

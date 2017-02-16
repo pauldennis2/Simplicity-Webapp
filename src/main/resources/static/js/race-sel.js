@@ -45,6 +45,7 @@ simplicityRaceSelApp.controller('raceSelController', function($scope, $http) {
             function successCallback (response) {
                 console.log("Successfully started a new game. So sayeth the wise Alaundo");
                 console.log(response.data);
+                window.location.href = "/main.html";
             },
 
             function errorCallback (response) {

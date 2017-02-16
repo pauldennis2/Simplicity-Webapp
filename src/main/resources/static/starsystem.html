@@ -8,10 +8,12 @@
         {{selectedElement.size}}
         {{selectedElement.travelTime}}
     </div>
-    <div id="shipActionDiv" ng-hide="!shipSelected" style="float: right; width: 395px">
+    <div id="alwaysAvailableButtons" style="width: 200px">
         <button class="space-bg" type="button" ng-click="openTunnels()" style="width: 120px">{{tunnelToggle}}</button><br>
+        <button class="space-bg" type="button" ng-click="colonizeMode()" style="width: 120px">{{colonizeToggle}}</button><br>
+    </div>
+    <div id="shipActionDiv" ng-hide="!shipSelected" style="float: right; width: 395px">
         <button class="space-bg" type="button" ng-click="enterCombat()" style="width: 120px">Enter Combat</button> <br>
-        <button class="space-bg" type="button" ng-click="colonizeMode()" style="width: 120px">Colonize</button><br>
         <button class="space-bg" type="button" ng-click="scrapShip()" style="width: 120px">Scrap</button>
     </div>
     <div id="planetActionDiv" ng-hide="!planetSelected" style="float:right; width: 545px">

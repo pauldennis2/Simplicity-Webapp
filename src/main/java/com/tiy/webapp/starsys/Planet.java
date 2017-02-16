@@ -20,23 +20,23 @@ public class Planet {
     @Column(nullable = false)
     private Integer size;
 
-    @Column(nullable = false)
+    @Column (nullable = false)
     private String imageString;
 
-    @Column(nullable = true)
+    @Column (nullable = false)
     private Integer population;
 
-    @Column(nullable = true)
+    @Column (nullable = true)
     private Double researchPct;
 
-    @Column(nullable = true)
+    @Column (nullable = true)
     private Double productionPct;
 
-    @Column(nullable = true)
+    @Column (nullable = true)
     private Integer turnsToGrowth;
 
-    @Column
-    private int ownerRaceNum;
+    @Column (nullable = false)
+    private Integer ownerRaceNum;
 
     public static final double BASE_GROWTH_RATE = 1.05; //Planets grow by 5% per turn
 
@@ -48,6 +48,46 @@ public class Planet {
         this.size = size;
         this.name = name;
         this.imageString = imageString;
+        productionPct = 0.9;
+        researchPct = 0.1;
+        population = 0;
+        ownerRaceNum = -1;
+    }
+
+    @Transient
+    public void growPop () {
+        if (population > 0) {
+            if (turnsToGrowth == null) {
+                turnsToGrowth = calculateTurnsToGrowth();
+            }
+            if (turnsToGrowth > 1) {
+                turnsToGrowth--;
+            } else {
+                population++;
+                turnsToGrowth = calculateTurnsToGrowth();
+            }
+        }
+    }
+
+    @Transient
+    private int calculateTurnsToGrowth () {
+        if (population > 0 && population < size) {
+            double pop = (double) population;
+            int numTurns = 0;
+            while (pop < population + 1) {
+                pop *= BASE_GROWTH_RATE;
+                numTurns++;
+            }
+            return numTurns;
+        } else {
+            return -1;
+        }
+    }
+
+
+    public void setPopulation(Integer population) {
+        this.population = population;
+        turnsToGrowth = calculateTurnsToGrowth();
     }
 
     /*public void setPopulation (int pop) {
@@ -191,9 +231,6 @@ public class Planet {
         return population;
     }
 
-    public void setPopulation(Integer population) {
-        this.population = population;
-    }
 
     public Double getResearchPct() {
         return researchPct;
@@ -224,6 +261,18 @@ public class Planet {
     }
 
     public void setOwnerRaceNum(int ownerRaceNum) {
+        this.ownerRaceNum = ownerRaceNum;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public void setOwnerRaceNum(Integer ownerRaceNum) {
         this.ownerRaceNum = ownerRaceNum;
     }
 }

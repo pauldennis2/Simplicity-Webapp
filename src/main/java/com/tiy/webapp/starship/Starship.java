@@ -66,17 +66,15 @@ public class Starship {
     ShipChassis chassis;
 
     @Column (nullable = false)
-    private Boolean isComplete;
-
-    @Column (nullable = true)
-    private Integer productionRemaining;
-
     private String imageString;
+
+    @Column (nullable = false)
+    private Integer ownerRaceNum;
 
     public Starship() {
     }
 
-    public Starship(StarSystem starSystem, ShipChassis chassis, String name, String imageString) {
+    public Starship(StarSystem starSystem, ShipChassis chassis, String name, String imageString, Integer ownerRaceNum) {
         this.name = name;
         this.starSystem = starSystem;
         isDestroyed = false;
@@ -100,9 +98,7 @@ public class Starship {
             currentReservePower = maxReservePower;
         }
         this.imageString = imageString;
-
-        isComplete = true;
-        productionRemaining = 0;
+        this.ownerRaceNum = ownerRaceNum;
     }
 
     public void startTurn () {
@@ -141,11 +137,11 @@ public class Starship {
     }
 
     public void moveToDestination () {
-        System.out.println("turns to destination before = " + turnsToDestination);
-        if (turnsToDestination > 0) {
-            turnsToDestination--;
+        if (turnsToDestination != null) {
+            if (turnsToDestination > 0) {
+                turnsToDestination--;
+            }
         }
-        System.out.println("turns to destination after = " + turnsToDestination);
     }
 
     public void takeDamage (int damage) {
@@ -330,27 +326,19 @@ public class Starship {
         this.chassis = chassis;
     }
 
-    public Boolean getComplete() {
-        return isComplete;
-    }
-
-    public void setComplete(Boolean complete) {
-        isComplete = complete;
-    }
-
-    public Integer getProductionRemaining() {
-        return productionRemaining;
-    }
-
-    public void setProductionRemaining(Integer productionRemaining) {
-        this.productionRemaining = productionRemaining;
-    }
-
     public String getImageString() {
         return imageString;
     }
 
     public void setImageString(String imageString) {
         this.imageString = imageString;
+    }
+
+    public Integer getOwnerRaceNum() {
+        return ownerRaceNum;
+    }
+
+    public void setOwnerRaceNum(Integer ownerRaceNum) {
+        this.ownerRaceNum = ownerRaceNum;
     }
 }
