@@ -85,8 +85,6 @@ public class SimplicityRestController {
         return new Response(false);
     }
 
-
-
     @RequestMapping(path = "/new-empty-game.json", method = RequestMethod.POST)
     public Response newEmptyGame (@RequestBody IdRequestWrapper wrapper, HttpSession session) {
         Integer raceId = wrapper.getRaceId();
@@ -124,7 +122,8 @@ public class SimplicityRestController {
         player.addPlanet(homePlanet);
         ssgraph.setName("Map " + d);
         String name = "Game " + d;
-        player.addShip(new Starship(homeSystem, ShipChassis.FIGHTER, "Fighter", "assets/ships/destroyerblue.png", raceId));
+        String imageString = "assets/ships/fighter/fighter_" + getColorFromRace(race) + ".png";
+        player.addShip(new Starship(homeSystem, ShipChassis.FIGHTER, "Fighter", imageString, raceId));
         Game game = new Game(name, players, ssgraph);
         games.save(game);
         session.setAttribute("gameId", game.getId());
@@ -241,12 +240,12 @@ public class SimplicityRestController {
     public CombatInfoWrapper combatInfo () {
         List<Starship> friendShips = new ArrayList<>();
         List<Starship> enemyShips = new ArrayList<>();
-        friendShips.add(new Starship(null, ShipChassis.DESTROYER, "Defiant", "destroyer", null));
-        friendShips.add(new Starship(null, ShipChassis.DESTROYER, "Valiant", "destroyer", null));
-        enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Tempest", "enemy", null));
-        enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Earthquake", "enemy", null));
-        enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Hurricane", "enemy", null));
-        enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Landslide", "enemy", null));
+        friendShips.add(new Starship(null, ShipChassis.DESTROYER, "Defiant", "gold-destroyer", null));
+        friendShips.add(new Starship(null, ShipChassis.DESTROYER, "Valiant", "gold-destroyer", null));
+        enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Tempest", "purple-fighter", null));
+        enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Earthquake", "purple-fighter", null));
+        enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Hurricane", "purple-fighter", null));
+        enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Landslide", "purple-fighter", null));
         return new CombatInfoWrapper(friendShips, enemyShips);
     }
 
@@ -300,14 +299,18 @@ public class SimplicityRestController {
     }
 
     @RequestMapping(path = "/create-ship.json", method = RequestMethod.POST)
-    public Starship createShip (@RequestBody Starship ship, HttpSession session) {
+    public Starship createShip (@RequestBody Starship shipWrapper, HttpSession session) {
         Integer playerId = (Integer) session.getAttribute("playerId");
         Player player = players.findOne(playerId);
         Integer raceId = getRaceId(player.getRace());
         Integer productionAvailable = player.getProductionPoolTotal();
-        if (productionAvailable >= ship.getChassis().getBaseProductionCost()) {
-            player.setProductionPoolTotal(player.getProductionPoolTotal() - ship.getChassis().getBaseProductionCost());
-            Starship createdShip = new Starship(player.getHomeSystem(), ship.getChassis(), ship.getName(), "assets/ships/destroyerblue.png", raceId);
+        if (productionAvailable >= shipWrapper.getChassis().getBaseProductionCost()) {
+            player.setProductionPoolTotal(player.getProductionPoolTotal() - shipWrapper.getChassis().getBaseProductionCost());
+            ShipChassis chassis = shipWrapper.getChassis();
+            String imageString = "assets/ships/" + chassis.toString().toLowerCase() + "/" + chassis.toString().toLowerCase() + "_";
+            imageString += getColorFromRaceId(raceId) + ".png";
+            Starship createdShip = new Starship(player.getHomeSystem(), shipWrapper.getChassis(), shipWrapper.getName(),
+                    imageString, raceId);
             player.addShip(createdShip);
             players.save(player);
             return createdShip;
@@ -372,5 +375,23 @@ public class SimplicityRestController {
                 return 3;
         }
         return -1;
+    }
+
+    public static String getColorFromRaceId (Integer raceId) {
+        switch (raceId) {
+            case 0:
+                return "ltblue";
+            case 1:
+                return "red";
+            case 2:
+                return "gold";
+            case 3:
+                return "green";
+        }
+        return null;
+    }
+
+    public static String getColorFromRace (AlienRace race) {
+        return getColorFromRaceId(getRaceId(race));
     }
 }

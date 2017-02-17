@@ -52,6 +52,10 @@ simplicityApp.config(function($routeProvider) {
 });
 
 simplicityApp.controller('ssgViewController', function($scope, $http) {
+    $scope.helpMode = false;
+    $scope.getHelp = function () {
+        $scope.helpMode = !$scope.helpMode;
+    }
     console.log("Initializing ssgViewController");
     var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-canvas-container',
          { preload: preload, create: create, update: update });
@@ -184,9 +188,18 @@ simplicityApp.controller('diplomacyController', function($scope, $http) {
             });
     };
     getPlayerInfo();
+
+    $scope.helpMode = false;
+    $scope.getHelp = function () {
+        $scope.helpMode = !$scope.helpMode;
+    }
 });
 
 simplicityApp.controller('planetsController', function($scope, $http) {
+    $scope.helpMode = false;
+    $scope.getHelp = function () {
+        $scope.helpMode = !$scope.helpMode;
+    }
     console.log("Initializing planetsController");
     getPlanetInfo = function () {
         console.log("Getting planets info");
@@ -213,6 +226,11 @@ simplicityApp.controller('planetsController', function($scope, $http) {
 
 simplicityApp.controller('shipsController', function($scope, $http) {
     console.log("Initializing shipsController");
+
+    $scope.helpMode = false;
+    $scope.getHelp = function () {
+        $scope.helpMode = !$scope.helpMode;
+    }
 
     getShipInfo = function () {
         console.log("Getting ship info");
@@ -323,6 +341,10 @@ simplicityApp.controller('researchController', function($scope, $http) {
             });
     };
     getResearchInfo();
+    $scope.helpMode = false;
+    $scope.getHelp = function () {
+        $scope.helpMode = !$scope.helpMode;
+    }
 });
 
 simplicityApp.controller('mainController', function($scope, $http) {
@@ -342,7 +364,6 @@ simplicityApp.controller('mainController', function($scope, $http) {
     }
     getCurrentTurn();
     $scope.advanceTurn = function () {
-        console.log("Seasons change... time passes by...");
 
         $http.post("/process-turn.json")
         .then(
@@ -392,27 +413,58 @@ simplicityApp.controller('combatController', function($scope, $http) {
 
     function preload() {
         game.load.image('stars', 'assets/starfield.png');
-        game.load.image('destroyer', 'assets/ships/destroyerblue.png');
-        game.load.image('enemy', 'assets/ships/enemy_ship.png');
         game.load.spritesheet('destruction_explosion', 'assets/anims/destruction_explosion.png');
+
+        game.load.image('green-destroyer', 'assets/ships/destroyer/destroyer_green.png');
+        game.load.image('ltblue-destroyer', 'assets/ships/destroyer/destroyer_ltblue.png');
+        game.load.image('red-destroyer', 'assets/ships/destroyer/destroyer_red.png');
+        game.load.image('gold-destroyer', 'assets/ships/destroyer/destroyer_gold.png');
+        game.load.image('purple-destroyer', 'assets/ships/destroyer/destroyer_purple.png');
+
+        game.load.image('green-fighter', 'assets/ships/fighter/fighter_green.png');
+        game.load.image('ltblue-fighter', 'assets/ships/fighter/fighter_ltblue.png');
+        game.load.image('red-fighter', 'assets/ships/fighter/fighter_red.png');
+        game.load.image('gold-fighter', 'assets/ships/fighter/fighter_gold.png');
+        game.load.image('purple-fighter', 'assets/ships/fighter/fighter_purple.png');
     }
 
     var friendSprites = [];
     var enemySprites = [];
+
+    $scope.helpMode = false;
+    $scope.getHelp = function () {
+        $scope.helpMode = !$scope.helpMode;
+    }
+
+    function getImageStringFromShip (ship) {
+        var chassis = ship.chassis;
+        chassis = chassis.toLowerCase();
+        var raceId = ship.ownerRaceNum;
+        switch (raceId) {
+            case 0:
+                return "ltblue-" + chassis;
+            case 1:
+                return "red-" + chassis;
+            case 2:
+                return "gold-" + chassis;
+            case 3:
+                return "green-" + chassis;
+        }
+    }
 
     function create() {
         game.add.sprite(0, 0, 'stars');
 
 
         for (i = 0; i < friendShips.length; i++) {
-            friendSprites[i] = game.add.sprite(50, 50 + 150*i, friendShips[i].imageString);
+            friendSprites[i] = game.add.sprite(50, 50 + 150*i, getImageStringFromShip(friendShips[i]));
             friendSprites[i].inputEnabled = true;
             friendSprites[i].events.onInputDown.add(friendListener, this);
             friendSprites[i].index = i;
         }
 
         for (i = 0; i < enemyShips.length; i++) {
-            enemySprites[i] = game.add.sprite(500, 50 + 100*i, enemyShips[i].imageString);
+            enemySprites[i] = game.add.sprite(500, 50 + 100*i, getImageStringFromShip(enemyShips[i]));
             enemySprites[i].inputEnabled = true;
             enemySprites[i].events.onInputDown.add(enemyListener, this);
             enemySprites[i].index = i;
@@ -568,11 +620,26 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
     var wormholeAnims = [];
     var addAnimations = true;
     var systemText;
+    
+    function getImageStringFromShip (ship) {
+            var chassis = ship.chassis;
+            chassis = chassis.toLowerCase();
+            var raceId = ship.ownerRaceNum;
+            switch (raceId) {
+                case 0:
+                    return "ltblue-" + chassis;
+                case 1:
+                    return "red-" + chassis;
+                case 2:
+                    return "gold-" + chassis;
+                case 3:
+                    return "green-" + chassis;
+            }
+        }
 
     function preload() {
         game.load.image('stars', 'assets/starfield.png');
-        game.load.image('sun', 'assets/smallsun.png');;
-        game.load.image('destroyer', 'assets/ships/destroyerblue.png');
+        game.load.image('sun', 'assets/smallsun.png');
         game.load.image('tunnel', 'assets/single_wormhole.png');
         game.load.spritesheet('kaboom', 'assets/anims/explode.png', 128, 128);
         game.load.spritesheet('wormhole', 'assets/anims/Effect117.png', 128, 128);
@@ -588,6 +655,24 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
         game.load.image('planet8', 'assets/planets/planet8.png');
         game.load.image('planet9', 'assets/planets/planet9.png');
         game.load.image('planet10', 'assets/planets/planet10.png');
+        
+        game.load.image('green-destroyer', 'assets/ships/destroyer/destroyer_green.png');
+        game.load.image('ltblue-destroyer', 'assets/ships/destroyer/destroyer_ltblue.png');
+        game.load.image('red-destroyer', 'assets/ships/destroyer/destroyer_red.png');
+        game.load.image('gold-destroyer', 'assets/ships/destroyer/destroyer_gold.png');
+        game.load.image('purple-destroyer', 'assets/ships/destroyer/destroyer_purple.png');
+        
+        game.load.image('green-fighter', 'assets/ships/fighter/fighter_green.png');
+        game.load.image('ltblue-fighter', 'assets/ships/fighter/fighter_ltblue.png');
+        game.load.image('red-fighter', 'assets/ships/fighter/fighter_red.png');
+        game.load.image('gold-fighter', 'assets/ships/fighter/fighter_gold.png');
+        game.load.image('purple-fighter', 'assets/ships/fighter/fighter_purple.png');
+        
+        game.load.image('green-colonizer', 'assets/ships/colonizer/colonizer_green.png');
+        game.load.image('ltblue-colonizer', 'assets/ships/colonizer/colonizer_ltblue.png');
+        game.load.image('red-colonizer', 'assets/ships/colonizer/colonizer_red.png');
+        game.load.image('gold-colonizer', 'assets/ships/colonizer/colonizer_gold.png');
+        game.load.image('purple-colonizer', 'assets/ships/colonizer/colonizer_purple.png');
     }
     var tunnels = [];
     var graphics;
@@ -632,6 +717,8 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
             planets[i].events.onInputDown.add(listener, this);
             planets[i].elementName = $scope.starSystemInfo.starSystem.planets[i].name;
             planets[i].size = $scope.starSystemInfo.starSystem.planets[i].size;
+            planets[i].population = $scope.starSystemInfo.starSystem.planets[i].population;
+            planets[i].turnsToGrowth = $scope.starSystemInfo.starSystem.planets[i].turnsToGrowth;
             var ownerRaceNum = $scope.starSystemInfo.starSystem.planets[i].ownerRaceNum;
             planets[i].icon = "";
             switch (ownerRaceNum) {
@@ -698,7 +785,7 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
         explosions = game.add.group();
         explosions.createMultiple(10, 'kaboom');
         for (i = 0; i < $scope.starSystemInfo.ships.length; i++) {
-            ships[i] = game.add.sprite(20, 20 + i*100, 'destroyer');
+            ships[i] = game.add.sprite(20, 20 + i*100, getImageStringFromShip($scope.starSystemInfo.ships[i]));
             ships[i].inputEnabled = true;
             ships[i].input.enableDrag();
             ships[i].events.onDragStop.add(onDragStop, this);
@@ -763,7 +850,16 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
             $scope.planetSelected = true;
             $scope.outputSlider = 60;
             $scope.selectedElement.icon = sprite.icon;
-
+            $scope.selectedElement.population = "FRIDAY";
+            console.log("pop = " + sprite.population)
+            if (sprite.population > 0) {
+                $scope.selectedElement.population = "Population: " + sprite.population;
+                if (sprite.turnsToGrowth == -1) {
+                    $scope.selectedElement.turnsToGrowth = "Population not growing";
+                } else {
+                    $scope.selectedElement.turnsToGrowth = "Turns to growth: " + sprite.turnsToGrowth;
+                }
+            }
             $scope.selectedElement.size = "Size: " + sprite.size;
         }
         if (sprite.travelTime != null) {
@@ -857,6 +953,10 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
             }
         }
 
+    }
+    $scope.helpMode = false;
+    $scope.getHelp = function () {
+        $scope.helpMode = !$scope.helpMode;
     }
 
     enterTunnel = function (destinationId, tunnelId, shipId) {

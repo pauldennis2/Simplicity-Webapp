@@ -1,22 +1,57 @@
-<div id="phaser-canvas-container">
+<div id="phaser-canvas-container" ng-hide="helpMode">
 </div>
-<div class="erro_miniview">
-    <div id="infoDiv" style="float: left; width: 300px">
+
+<div class="w800 h600 star-bg" id="help-div" ng-hide="!helpMode" >
+    <center>System View Help</center>
+    Welcome to System View Help. The purpose of this page is to give you, the user, information about how to play this
+    part of the game. Let's get started.
+
+    <h4>What is this?</h4>
+    This is the System View. In this screen you can see everything that's going on in this particular star system. You
+    should see all the planets in the system, as well as the tunnels that connect this system to other systems. You can
+    also see the ships present in the system. Clicking on any of these elements will display detailed information in the
+    context bar (which you can see below).
+
+    <h4>OK - How do I play?</h4>
+    There are four main possible actions you will want to take from this screen:
+    <ol>
+        <li>Use tunnels to travel to other systems</li>
+        <li>Colonize a planet</li>
+        <li>Start combat (NYI)</li>
+        <li>Adjust planet output (NYI)</li>
+    </ol>
+    <h5>Tunnels</h5>
+    To open the tunnels and activate space travel hit the "Open Tunnels" button (to close, hit the button again). You
+    should see a visual indicator that the tunnels are open (animation). Then simply drag the ship you want to the
+    desired tunnel. You can find out which other system a tunnel connects to by clicking it.
+    <h5>Colonize</h5>
+    To colonize a planet you will need to toggle Colonize Mode to ON. At this point you should see a small <span style="color: green">green</span> circle
+    around any available planets (may be covered up by larger planet). Then just drag your colonizer over to that
+    planet.<br>
+    <img src="assets/ships/colonizer/colonizer_blue.png">
+    <img src="assets/planets/planet2.png">
+</div>
+
+<div class="erro-miniview">
+    <div class="w300" id="infoDiv">
         <img ng-src={{selectedElement.icon}} style="padding: 4px">
         <b>{{selectedElement.name}}</b><br>
         {{selectedElement.health}}
         {{selectedElement.size}}
         {{selectedElement.travelTime}}
+        {{selectedElement.turnsToGrowth}}
+        {{selectedElement.population}}
     </div>
     <div id="alwaysAvailableButtons" style="width: 200px">
-        <button class="space-bg" type="button" ng-click="openTunnels()" style="width: 120px">{{tunnelToggle}}</button><br>
-        <button class="space-bg" type="button" ng-click="colonizeMode()" style="width: 120px">{{colonizeToggle}}</button><br>
+        <button class="space-bg w120" type="button" ng-click="openTunnels()">{{tunnelToggle}}</button><br>
+        <button class="space-bg w120" type="button" ng-click="colonizeMode()">{{colonizeToggle}}</button><br>
+        <button class="space-bg right help-button" type="button" ng-click="getHelp()"><h2>Help</h2></button>
     </div>
-    <div id="shipActionDiv" ng-hide="!shipSelected" style="float: right; width: 395px">
-        <button class="space-bg" type="button" ng-click="enterCombat()" style="width: 120px">Enter Combat</button> <br>
-        <button class="space-bg" type="button" ng-click="scrapShip()" style="width: 120px">Scrap</button>
+    <div class="right" id="shipActionDiv" ng-hide="!shipSelected" style="width: 395px">
+        <button class="space-bg w120" type="button" ng-click="enterCombat()">Enter Combat</button> <br>
+        <button class="space-bg w120" type="button" ng-click="scrapShip()">Scrap</button>
     </div>
-    <div id="planetActionDiv" ng-hide="!planetSelected" style="float:right; width: 545px">
+    <div class="right" id="planetActionDiv" ng-hide="!planetSelected" style="width: 545px">
         <div class="left clear-both">Change Planet Output Priorities </div>
         <div class="left clear-both">
             <span class="left">Research</span>

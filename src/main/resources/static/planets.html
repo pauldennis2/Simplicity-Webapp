@@ -1,12 +1,59 @@
-<ul class="media-list star-bg w800 h600">
-    <li class="media" ng-repeat="planet in planets">
-        <div class="media-left">
-            <img class="media-object" ng-src={{planet.imageString}} alt="planet?">
-        </div>
-        <div class="media-body">
-            <h4 class="media-heading">{{planet.name}}</h4>
-            System: ??? <br>
-            Population: {{planet.size}}
-        </div>
-    </li>
-</ul>
+<div class="help-div" ng-hide="!helpMode">
+    <center>Planets View Help</center>
+    There is not anything to "do" right now in this view. It's simply a list of the planets that are a part of your
+    empire, with some information about them. We'll go over this information and the general mechanics of planets on
+    this page.
+    <h4>Properties of Planets</h4>
+    <ul style="list-style-type: none;">
+        <li>
+            Name - right now planets are named for their system and can't be changed.
+        </li>
+        <li>
+            Size - the maximum population the planet can support (a static number). Randomly generated, range of about 9
+            to 12.
+        </li>
+        <li>
+            Population - the current population of the planet.
+        </li>
+        <li>
+            Owner - expressed through the icon next to the planet: <img src="assets/races/race1_icon.jpg">
+            (Does not show on this screen since all these planets are yours)
+        </li>
+        <li>
+            Image - No effect on gameplay.
+        </li>
+        <li>
+            Turns to Growth - planets with room to grow (population < size) grow at 5% per turn.
+        </li>
+        <li>
+            Output Priorities - (see below)
+        </li>
+    </ul>
+
+    <h4>Output Priorities</h4>
+    Each planet divides its output as you see fit between <span class="production">Production</span> - which goes to
+    your <span class="production">Production Pool </span> and is in turn used to purchase ships - and
+    <span class="research">Research</span> - which does to your <span class="research">Research Pool</span> which sadly
+    does nothing at the present time. <br><br>
+    How it works: You decide in percentage the amount to assign to each output. For example, you could do 50/50, 80/20,
+    etc. These percentages are then multiplied by the population to determine the output. A planet with 10 population
+    that is assigned 80% production and 20% research would produce 8 production and 2 research each turn.
+</div>
+
+<div id="planetInfoDiv" ng-hide="helpMode">
+    <ul class="media-list star-bg w800 h600">
+        <li class="media" ng-repeat="planet in planets">
+            <div class="media-left">
+                <img class="media-object" ng-src={{planet.imageString}} alt="planet?">
+            </div>
+            <div class="media-body">
+                <h4 class="media-heading">{{planet.name}}</h4>
+                System: ??? <br>
+                Population: {{planet.size}}
+            </div>
+        </li>
+    </ul>
+</div>
+<div id="button-div">
+    <button type="button" ng-click="getHelp()" class="space-bg help-button"><h3>Help</h3></button>
+</div>

@@ -9,7 +9,13 @@ body {
     padding: 5px;
 }
 
-.erro_miniview {
+.errominiview {
+    height: 150px;
+    border-style: solid;
+    border-color: grey;
+}
+
+.help-button {
     height: 150px;
     border-style: solid;
     border-color: grey;
@@ -39,13 +45,53 @@ body {
     color: white;
 }
 
+.blue-text {
+    color: blue;
+}
+
+.green-text {
+    color: green;
+}
+
+.production{
+    color: #780000;
+     font-weight: bold;
+}
+
+.research {
+    color: #0066cc;
+    font-weight: bold;
+}
+
+.generator {
+    color: #ffcc00;
+    font-weight: bold;
+}
+
+.shield {
+    color: #00b8e6;
+    font-weight: bold;
+}
+
+.help-button {
+    color: blue;
+}
+
 .padding10 {
     padding: 10px;
+}
+
+.w120 {
+    width: 120px;
 }
 
 .w200 {
     width: 200px;
     float: left;
+}
+
+.w300 {
+    width: 300px;
 }
 
 .w390 {
@@ -65,6 +111,12 @@ body {
 
 .w800 {
     width: 800px;
+}
+
+.help-div {
+    width: 800px;
+    height: 600px;
+    background-image: url("/assets/starfield.png");
 }
 
 .h40 {

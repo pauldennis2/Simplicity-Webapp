@@ -1,32 +1,64 @@
 
-<div class="h40">
-    <div class="star-bg w400">
-        <center><h4>Your Ships</h4></center>
-    </div>
-    <div class="star-bg w400">
-        <center><h4>Shipyard</h4></center>
-    </div>
+<div class="help-div" id="helpDiv" ng-hide="!helpMode">
+    <center>Ships View Help</center>
+    On this screen you will see a list of your existing ships and have the ability to create new ships provided you
+    have enough <span class="production">production</span> in your pool. (See planets help for an explanation of
+    production).
+
+    Here is a basic overview of how combat ships work:<br><br>
+    <span class="generator">Generator:</span> every ship has a generator that has two characteristics -
+    <span class="generator">power per turn</span> and <span class="generator">reserve power</span>. Reserve power is
+    like your "battery" or "bank" of power.<br>
+    <span class="shield">Shield:</span> a defensive barrier that reduces damage to the ship. Shields regenerate fully
+    outside of combat and can regenerate (slowly) in combat. Shields consume power equal to the damage blocked, which
+    is based on the size of the ship (bigger ships have more powerful shields).
+    <br>
+    <h3>Ship Class</h3>
+    Each ship has a "class" or size. At first, only the smaller classes are available but as you progress through the
+    tech tree you will be able to build bigger and better ships. At some point we'll provide more specifics about the
+    strategies and usefulness of each type but for now here are the types:<br>
+    Fighter: <img src="assets/ships/fighter/fighter_blue.png"><br><br>
+    Destroyer: <img src="assets/ships/destroyer/destroyer_blue.png"><br><br>
+    Cruiser (NYI): <img src="assets/ships/cruiser/cruiser_blue.png"><br><br>
+
+    Note: ship sizes are not to scale. Fighters appear way bigger than they "should" simply to make them visible, and
+    the bigger ships will appear smaller than they "should".
+
+
 </div>
-<div>
-    <!--These in-line styles are left as an excercise for the reader. No, I mean, I'm coming back here anyway. TODO-->
-    <div id="shipInfoDiv" class="star-bg w400" style="overflow-y:scroll; overflow-x: hidden; height:560px;">
-        <div ng-repeat="ship in ships">
-            <div class="w200 h120">
-                <img ng-src={{ship.imageString}} style="padding: 15%">
-            </div>
-            <div class="w600 h120">
-                <h4>{{ship.name}}</h4>
-                Location: {{ship.starSystem.name}} <br>
-                Health: {{ship.health}}/{{ship.maxHealth}}
-            </div>
+<div id="mainDiv" ng-hide="helpMode">
+    <div class="h40">
+        <div class="star-bg w400">
+            <center><h4>Your Ships</h4></center>
+        </div>
+        <div class="star-bg w400">
+            <center><h4>Shipyard</h4></center>
         </div>
     </div>
-    <div id="shipyardDiv" class="star-bg w400 h560 padding10">
-        Total Production Accumulated: {{totalProduction}}<br>
-        <select class="space-bg" ng-model="shipTypeSelection">
-            <option ng-repeat="option in unlockedShips">{{option}}</option>
-        </select>
-        <input type="text" class="trans-bg" ng-model="shipName" placeholder="Name your ship.">
-        <button type="button" class="space-bg" ng-click="purchaseShip()">Purchase Ship</button>
+    <div class="star-bg">
+        <!--These in-line styles are left as an excercise for the reader.      No, I mean, I'm coming back here anyway. TODO-->
+        <div id="shipInfoDiv" class="star-bg w400" style="overflow-y:scroll; overflow-x: hidden; height:560px;">
+            <div ng-repeat="ship in ships">
+                <div class="w200 h120 trans-bg" >
+                    <center><img ng-src={{ship.imageString}} style="padding-top: 10%"></center>
+                </div>
+                <div class="w600 h120 trans-bg">
+                    <h4>{{ship.name}}</h4>
+                    Location: {{ship.starSystem.name}} <br>
+                    Health: {{ship.health}}/{{ship.maxHealth}}
+                </div>
+            </div>
+        </div>
+        <div id="shipyardDiv" class="star-bg w400 h560 padding10">
+            Total Production Accumulated: {{totalProduction}}<br>
+            <select class="space-bg" ng-model="shipTypeSelection">
+                <option ng-repeat="option in unlockedShips">{{option}}</option>
+            </select>
+            <input type="text" class="trans-bg" ng-model="shipName" placeholder="Name your ship.">
+            <button type="button" class="space-bg" ng-click="purchaseShip()">Purchase Ship</button>
+        </div>
     </div>
+</div>
+<div id="button-div">
+    <button type="button" class="space-bg help-button" ng-click="getHelp()"><h3>Help</h3></button>
 </div>

@@ -1,5 +1,8 @@
-<div id="phaser-canvas-container"></div>
-<div class="erro_miniview">
+<div class="help-div" id="help-div" ng-hide="!helpMode" >
+    Cool help content for ssgview
+</div>
+<div id="phaser-canvas-container" ng-hide="helpMode"></div>
+<div class="erro-miniview">
     <div class="w200" id="systemNameDiv">
         <b>{{selectedSystem.name}} System</b><br>
     </div>
@@ -9,4 +12,5 @@
     </ul>
     </div>
     <button class="space-bg right" ng-click="goToDagobah()" ng-hide="noSystemSelected" type="button">Go To System</button>
+    <button class="space-bg help-button" ng-click="getHelp()" type="button"><h3>Help</h3></button>
 </div>
