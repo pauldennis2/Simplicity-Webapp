@@ -2,15 +2,21 @@
     Research help.
 </div>
 
-<div class="star-bg h600" ng-hide="helpMode">
+<div class="star-bg h600 w800" ng-hide="helpMode">
     <div class="row left">
         <div class="col-sm-10 col-md-70">
-            <div class="thumbnail trans-bg no-border" >
-                <center><img src="assets/ships/destroyer/destroyer_wshieldgrey.png" alt="player picture"></center>
+            <div class="thumbnail trans-bg no-border">
+                <center><img ng-class="firstTechImageClass" src="assets/ships/destroyer/destroyer_shield.png" alt="player picture"></center>
                 <div class="caption" style="color: white;"> <!--white-text class doesn't work here-->
                     <h4>Shield Tech</h4>
-                    Info<br>
-                    <p><button class="trans-bg" role="button" disabled>Research</button></p>
+                    <div ng-hide="researchInfo.firstTechResearched">
+                        Cost: 40rp
+                    </div>
+                    <div ng-hide="!researchInfo.firstTechResearched">
+                        COMPLETE
+                    </div>
+                    <br>
+                    <p><button class="trans-bg" role="button" ng-hide="researchInfo.secondTechResearched" ng-click="purchaseTech(0)">Research</button></p>
                 </div>
             </div>
         </div>
@@ -18,14 +24,23 @@
     <div class="row left clear-both">
         <div class="col-sm-10 col-md-70">
             <div class="thumbnail trans-bg no-border">
-                <center><img src="assets/ships/destroyer/destroyer_wshieldcenterrightmostlygrey.png" alt="player picture"></center>
-                <div class="caption white-text">
+                <center><img ng-class="secondTechImageClass" src="assets/ships/destroyer/destroyer_blue.png" alt="player picture"></center>
+                <div class="caption" style="color: white">
                     <h4>Destroyer Tech</h4>
-                    Info<br>
-                    <p><button class="trans-bg" role="button" disabled>Research</button></p>
+                    <div ng-hide="researchInfo.secondTechResearched">
+                        Cost: 50rp
+                    </div>
+                    <div ng-hide="!researchInfo.secondTechResearched">
+                        COMPLETE
+                    </div>
+                    <br>
+                    <p><button class="trans-bg" role="button" ng-hide="researchInfo.secondTechResearched" ng-click="purchaseTech(1)">Research</button></p>
                 </div>
             </div>
         </div>
+    </div>
+    <div class="clear-both">
+        Research Total: {{researchInfo.researchPoolTotal}}
     </div>
 </div>
 <div id="helpButtonDiv">

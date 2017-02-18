@@ -39,6 +39,12 @@ public class Player {
     @Column
     private Integer researchPoolTotal;
 
+    @Column
+    private Boolean firstTechResearched;
+
+    @Column
+    private Boolean secondTechResearched;
+
     @OneToOne
     private StarSystem homeSystem;
 
@@ -54,6 +60,8 @@ public class Player {
         this.homeSystem = homeSystem;
         productionPoolTotal = 0;
         researchPoolTotal = 0;
+        firstTechResearched = false;
+        secondTechResearched = false;
     }
 
     public void addShip (Starship starship) {
@@ -140,5 +148,19 @@ public class Player {
         this.homeSystem = homeSystem;
     }
 
+    public Boolean getFirstTechResearched() {
+        return firstTechResearched;
+    }
 
+    public void setFirstTechResearched(Boolean firstTechResearched) {
+        this.firstTechResearched = firstTechResearched;
+    }
+
+    public Boolean getSecondTechResearched() {
+        return secondTechResearched;
+    }
+
+    public void setSecondTechResearched(Boolean secondTechResearched) {
+        this.secondTechResearched = secondTechResearched;
+    }
 }

@@ -163,7 +163,6 @@ simplicityApp.controller('ssgViewController', function($scope, $http) {
     }
 });
 
-
 simplicityApp.controller('diplomacyController', function($scope, $http) {
     console.log("Initializing diplomacyController");
     $scope.players = [];
@@ -326,28 +325,75 @@ simplicityApp.controller('researchController', function($scope, $http) {
     console.log("Initializing researchController");
     getResearchInfo = function () {
         console.log("Getting research info");
-        var wrapper = {"gameId": 1, "playerId":2};
 
-        $http.post("/research-info.json", wrapper)
+        $http.post("/research-info.json")
         .then(
             function successCallback (response) {
                 console.log("Found research info");
                 console.log(response.data);
                 $scope.researchInfo = response.data;
+                if (!$scope.researchInfo.firstTechResearched) {
+                    $scope.firstTechImageClass = "img-grey";
+                } else {
+                    $scope.firstTechImageClass = "img-normal";
+                }
+
+                if (!$scope.researchInfo.secondTechResearched) {
+                    $scope.secondTechImageClass = "img-grey";
+                } else {
+                    $scope.secondTechImageClass = "img-normal";
+                }
             },
 
             function errorCallback (response) {
                 console.log("No planets");
             });
     };
+
     getResearchInfo();
+
+    $scope.purchaseTech = function (techNumber) {
+        console.log("Trying to purchase tech number " + techNumber);
+        if (techNumber === 0 && $scope.researchInfo.researchPoolTotal < 40) {
+            alert('Not enough research points');
+            return;
+        }
+        if (techNumber === 1 && $scope.researchInfo.researchPoolTotal < 50) {
+            alert('Not enough research points');
+            return;
+        }
+
+        var wrapper = {"techId": techNumber};
+        $http.post("/research-tech.json", wrapper)
+        .then(
+            function successCallback (response) {
+                console.log("Got a tech response");
+                console.log(response.data);
+                $scope.researchInfo = response.data;
+                if (!$scope.researchInfo.firstTechResearched) {
+                    $scope.firstTechImageClass = "img-grey";
+                } else {
+                    $scope.firstTechImageClass = "img-normal";
+                }
+                if (!$scope.researchInfo.secondTechResearched) {
+                    $scope.secondTechImageClass = "img-grey";
+                } else {
+                    $scope.secondTechImageClass = "img-normal";
+                }
+            },
+
+            function errorCallback (response) {
+                console.log("Unable to research tech")
+            });
+    }
+
     $scope.helpMode = false;
     $scope.getHelp = function () {
         $scope.helpMode = !$scope.helpMode;
     }
 });
 
-simplicityApp.controller('mainController', function($scope, $http) {
+simplicityApp.controller('mainController', function($scope, $http, $rootScope) {
     console.log("Initializing mainController");
     $scope.currentTurn = 0;
 
@@ -385,9 +431,10 @@ simplicityApp.controller('helpController', function($scope, $http) {
     console.log("Initializing helpController");
 });
 
-simplicityApp.controller('combatController', function($scope, $http, $routeParams) {
+simplicityApp.controller('combatController', function($scope, $http, $routeParams, $rootScope) {
+    $rootScope.combatMode = true;
     console.log("Initializing combatController");
-    var game = new Phaser.Game(800, 550, Phaser.AUTO, 'phaser-canvas-container',
+    var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-canvas-container',
      { preload: preload, create: create, update: update });
     var friendShips = [];
     var enemyShips = [];
@@ -465,11 +512,6 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
     var friendSprites = [];
     var enemySprites = [];
 
-    $scope.helpMode = false;
-    $scope.getHelp = function () {
-        $scope.helpMode = !$scope.helpMode;
-    }
-
     function getImageStringFromShip (ship) {
         var chassis = ship.chassis;
         chassis = chassis.toLowerCase();
@@ -514,6 +556,7 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
             //enemySprites[i] = game.add.sprite(600, 50 + 100*i, 'purple-fighter');
             enemyShieldSprites[i] = game.add.sprite(600, 50 + 100*i, getShieldStringFromShip(enemyShips[i]));
             enemyShieldSprites[i].anchor.setTo(0.5, 0.5);
+            enemyShieldSprites[i].scale.x *= -1;
             enemySprites[i].inputEnabled = true;
             enemySprites[i].events.onInputDown.add(enemyListener, this);
             enemySprites[i].index = i;
@@ -638,6 +681,7 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
                     enemiesRemaining--;
                     if (enemiesRemaining == 0) {
                         alert("Combat is over! You win");
+                        $scope.combatOver = true;
                     }
                 }
             },
@@ -1029,6 +1073,7 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
     }
     $scope.helpMode = false;
     $scope.getHelp = function () {
+        console.log("In systemController's getHelp()")
         $scope.helpMode = !$scope.helpMode;
     }
 

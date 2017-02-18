@@ -5,8 +5,6 @@ package com.tiy.webapp.wrappers;
  */
 public class IdRequestWrapper {
 
-    private Integer gameId;
-    private Integer playerId;
     private Integer systemId;
     private Integer shipId;
     private Integer planetId;
@@ -19,21 +17,6 @@ public class IdRequestWrapper {
 
     }
 
-    public Integer getGameId() {
-        return gameId;
-    }
-
-    public void setGameId(Integer gameId) {
-        this.gameId = gameId;
-    }
-
-    public Integer getPlayerId() {
-        return playerId;
-    }
-
-    public void setPlayerId(Integer playerId) {
-        this.playerId = playerId;
-    }
 
     public Integer getSystemId() {
         return systemId;

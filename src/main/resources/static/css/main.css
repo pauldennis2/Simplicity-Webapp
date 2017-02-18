@@ -143,6 +143,13 @@ body {
     overflow-y: scroll;
 }
 
+.img-grey {
+    filter: grayscale(100%);
+}
+
+.img-normal {
+}
+
 .h40 {
     height: 40px;
 }

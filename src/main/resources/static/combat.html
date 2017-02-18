@@ -1,70 +1,76 @@
-<div id="helpDiv" class="help-div" ng-hide="!helpMode">
+<div id="helpDiv" class="help-div left" ng-hide="!helpMode">
     Combat help
 </div>
-<div id="combatLogDiv" class="help-div" ng-hide="!combatLogMode">
+<div id="combatLogDiv" class="help-div left" ng-hide="!combatLogMode">
     <center>Combat Log</center><br><br>
     <div ng-repeat="logItem in combatLog track by $index">
         {{logItem}}
     </div>
 </div>
 
-<div id="phaser-canvas-container" ng-hide="helpMode || combatLogMode">
+<div class="left" id="phaser-canvas-container" ng-hide="helpMode || combatLogMode">
 </div>
 
-<div class="padding10 w390" id="allied_info">
-    <b>{{friendSelected.name}}</b>
-    <span ng-if="friendSelected">(Damage: {{friendSelected.damage}})</span><br>
-    <div class="progress space-bg">
-        <div class="progress-bar progress-bar-success" role="progressbar" style="width: {{friendSelected.healthPct}}">
-            <span ng-if="friendSelected">Health {{friendSelected.health}} / {{friendSelected.maxHealth}}</span>
-        </div>
-    </div>
-    <div class="progress space-bg">
-        <div class="progress-bar progress-bar-info" role="progressbar" style="width: {{friendSelected.shieldPct}}">
-            <span ng-if="friendSelected">Shield {{friendSelected.shieldHealth}} / {{friendSelected.maxShieldHealth}}</span>
-        </div>
-    </div>
-    <div class="progress space-bg">
-        <div class="progress-bar progress-bar-warning" role="progressbar" style="width: {{friendSelected.energyPct}}">
-            <span ng-if="friendSelected">Energy {{friendSelected.currentReservePower}} (+{{friendSelected.powerPerTurn}}) / {{friendSelected.maxReservePower}}</span>
-        </div>
-    </div>
-
-</div>
-<!--The reason we are putting the ng-ifs on each line of text is to preserve the cool animation of the progress bars
-showing up. If we put an ng-if on the container div it works but the progress bars appear suddenly. #coolness_factor-->
-<div class="padding10 w390" id="enemy_info">
-    <b>{{enemySelected.name}}</b>
-    <span ng-if="enemySelected">(Damage: {{enemySelected.damage}})</span><br>
-    <div class="progress space-bg">
-        <div class="progress-bar progress-bar-success" role="progressbar" style="width: {{enemySelected.healthPct}}">
-            <span ng-if="enemySelected">Health {{enemySelected.health}} / {{enemySelected.maxHealth}} </span>
-        </div>
-    </div>
-    <div class="progress space-bg">
-        <div class="progress-bar progress-bar-info" role="progressbar" style="width: {{enemySelected.shieldPct}}">
-            <span ng-if="enemySelected">Shield {{enemySelected.shieldHealth}} / {{enemySelected.maxShieldHealth}}</span>
-        </div>
-    </div>
-    <div class="progress space-bg">
-        <div class="progress-bar progress-bar-warning" role="progressbar" style="width: {{enemySelected.energyPct}}">
-            <span ng-if="enemySelected">Energy {{enemySelected.currentReservePower}} (+{{enemySelected.powerPerTurn}}) / {{enemySelected.maxReservePower}}</span>
-        </div>
-    </div>
-</div>
-<div id="buttonDiv">
+<div id="buttonDiv" style="float: right">
     <center>
-        <button class="space-bg red-text" type="button" ng-click="fireWeapons()" ng-if="bothSelected">
-            <h4>Fire Weapons</h4>
-        </button>
         <button class="space-bg white-text" type="button" ng-click="passTurn()">
             <h4>Next Round -></h4>
-        </button>
-        <button class="help-button" type="button" ng-click="getHelp()">
+        </button><br>
+        <button class="space-bg blue-text" type="button" ng-click="getHelp()">
             <h4>Help</h4>
-        </button>
+        </button><br>
         <button class="space-bg green-text" type="button" ng-click="viewLog()">
             <h4>{{logToggle}}</h4>
+        </button><br>
+        <button class="space-bg white-text" type="button" ng-click="endCombat()" ng-hide="!combatOver">
+            <h4>Exit Combat</h4>
+        </button><br>
+        <button class="space-bg red-text" type="button" ng-click="fireWeapons()" ng-hide="!bothSelected">
+            <h4>Fire Weapons</h4>
         </button>
     </center>
+</div>
+<div style="clear: both">
+    <div class="padding10 w390" id="allied_info">
+        <b>{{friendSelected.name}}</b>
+        <span ng-if="friendSelected">(Damage: {{friendSelected.damage}})</span><br>
+        <div class="progress space-bg">
+            <div class="progress-bar progress-bar-success" role="progressbar" style="width: {{friendSelected.healthPct}}">
+                <span ng-if="friendSelected">Health {{friendSelected.health}} / {{friendSelected.maxHealth}}</span>
+            </div>
+        </div>
+        <div class="progress space-bg">
+            <div class="progress-bar progress-bar-info" role="progressbar" style="width: {{friendSelected.shieldPct}}">
+                <span ng-if="friendSelected">Shield {{friendSelected.shieldHealth}} / {{friendSelected.maxShieldHealth}}</span>
+            </div>
+        </div>
+        <div class="progress space-bg">
+            <div class="progress-bar progress-bar-warning" role="progressbar" style="width: {{friendSelected.energyPct}}">
+                <span ng-if="friendSelected">Energy {{friendSelected.currentReservePower}}
+                    (+{{friendSelected.powerPerTurn}}) / {{friendSelected.maxReservePower}}</span>
+            </div>
+        </div>
+    </div>
+    <!--The reason we are putting the ng-ifs on each line of text is to preserve the cool animation of the progress bars
+    showing up. If we put an ng-if on the container div it works but the progress bars appear suddenly. #coolness_factor-->
+    <div class="padding10 w390" id="enemy_info">
+        <b>{{enemySelected.name}}</b>
+        <span ng-if="enemySelected">(Damage: {{enemySelected.damage}})</span><br>
+        <div class="progress space-bg">
+            <div class="progress-bar progress-bar-success" role="progressbar" style="width: {{enemySelected.healthPct}}">
+                <span ng-if="enemySelected">Health {{enemySelected.health}} / {{enemySelected.maxHealth}} </span>
+            </div>
+        </div>
+        <div class="progress space-bg">
+            <div class="progress-bar progress-bar-info" role="progressbar" style="width: {{enemySelected.shieldPct}}">
+                <span ng-if="enemySelected">Shield {{enemySelected.shieldHealth}} / {{enemySelected.maxShieldHealth}}</span>
+            </div>
+        </div>
+        <div class="progress space-bg">
+            <div class="progress-bar progress-bar-warning" role="progressbar" style="width: {{enemySelected.energyPct}}">
+                <span ng-if="enemySelected">Energy {{enemySelected.currentReservePower}}
+                    (+{{enemySelected.powerPerTurn}}) / {{enemySelected.maxReservePower}}</span>
+            </div>
+        </div>
+    </div>
 </div>

@@ -158,16 +158,14 @@ public class SimplicityRestController {
     }
 
     @RequestMapping(path = "/research-info.json", method = RequestMethod.POST)
-    public Response researchInfo (@RequestBody IdRequestWrapper wrapper) {
-        Integer gameId = wrapper.getGameId();
-        Integer playerId = wrapper.getPlayerId();
-        return null;
+    public Player researchInfo (HttpSession session) {
+        Integer playerId = (Integer) session.getAttribute("playerId");
+        Player player = players.findOne(playerId);
+        return player;
     }
 
     @RequestMapping(path = "/diplomacy-info.json", method = RequestMethod.POST)
     public List<PlayerTemp> diplomacyInfo (@RequestBody IdRequestWrapper wrapper) {
-        Integer gameId = wrapper.getGameId();
-        Integer playerId = wrapper.getPlayerId();
         List<PlayerTemp> hardCodedList = new ArrayList<>();
         hardCodedList.add(new PlayerTemp(10, "Kitties", "assets/races/race1.jpg"));
         hardCodedList.add(new PlayerTemp(15, "Doges", "assets/races/race2.jpg"));
@@ -275,8 +273,6 @@ public class SimplicityRestController {
 
     @RequestMapping(path = "/scrap-ship.json", method = RequestMethod.POST)
     public Response scrapShip (@RequestBody IdRequestWrapper wrapper) {
-        Integer gameId = wrapper.getGameId();
-        Integer playerId = wrapper.getPlayerId();
         Integer shipId = wrapper.getShipId();
         return null;
     }
@@ -308,18 +304,37 @@ public class SimplicityRestController {
 
     @RequestMapping(path = "/change-output.json", method = RequestMethod.POST)
     public Response changeOutput (@RequestBody IdRequestWrapper wrapper) {
-        Integer gameId = wrapper.getGameId();
-        Integer playerId = wrapper.getPlayerId();
         Integer planetId = wrapper.getPlanetId();
         return null;
     }
 
-    @RequestMapping(path = "/change-research.json", method = RequestMethod.POST)
-    public Response changeResearch (@RequestBody IdRequestWrapper wrapper) {
-        Integer gameId = wrapper.getGameId();
-        Integer playerId = wrapper.getPlayerId();
+    @RequestMapping(path = "/research-tech.json", method = RequestMethod.POST)
+    public Player researchTech (@RequestBody IdRequestWrapper wrapper, HttpSession session) {
         Integer techId = wrapper.getTechId();
-        return null;
+        Integer playerId = (Integer) session.getAttribute("playerId");
+        Player player = players.findOne(playerId);
+        if (techId == 0) {
+            if (player.getFirstTechResearched()) {
+                throw new AssertionError("already researched");
+            }
+            if (player.getResearchPoolTotal() < 40) {
+                throw new AssertionError("not enough rp");
+            }
+            player.setFirstTechResearched(true);
+            player.setResearchPoolTotal(player.getResearchPoolTotal() - 40);
+        }
+        if (techId == 1) {
+            if (player.getSecondTechResearched()) {
+                throw new AssertionError("already researched");
+            }
+            if (player.getResearchPoolTotal() < 50) {
+                throw new AssertionError("not enough rp");
+            }
+            player.setSecondTechResearched(true);
+            player.setResearchPoolTotal(player.getResearchPoolTotal() - 50);
+        }
+        players.save(player);
+        return player;
     }
 
     @RequestMapping(path = "/create-ship.json", method = RequestMethod.POST)
