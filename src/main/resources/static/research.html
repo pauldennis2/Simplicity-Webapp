@@ -1,4 +1,33 @@
-<div class="star-bg h600">
-    Research. Content coming soon! <br>
-    Total Research Accumulated: {{totalResearch}}
+<div class="help-div" id="helpDiv" ng-hide="!helpMode">
+    Research help.
+</div>
+
+<div class="star-bg h600" ng-hide="helpMode">
+    <div class="row left">
+        <div class="col-sm-10 col-md-70">
+            <div class="thumbnail trans-bg no-border" >
+                <center><img src="assets/ships/destroyer/destroyer_wshieldgrey.png" alt="player picture"></center>
+                <div class="caption" style="color: white;"> <!--white-text class doesn't work here-->
+                    <h4>Shield Tech</h4>
+                    Info<br>
+                    <p><button class="trans-bg" role="button" disabled>Research</button></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row left clear-both">
+        <div class="col-sm-10 col-md-70">
+            <div class="thumbnail trans-bg no-border">
+                <center><img src="assets/ships/destroyer/destroyer_wshieldcenterrightmostlygrey.png" alt="player picture"></center>
+                <div class="caption white-text">
+                    <h4>Destroyer Tech</h4>
+                    Info<br>
+                    <p><button class="trans-bg" role="button" disabled>Research</button></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="helpButtonDiv">
+    <button type="button" class="space-bg help-button" ng-click="getHelp()"><h3>Help</h3></button>
 </div>

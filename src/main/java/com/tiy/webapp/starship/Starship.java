@@ -72,7 +72,54 @@ public class Starship {
     private Integer ownerRaceNum;
 
     public Starship() {
+
     }
+
+    public void takeDamage (int damage) {
+        int tempMaxDamageAbsorb = maxDamageAbsorb;
+        while (damage > 0 && shieldHealth > 0 && currentReservePower > 0 && tempMaxDamageAbsorb > 0) {
+            damage--;
+            shieldHealth--;
+            currentReservePower--;
+            tempMaxDamageAbsorb--;
+        }
+        if (damage > health) {
+            health = 0;
+        } else {
+            health -= damage;
+        }
+    }
+
+    /*public void takeDamage (int damage) {
+        //Shield part first
+        if (currentReservePower >= maxDamageAbsorb) {//If we can afford to fully take a hit on shields energy-wise
+            if (shieldHealth >= damage) { //If we can afford to fully take the hit on shield shield health-wise
+                shieldHealth -= maxDamageAbsorb;
+                damage -= maxDamageAbsorb;
+                currentReservePower -= maxDamageAbsorb;
+            }
+        }
+        //Health part 2nd
+    }*/
+
+    /*public void takeDamage (int damage) {
+        if (currentReservePower >= maxDamageAbsorb) {
+            damage -= maxDamageAbsorb;
+            currentReservePower -= maxDamageAbsorb;
+            shieldHealth -= maxDamageAbsorb;
+        } else {
+            damage -= currentReservePower;
+            currentReservePower = 0;
+        }
+        if (damage <= 0) {
+            return;
+        }
+        if (damage >= health) {
+            health = 0;
+        } else {
+            health -= damage;
+        }
+    }*/
 
     public Starship(StarSystem starSystem, ShipChassis chassis, String name, String imageString, Integer ownerRaceNum) {
         this.name = name;
@@ -99,6 +146,26 @@ public class Starship {
         }
         this.imageString = imageString;
         this.ownerRaceNum = ownerRaceNum;
+    }
+
+    public Starship (ShipChassis chassis) {
+        health = chassis.getHealth();
+        maxHealth = chassis.getHealth();
+        Shield shield = chassis.getShield();
+        if (shield != null) {
+            maxDamageAbsorb = shield.getMaxDamageAbsorb();
+            shieldHealth = shield.getShieldHealth();
+            maxShieldHealth = shield.getMaxShieldHealth();
+            regenRate = shield.getRegenRate();
+        }
+        damage = chassis.getDamage();
+
+        Generator generator = chassis.getGenerator();
+        if (generator != null) {
+            powerPerTurn = generator.getPowerPerTurn();
+            maxReservePower = generator.getMaxReservePower();
+            currentReservePower = maxReservePower;
+        }
     }
 
     public void startTurn () {
@@ -144,15 +211,15 @@ public class Starship {
         }
     }
 
-    public void takeDamage (int damage) {
+    /*public void takeDamage (int damage) {
         if (shieldsUp) {
             if (currentReservePower >= maxDamageAbsorb) {
                 int returnedDamage = takeShieldDamage(damage);
                 health -= returnedDamage;
                 currentReservePower -= damage - returnedDamage;
             } else {
-                int returnedDamage = takeShieldDamage(currentReservePower);
-                health -= returnedDamage;
+                takeShieldDamage(currentReservePower);
+                health -= damage - currentReservePower;
                 currentReservePower = 0;
             }
         } else {
@@ -188,7 +255,7 @@ public class Starship {
                 }
             }
         }
-    }
+    }*/
 
     public int getHealth () {
         return health;

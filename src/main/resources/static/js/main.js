@@ -385,16 +385,35 @@ simplicityApp.controller('helpController', function($scope, $http) {
     console.log("Initializing helpController");
 });
 
-simplicityApp.controller('combatController', function($scope, $http) {
+simplicityApp.controller('combatController', function($scope, $http, $routeParams) {
     console.log("Initializing combatController");
     var game = new Phaser.Game(800, 550, Phaser.AUTO, 'phaser-canvas-container',
      { preload: preload, create: create, update: update });
     var friendShips = [];
     var enemyShips = [];
+    $scope.helpMode = false;
+    $scope.getHelp = function () {
+        $scope.helpMode = !$scope.helpMode;
+        $scope.combatLogMode = false;
+    }
+    $scope.combatLogMode = false;
+    $scope.logToggle = "View Log";
+    $scope.viewLog = function () {
+        $scope.combatLogMode = !$scope.combatLogMode;
+        if ($scope.combatLogMode) {
+            $scope.logToggle = "Hide Log";
+        } else {
+            $scope.logToggle = "View Log";
+        }
+        $scope.helpMode = false;
+    }
+    $scope.combatLog = [];
+    var combatLogIndex = 0;
 
     var enemiesRemaining;
-    getCombatInfo = function () {
-        $http.post("/combat-info.json")
+    getCombatInfo = function (systemId) {
+        var wrapper = {"systemId": systemId};
+        $http.post("/empty-combat-info.json", wrapper)
         .then(
             function successCallback (response) {
                 console.log("Found combat info");
@@ -409,7 +428,9 @@ simplicityApp.controller('combatController', function($scope, $http) {
                 console.log("Did not find combat info");
             });
     };
-    getCombatInfo();
+    if ($routeParams.param != null) {
+        getCombatInfo($routeParams.param);
+    }
 
     function preload() {
         game.load.image('stars', 'assets/starfield.png');
@@ -420,12 +441,25 @@ simplicityApp.controller('combatController', function($scope, $http) {
         game.load.image('red-destroyer', 'assets/ships/destroyer/destroyer_red.png');
         game.load.image('gold-destroyer', 'assets/ships/destroyer/destroyer_gold.png');
         game.load.image('purple-destroyer', 'assets/ships/destroyer/destroyer_purple.png');
+        game.load.image('destroyer-shield', 'assets/ships/destroyer/destroyer_shield.png');
 
         game.load.image('green-fighter', 'assets/ships/fighter/fighter_green.png');
         game.load.image('ltblue-fighter', 'assets/ships/fighter/fighter_ltblue.png');
         game.load.image('red-fighter', 'assets/ships/fighter/fighter_red.png');
         game.load.image('gold-fighter', 'assets/ships/fighter/fighter_gold.png');
         game.load.image('purple-fighter', 'assets/ships/fighter/fighter_purple.png');
+        game.load.image('fighter-shield', 'assets/ships/fighter/fighter_shield.png');
+        
+//        game.load.image('green-cruiser', 'assets/ships/cruiser/cruiser_green.png');
+//        game.load.image('ltblue-cruiser', 'assets/ships/cruiser/cruiser_ltblue.png');
+//        game.load.image('red-cruiser', 'assets/ships/cruiser/cruiser_red.png');
+//        game.load.image('gold-cruiser', 'assets/ships/cruiser/cruiser_gold.png');
+//        game.load.image('purple-cruiser', 'assets/ships/cruiser/cruiser_purple.png');
+//        game.load.image('cruiser-shield', 'assets/ships/cruiser/cruiser_shield.png');
+
+        game.load.image('planet', 'assets/planet_large.png');
+
+
     }
 
     var friendSprites = [];
@@ -449,25 +483,42 @@ simplicityApp.controller('combatController', function($scope, $http) {
                 return "gold-" + chassis;
             case 3:
                 return "green-" + chassis;
+            default:
+                return "purple-" + chassis;
         }
     }
 
+    function getShieldStringFromShip (ship) {
+        var chassisName = ship.chassis.toLowerCase();
+        return chassisName + '-shield';
+    }
+
+    var friendShieldSprites = [];
+    var enemyShieldSprites = [];
+
     function create() {
         game.add.sprite(0, 0, 'stars');
-
-
+        //game.add.sprite(-150, 200, 'planet');
         for (i = 0; i < friendShips.length; i++) {
-            friendSprites[i] = game.add.sprite(50, 50 + 150*i, getImageStringFromShip(friendShips[i]));
+            friendSprites[i] = game.add.sprite(75, 50 + 150*i, getImageStringFromShip(friendShips[i]));
+            friendShieldSprites[i] = game.add.sprite(72, 50 + 150*i, getShieldStringFromShip(friendShips[i]));
+            friendShieldSprites[i].anchor.setTo(0.5, 0.5);
+            friendSprites[i].anchor.setTo(0.5, 0.5);
             friendSprites[i].inputEnabled = true;
             friendSprites[i].events.onInputDown.add(friendListener, this);
             friendSprites[i].index = i;
         }
 
         for (i = 0; i < enemyShips.length; i++) {
-            enemySprites[i] = game.add.sprite(500, 50 + 100*i, getImageStringFromShip(enemyShips[i]));
+            enemySprites[i] = game.add.sprite(600, 50 + 100*i, getImageStringFromShip(enemyShips[i]));
+            //enemySprites[i] = game.add.sprite(600, 50 + 100*i, 'purple-fighter');
+            enemyShieldSprites[i] = game.add.sprite(600, 50 + 100*i, getShieldStringFromShip(enemyShips[i]));
+            enemyShieldSprites[i].anchor.setTo(0.5, 0.5);
             enemySprites[i].inputEnabled = true;
             enemySprites[i].events.onInputDown.add(enemyListener, this);
             enemySprites[i].index = i;
+            enemySprites[i].anchor.setTo(0.5, 0.5);
+            enemySprites[i].scale.x *= -1;
         }
 
         explosions = game.add.group();
@@ -495,7 +546,6 @@ simplicityApp.controller('combatController', function($scope, $http) {
         friendChosen = true;
         $scope.bothSelected = friendChosen && enemyChosen;
         $scope.friendSelected = friendShips[sprite.index];
-        friendSelectedIndex = sprite.index;
         var ship = friendShips[sprite.index];
         $scope.friendSelected.healthPct = "" + (ship.health/ship.maxHealth)*100 + "%";
         $scope.friendSelected.shieldPct = "" + (ship.shieldHealth/ship.maxShieldHealth)*100 + "%";
@@ -514,13 +564,39 @@ simplicityApp.controller('combatController', function($scope, $http) {
         $scope.enemySelected.energyPct = "" + (ship.currentReservePower/ship.maxReservePower)*100 + "%";
         $scope.$apply();
     }
-
+    var firstShieldAlpha = 1.0;
+    var goingDown = true;
+    var animateFirstShield = false;
     function update() {
         //Called every frame
+        if (animateFirstShield) {
+            if (goingDown) {
+                firstShieldAlpha -= 0.003;
+                if (firstShieldAlpha < 0.7) {
+                    goingDown = false;
+                }
+            } else {
+                firstShieldAlpha += 0.003;
+                if (firstShieldAlpha > 0.97) {
+                    goingDown = true;
+                }
+            }
+            friendShieldSprites[0].alpha = firstShieldAlpha;
+        }
+    }
+
+    $scope.passTurn = function () {
+        console.log("Passing turn");
+        $scope.combatLog[combatLogIndex] = "Next round.";
+        combatLogIndex++;
     }
 
     $scope.fireWeapons = function () {
-        $scope.friendSelected.currentReservePower
+        if ($scope.friendSelected.currentReservePower == 0) {
+            console.log("No energy. exiting function");
+            return 0;
+        }
+        console.log("Firing weapon");
         var damage = $scope.friendSelected.damage;
         if ($scope.friendSelected.currentReservePower < damage) {
             damage = $scope.friendSelected.currentReservePower;
@@ -528,6 +604,8 @@ simplicityApp.controller('combatController', function($scope, $http) {
         } else {
             $scope.friendSelected.currentReservePower -= damage;
         }
+        $scope.combatLog[combatLogIndex] = $scope.friendSelected.name + " fired at " + $scope.enemySelected.name + " for " + damage + " damage.";
+        combatLogIndex++;
         $scope.friendSelected.energyPct = "" + ($scope.friendSelected.currentReservePower/$scope.friendSelected.maxReservePower)*100 + "%";
         var enemyShip = $scope.enemySelected;
         var enemyShipRealDamage = enemyShip.damage;
@@ -537,16 +615,21 @@ simplicityApp.controller('combatController', function($scope, $http) {
         $http.post("/process-attack.json", enemyShip)
         .then(
             function successCallback (response) {
+                console.log(response.data);
                 enemyShips[enemySelectedIndex] = response.data;
                 enemyShips[enemySelectedIndex].damage = enemyShipRealDamage;
                 $scope.enemySelected = enemyShips[enemySelectedIndex];
+                enemyShieldSprites[enemySelectedIndex].alpha = enemyShips[enemySelectedIndex].shieldHealth/enemyShips[enemySelectedIndex].maxShieldHealth;
                 $scope.enemySelected.healthPct = "" + (enemyShips[enemySelectedIndex].health/enemyShips[enemySelectedIndex].maxHealth)*100 + "%";
                 $scope.enemySelected.shieldPct = "" + (enemyShips[enemySelectedIndex].shieldHealth/enemyShips[enemySelectedIndex].maxShieldHealth)*100 + "%";
                 $scope.enemySelected.energyPct = "" + (enemyShips[enemySelectedIndex].currentReservePower/enemyShips[enemySelectedIndex].maxReservePower)*100 + "%";
                 if ($scope.enemySelected.health <= 0) {
                     console.log("He's dead, Jim");
+                    $scope.combatLog[combatLogIndex] = $scope.enemySelected.name + " was destroyed.";
+                    combatLogIndex++;
                     enemyShips[enemySelectedIndex] = null;
                     enemySprites[enemySelectedIndex].kill();
+                    enemyShieldSprites[enemySelectedIndex].alpha = 0.0;
                     $scope.enemySelected = null;
                     $scope.bothSelected = false;
                     var explosion = explosions.getFirstExists(false);
@@ -558,16 +641,6 @@ simplicityApp.controller('combatController', function($scope, $http) {
                     }
                 }
             },
-            /*function successCallback (response) {
-                $scope.enemySelected = response.data;
-                $scope.enemySelected.damage = enemyShipRealDamage;
-                enemyShips[enemySelectedIndex] = $scope.enemySelected;
-                if ($scope.enemySelected.health <= 0) {
-                    console.log("He's dead, Jim");
-                    enemyShips[enemySelectedIndex] = null;
-                    enemySprites[enemySelectedIndex].kill();
-                }
-            },*/
 
             function errorCallback (response) {
                 console.log("Unable to find combat action response");
@@ -595,6 +668,9 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
                 console.log("Unable to find system info");
             });
     }
+    if ($routeParams.param != null) {
+        getSpecificStarSystemInfo($routeParams.param);
+    }
 
     colonizePlanet = function (planet, ship) {
         var wrapper = {"planetId": planet.id, "shipId": ship.id};
@@ -612,9 +688,7 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
             });
     }
 
-    if ($routeParams.param != null) {
-        getSpecificStarSystemInfo($routeParams.param);
-    }
+
     var explosions;
     var wormholes;
     var wormholeAnims = [];
@@ -711,7 +785,6 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
         graphics.lineStyle(1, 0x6C6C6C, 1);
         for(i = 0; i < $scope.starSystemInfo.starSystem.planets.length; i++) {
             graphics.drawCircle(ringCenterX, ringCenterY, 100 + i*50);
-            //Todo fix to use the image string coming in
             planets[i] = game.add.sprite(planetCoordsX[i], planetCoordsY[i], $scope.starSystemInfo.starSystem.planets[i].imageString);
             planets[i].inputEnabled = true;
             planets[i].events.onInputDown.add(listener, this);
@@ -995,8 +1068,16 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
         }
     }
 
+    /*$scope.goToDagobah = function () {
+            console.log("Go to the Dagobah system Luke");
+            console.log("Selected system = " + $scope.selectedSystem.name);
+            window.location.href = "/main.html#/system/" + selectedSystemId;
+        };*/
+
     $scope.enterCombat = function () {
         console.log("EVERYBODY WAS KUNG FU FITING");
+        console.log("Starting a fight in star system with id = " + $scope.starSystemInfo.starSystem.id);
+        window.location.href = "/main.html#/combat/" + $scope.starSystemInfo.starSystem.id;
     }
 
     $scope.colonizeToggle = "Colonize Mode: OFF";

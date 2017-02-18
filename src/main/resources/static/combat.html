@@ -1,4 +1,14 @@
-<div id="phaser-canvas-container">
+<div id="helpDiv" class="help-div" ng-hide="!helpMode">
+    Combat help
+</div>
+<div id="combatLogDiv" class="help-div" ng-hide="!combatLogMode">
+    <center>Combat Log</center><br><br>
+    <div ng-repeat="logItem in combatLog track by $index">
+        {{logItem}}
+    </div>
+</div>
+
+<div id="phaser-canvas-container" ng-hide="helpMode || combatLogMode">
 </div>
 
 <div class="padding10 w390" id="allied_info">
@@ -16,7 +26,7 @@
     </div>
     <div class="progress space-bg">
         <div class="progress-bar progress-bar-warning" role="progressbar" style="width: {{friendSelected.energyPct}}">
-            <span ng-if="friendSelected">Energy {{friendSelected.currentReservePower}} / {{friendSelected.maxReservePower}}</span>
+            <span ng-if="friendSelected">Energy {{friendSelected.currentReservePower}} (+{{friendSelected.powerPerTurn}}) / {{friendSelected.maxReservePower}}</span>
         </div>
     </div>
 
@@ -38,12 +48,23 @@ showing up. If we put an ng-if on the container div it works but the progress ba
     </div>
     <div class="progress space-bg">
         <div class="progress-bar progress-bar-warning" role="progressbar" style="width: {{enemySelected.energyPct}}">
-            <span ng-if="enemySelected">Energy {{enemySelected.currentReservePower}} / {{enemySelected.maxReservePower}}</span>
+            <span ng-if="enemySelected">Energy {{enemySelected.currentReservePower}} (+{{enemySelected.powerPerTurn}}) / {{enemySelected.maxReservePower}}</span>
         </div>
     </div>
 </div>
-<center>
-    <button class="space-bg red-text" type="button" ng-click="fireWeapons()"ng-if="bothSelected">
-        <h4>Fire Weapons</h4>
-    </button>
-</center>
+<div id="buttonDiv">
+    <center>
+        <button class="space-bg red-text" type="button" ng-click="fireWeapons()" ng-if="bothSelected">
+            <h4>Fire Weapons</h4>
+        </button>
+        <button class="space-bg white-text" type="button" ng-click="passTurn()">
+            <h4>Next Round -></h4>
+        </button>
+        <button class="help-button" type="button" ng-click="getHelp()">
+            <h4>Help</h4>
+        </button>
+        <button class="space-bg green-text" type="button" ng-click="viewLog()">
+            <h4>{{logToggle}}</h4>
+        </button>
+    </center>
+</div>

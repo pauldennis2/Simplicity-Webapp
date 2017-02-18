@@ -236,8 +236,8 @@ public class SimplicityRestController {
         return new Response(true);
     }
 
-    @RequestMapping(path = "/combat-info.json", method = RequestMethod.POST)
-    public CombatInfoWrapper combatInfo () {
+    @RequestMapping(path = "/sample-combat-info.json", method = RequestMethod.POST)
+    public CombatInfoWrapper sampleCombatInfo () {
         List<Starship> friendShips = new ArrayList<>();
         List<Starship> enemyShips = new ArrayList<>();
         friendShips.add(new Starship(null, ShipChassis.DESTROYER, "Defiant", "gold-destroyer", null));
@@ -247,6 +247,30 @@ public class SimplicityRestController {
         enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Hurricane", "purple-fighter", null));
         enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Landslide", "purple-fighter", null));
         return new CombatInfoWrapper(friendShips, enemyShips);
+    }
+
+    @RequestMapping (path = "/empty-combat-info.json", method = RequestMethod.POST)
+    public CombatInfoWrapper emptyCombatInfo (@RequestBody IdRequestWrapper wrapper, HttpSession session) {
+        Integer playerId = (Integer) session.getAttribute("playerId");
+        Player player = players.findOne(playerId);
+        Integer systemId = wrapper.getSystemId();
+        StarSystem starSystem = starSystems.findOne(systemId);
+        List<Starship> shipsInSystem = ships.findByStarSystem(starSystem);
+        List<Starship> playersShips = player.getShips();
+        List<Starship> playersShipsInSystem = getOverlap(shipsInSystem, playersShips);
+        for (Starship ship : playersShipsInSystem) {
+            if (ship.getChassis() == ShipChassis.COLONIZER) {
+                playersShipsInSystem.remove(ship);
+            }
+        }
+
+        List<Starship> enemyShips = new ArrayList<>();
+        enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Tempest", "purple-fighter", null));
+        enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Earthquake", "purple-fighter", null));
+        enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Hurricane", "purple-fighter", null));
+        enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Landslide", "purple-fighter", null));
+
+        return new CombatInfoWrapper(playersShipsInSystem, enemyShips);
     }
 
     @RequestMapping(path = "/scrap-ship.json", method = RequestMethod.POST)
@@ -393,5 +417,18 @@ public class SimplicityRestController {
 
     public static String getColorFromRace (AlienRace race) {
         return getColorFromRaceId(getRaceId(race));
+    }
+
+
+    public static List<Starship> getOverlap (List<Starship> firstList, List<Starship> secondList) {
+        List<Starship> overlap = new ArrayList<>();
+
+        for (Starship ship : firstList) {
+            if (secondList.contains(ship)) {
+                overlap.add(ship);
+            }
+        }
+
+        return overlap;
     }
 }

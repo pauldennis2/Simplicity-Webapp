@@ -35,10 +35,10 @@ public class Shield {
 
     public static Shield getTemplateShield (ShipChassis shipType){
         if (shipType == ShipChassis.DESTROYER) {
-            return new Shield(40, 100, 1);
+            return new Shield(25, 80, 1);
         }
         if (shipType == ShipChassis.FIGHTER) {
-            return new Shield(20, 30, 0);
+            return new Shield(15, 20, 0);
         }
         return null;
     }

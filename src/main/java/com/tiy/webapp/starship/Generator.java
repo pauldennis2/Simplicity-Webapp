@@ -49,10 +49,10 @@ public class Generator {
 
     public static Generator getTemplateGenerator (ShipChassis type) {
         if (type == ShipChassis.DESTROYER) {
-            return new Generator(400, 75);
+            return new Generator(150, 30);
         }
         if (type == ShipChassis.FIGHTER) {
-            return new Generator(100, 25);
+            return new Generator(30, 10);
         }
         return null;
     }
