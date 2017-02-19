@@ -84,6 +84,47 @@ public class Planet {
         }
     }
 
+    @Transient
+    public void setProduction (Integer productionNumber) {
+        if (productionNumber > 100 || productionNumber < 0) {
+            throw new AssertionError("Bad input");
+        }
+        if (productionNumber > 95) {
+            productionPct = 1.0;
+            researchPct = 0.0;
+        } else if (productionNumber > 85) {
+            productionPct = 0.9;
+            researchPct = 0.1;
+        } else if (productionNumber > 75) {
+            productionPct = 0.8;
+            researchPct = 0.2;
+        } else if (productionNumber > 65) {
+            productionPct = 0.7;
+            researchPct = 0.3;
+        } else if (productionNumber > 55) {
+            productionPct = 0.6;
+            researchPct = 0.4;
+        } else if (productionNumber > 45) {
+            productionPct = 0.5;
+            researchPct = 0.5;
+        } else if (productionNumber > 35) {
+            productionPct = 0.4;
+            researchPct = 0.6;
+        } else if (productionNumber > 25) {
+            productionPct = 0.3;
+            researchPct = 0.7;
+        } else if (productionNumber > 15) {
+            productionPct = 0.2;
+            researchPct = 0.8;
+        } else if (productionNumber > 5) {
+            productionPct = 0.1;
+            researchPct = 0.9;
+        } else {
+            productionPct = 0.0;
+            researchPct = 1.0;
+        }
+    }
+
 
     public void setPopulation(Integer population) {
         this.population = population;

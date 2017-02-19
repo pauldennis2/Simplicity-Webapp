@@ -447,6 +447,12 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
         $scope.combatLogMode = false;
     }
 
+    window.onbeforeunload = function() {
+        //alert("Confirm leaving page?");
+        console.log("leaving page????????");
+        return "Are you sure?";
+    }
+
     $scope.combatLogMode = false;
     $scope.logToggle = "View Log";
     $scope.viewLog = function () {
@@ -1020,6 +1026,9 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
             planets[i].size = $scope.starSystemInfo.starSystem.planets[i].size;
             planets[i].population = $scope.starSystemInfo.starSystem.planets[i].population;
             planets[i].turnsToGrowth = $scope.starSystemInfo.starSystem.planets[i].turnsToGrowth;
+            planets[i].productionPct = $scope.starSystemInfo.starSystem.planets[i].productionPct;
+            planets[i].id = $scope.starSystemInfo.starSystem.planets[i].id;
+            console.log("Production Percent = " + planets[i].productionPct);
             var ownerRaceNum = $scope.starSystemInfo.starSystem.planets[i].ownerRaceNum;
             planets[i].icon = "";
             switch (ownerRaceNum) {
@@ -1142,6 +1151,7 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
         $scope.tunnelSelected = false;
         $scope.selectedElement = {};
         $scope.selectedElement.name = sprite.elementName;
+        $scope.selectedElement.id = sprite.id;
         if (sprite.shipHealth != null) {
             $scope.shipSelected = true;
             $scope.selectedElement.icon = sprite.icon;
@@ -1149,10 +1159,13 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
         }
         if (sprite.size != null) {
             $scope.planetSelected = true;
-            $scope.outputSlider = 60;
             $scope.selectedElement.icon = sprite.icon;
-            $scope.selectedElement.population = "FRIDAY";
-            console.log("pop = " + sprite.population)
+            $scope.selectedElement.population = sprite.population;
+            $scope.selectedElement.productionPct = sprite.productionPct;
+            $scope.selectedElement.id = sprite.id;
+            console.log("$scope.selectedElement.productionPct = " + $scope.selectedElement.productionPct);
+            $scope.outputSlider = 100 * $scope.selectedElement.productionPct;
+            console.log("output slider = " + $scope.outputSlider);
             if (sprite.population > 0) {
                 $scope.selectedElement.population = "Population: " + sprite.population;
                 if (sprite.turnsToGrowth == -1) {
@@ -1277,6 +1290,23 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
 
     $scope.tunnelToggle = "Open Tunnels";
 
+    $scope.scrapShip = function (sprite) {
+        console.log("Scrapping ship");
+        console.log("id = " + sprite.id);
+        var wrapper = {"shipId": sprite.id};
+        $http.post("/scrap-ship.json", wrapper)
+        .then(
+            function successCallback (response) {
+                console.log("heard back");
+                console.log(response.data);
+                //sprite.kill();
+            },
+
+            function errorCallback (response) {
+                console.log("Error callback for scrapping ship");
+            });
+    }
+
     $scope.openTunnels = function () {
         $scope.tunnelsOpen = !$scope.tunnelsOpen;
         if ($scope.tunnelsOpen) {
@@ -1332,7 +1362,20 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
             for(i = 0; i < $scope.starSystemInfo.starSystem.planets.length; i++) {
                 graphics.drawCircle(ringCenterX, ringCenterY, 100 + i*50);*/
 
-    $scope.changeOutput = function () {
+    $scope.changeOutput = function (planet) {
         console.log("The outputs they are a changin'");
+        console.log(planet);
+        console.log("$scope.outputSlider = " + $scope.outputSlider);
+        var wrapper = {"planetId": planet.id, "productionNumber": $scope.outputSlider};
+        $http.post("/change-output.json", wrapper)
+        .then(
+            function successCallback (response) {
+                console.log("Successfully changed planet's production. Probably.")
+                console.log(response.data);
+            },
+
+            function errorCallback (response) {
+                console.log("Error callback for changeOutput");
+            });
     }
 });

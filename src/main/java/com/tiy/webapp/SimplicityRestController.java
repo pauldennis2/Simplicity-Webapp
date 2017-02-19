@@ -313,9 +313,18 @@ public class SimplicityRestController {
     }
 
     @RequestMapping(path = "/scrap-ship.json", method = RequestMethod.POST)
-    public Response scrapShip (@RequestBody IdRequestWrapper wrapper) {
+    public Response scrapShip (@RequestBody IdRequestWrapper wrapper, HttpSession session) {
         Integer shipId = wrapper.getShipId();
-        return null;
+        Integer playerId = (Integer) session.getAttribute("playerId");
+        Player player = players.findOne(playerId);
+        Starship ship = ships.findOne(shipId);
+        if (player == null || ship == null) {
+            throw new AssertionError("Neither player nor ship can be null to scrap ship");
+        }
+        player.removeShip(ship);
+        ships.delete(ship);
+        players.save(player);
+        return new Response(true);
     }
 
     @RequestMapping(path = "/enter-tunnel.json", method = RequestMethod.POST)
@@ -346,7 +355,14 @@ public class SimplicityRestController {
     @RequestMapping(path = "/change-output.json", method = RequestMethod.POST)
     public Response changeOutput (@RequestBody IdRequestWrapper wrapper) {
         Integer planetId = wrapper.getPlanetId();
-        return null;
+        Planet planet = planets.findOne(planetId);
+        Integer productionNumber = wrapper.getProductionNumber();
+        if (planet == null) {
+            throw new AssertionError("Planet cannot be null");
+        }
+        planet.setProduction(productionNumber);
+        planets.save(planet);
+        return new Response(true);
     }
 
     @RequestMapping(path = "/research-tech.json", method = RequestMethod.POST)

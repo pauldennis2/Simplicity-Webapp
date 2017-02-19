@@ -10,8 +10,9 @@ public class IdRequestWrapper {
     private Integer planetId;
     private Integer tunnelId;
     private Integer techId;
-
     private Integer raceId;
+
+    private Integer productionNumber;
 
     public IdRequestWrapper () {
 
@@ -64,5 +65,13 @@ public class IdRequestWrapper {
 
     public void setRaceId(Integer raceId) {
         this.raceId = raceId;
+    }
+
+    public Integer getProductionNumber() {
+        return productionNumber;
+    }
+
+    public void setProductionNumber(Integer productionNumber) {
+        this.productionNumber = productionNumber;
     }
 }

@@ -49,7 +49,7 @@
     </div>
     <div class="right" id="shipActionDiv" ng-hide="!shipSelected" style="width: 395px">
         <button class="space-bg w120" type="button" ng-click="enterCombat()">Enter Combat</button> <br>
-        <button class="space-bg w120" type="button" ng-click="scrapShip()">Scrap</button>
+        <button class="space-bg w120" type="button" ng-click="scrapShip(selectedElement)">Scrap</button>
     </div>
     <div class="right" id="planetActionDiv" ng-hide="!planetSelected" style="width: 545px">
         <div class="left clear-both">Change Planet Output Priorities </div>
@@ -59,7 +59,7 @@
             <span class="left">Production</span>
         </div>
         <div class="left clear-both padding10">
-            <button class="space-bg" type="button" ng-click="changeOutput()">Confirm</button>
+            <button class="space-bg" type="button" ng-click="changeOutput(selectedElement)">Confirm</button>
         </div>
     </div>
 </div>
