@@ -12,9 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by Paul Dennis on 2/6/2017.
@@ -164,8 +162,8 @@ public class SimplicityRestController {
         return player;
     }
 
-    @RequestMapping(path = "/diplomacy-info.json", method = RequestMethod.POST)
-    public List<PlayerTemp> diplomacyInfo (@RequestBody IdRequestWrapper wrapper) {
+    @RequestMapping(path = "/simple-diplomacy-info.json", method = RequestMethod.POST)
+    public List<PlayerTemp> simpleDiplomacyInfo (@RequestBody IdRequestWrapper wrapper) {
         List<PlayerTemp> hardCodedList = new ArrayList<>();
         hardCodedList.add(new PlayerTemp(10, "Kitties", "assets/races/race1.jpg"));
         hardCodedList.add(new PlayerTemp(15, "Doges", "assets/races/race2.jpg"));
@@ -179,6 +177,47 @@ public class SimplicityRestController {
             playerTemp.calculatePercentageOfTotalPop((double) total);
         }
         return hardCodedList;
+    }
+
+    @RequestMapping(path = "/diplomacy-info.json", method = RequestMethod.POST)
+    public List<Player> diplomacyInfo (HttpSession session) {
+        Integer gameId = (Integer) session.getAttribute("gameId");
+        List<Player> players = games.findOne(gameId).getPlayers();
+        int totalPop = 0;
+        for (Player player : players) {
+            int population = 0;
+            for (Planet planet : player.getPlanets()) {
+                population += planet.getPopulation();
+            }
+            player.setPopulation(population);
+            totalPop += population;
+
+            switch (player.getRace()) {
+                case KITTY:
+                    player.setImageFile("assets/races/race1.jpg");
+                    break;
+                case DOGE:
+                    player.setImageFile("assets/races/race2.jpg");
+                    break;
+                case HORSIE:
+                    player.setImageFile("assets/races/race3.jpg");
+                    break;
+                case SSSNAKE:
+                    player.setImageFile("assets/races/race4.jpg");
+                    break;
+                default:
+                    throw new AssertionError("Race not recognized");
+            }
+            if (population == 0) {
+                player.setImageFile(player.getImageFile().substring(0, 18) + "_extinct.jpg");
+            }
+        }
+        for (Player player : players) {
+            int pop = player.getPopulation();
+            double pct = (double)pop / (double) totalPop;
+            player.setPercentOfTotalPop(pct);
+        }
+        return players;
     }
 
     @RequestMapping(path = "/ships-info.json", method = RequestMethod.POST)
@@ -261,6 +300,8 @@ public class SimplicityRestController {
                 playersShipsInSystem.remove(ship);
             }
         }
+
+        Collections.sort(playersShipsInSystem);
 
         List<Starship> enemyShips = new ArrayList<>();
         enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Tempest", "purple-fighter", null));

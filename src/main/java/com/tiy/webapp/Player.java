@@ -48,6 +48,15 @@ public class Player {
     @OneToOne
     private StarSystem homeSystem;
 
+    @Transient
+    private int population;
+
+    @Transient
+    private String imageFile;
+
+    @Transient
+    private double percentOfTotalPop;
+
     public Player () {
 
     }
@@ -162,5 +171,29 @@ public class Player {
 
     public void setSecondTechResearched(Boolean secondTechResearched) {
         this.secondTechResearched = secondTechResearched;
+    }
+
+    public int getPopulation() {
+        return population;
+    }
+
+    public void setPopulation(int population) {
+        this.population = population;
+    }
+
+    public String getImageFile() {
+        return imageFile;
+    }
+
+    public void setImageFile(String imageFile) {
+        this.imageFile = imageFile;
+    }
+
+    public double getPercentOfTotalPop() {
+        return percentOfTotalPop;
+    }
+
+    public void setPercentOfTotalPop(double percentOfTotalPop) {
+        this.percentOfTotalPop = percentOfTotalPop;
     }
 }

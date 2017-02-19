@@ -34,11 +34,13 @@ public class Shield {
 
 
     public static Shield getTemplateShield (ShipChassis shipType){
-        if (shipType == ShipChassis.DESTROYER) {
-            return new Shield(25, 80, 1);
-        }
-        if (shipType == ShipChassis.FIGHTER) {
-            return new Shield(15, 20, 0);
+        switch (shipType) {
+            case FIGHTER:
+                return new Shield(15, 20, 0);
+            case DESTROYER:
+                return new Shield(25, 80, 1);
+            case CRUISER:
+                return new Shield(35, 120, 2);
         }
         return null;
     }

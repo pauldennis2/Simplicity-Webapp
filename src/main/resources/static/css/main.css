@@ -64,6 +64,10 @@ body {
     color: red;
 }
 
+.grey-text {
+    color: grey;
+}
+
 .white-text {
     color: white;
 }

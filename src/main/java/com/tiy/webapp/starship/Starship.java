@@ -11,20 +11,20 @@ import javax.persistence.*;
  */
 @Entity
 @Table (name = "starships")
-public class Starship {
+public class Starship implements Comparable {
 
     @GeneratedValue
     @Id
-    Integer id;
+    private Integer id;
 
     @ManyToOne
-    StarSystem starSystem;
+    private StarSystem starSystem;
 
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = true)
-    Integer damage;
+    @Column(nullable = false)
+    private Integer damage;
 
     @Column(nullable = false)
     private Integer health;
@@ -75,18 +75,19 @@ public class Starship {
 
     }
 
-    public void takeDamage (int damage) {
+    @Transient
+    public void takeDamage (int damageAmount) {
         int tempMaxDamageAbsorb = maxDamageAbsorb;
-        while (damage > 0 && shieldHealth > 0 && currentReservePower > 0 && tempMaxDamageAbsorb > 0) {
-            damage--;
+        while (damageAmount > 0 && shieldHealth > 0 && currentReservePower > 0 && tempMaxDamageAbsorb > 0) {
+            damageAmount--;
             shieldHealth--;
             currentReservePower--;
             tempMaxDamageAbsorb--;
         }
-        if (damage > health) {
+        if (damageAmount > health) {
             health = 0;
         } else {
-            health -= damage;
+            health -= damageAmount;
         }
     }
 
@@ -120,6 +121,22 @@ public class Starship {
             health -= damage;
         }
     }*/
+
+    //a negative integer, zero, or a positive integer as the first argument is less than, equal to, or greater than the second.
+
+    //first < second : -1
+    //first = second : 0
+    //first > second : 1
+    public int compareTo (Starship other) {
+        //we'll just compare by health since bigger ships will always have more
+        if (other.damage > damage) {
+            return 1;
+        } else if (other.damage == damage) {
+            return 0;
+        } else {
+            return -1;
+        }
+    }
 
     public Starship(StarSystem starSystem, ShipChassis chassis, String name, String imageString, Integer ownerRaceNum) {
         this.name = name;
@@ -407,5 +424,10 @@ public class Starship {
 
     public void setOwnerRaceNum(Integer ownerRaceNum) {
         this.ownerRaceNum = ownerRaceNum;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        return this.compareTo((Starship)o);
     }
 }

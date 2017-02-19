@@ -25,7 +25,8 @@
         <button class="space-bg white-text" type="button" ng-click="endCombat()" ng-hide="!combatOver">
             <h4>Exit Combat</h4>
         </button><br>
-        <button class="space-bg red-text" type="button" ng-click="fireWeapons()" ng-hide="!bothSelected">
+        <button class="space-bg red-text" type="button" ng-click="fireWeapons()" ng-hide="!bothSelected"
+                ng-disabled="friendSelected.alreadyFired" ng-class="greyIfFired">
             <h4>Fire Weapons</h4>
         </button>
     </center>

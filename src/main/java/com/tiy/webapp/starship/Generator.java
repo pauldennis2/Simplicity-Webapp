@@ -48,11 +48,13 @@ public class Generator {
     }
 
     public static Generator getTemplateGenerator (ShipChassis type) {
-        if (type == ShipChassis.DESTROYER) {
-            return new Generator(150, 30);
-        }
-        if (type == ShipChassis.FIGHTER) {
-            return new Generator(30, 10);
+        switch (type) {
+            case FIGHTER:
+                return new Generator(30, 10);
+            case DESTROYER:
+                return new Generator(150, 30);
+            case CRUISER:
+                return new Generator(200, 40);
         }
         return null;
     }
