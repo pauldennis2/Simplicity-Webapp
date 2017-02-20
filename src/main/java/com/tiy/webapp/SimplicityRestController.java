@@ -295,9 +295,15 @@ public class SimplicityRestController {
         List<Starship> shipsInSystem = ships.findByStarSystem(starSystem);
         List<Starship> playersShips = player.getShips();
         List<Starship> playersShipsInSystem = getOverlap(shipsInSystem, playersShips);
-        for (Starship ship : playersShipsInSystem) {
+        /*for (Starship ship : playersShipsInSystem) {
             if (ship.getChassis() == ShipChassis.COLONIZER) {
                 playersShipsInSystem.remove(ship);
+            }
+        }*/
+        for (int index = 0; index < playersShipsInSystem.size(); index++) {
+            if (playersShipsInSystem.get(index).getChassis() == ShipChassis.COLONIZER) {
+                playersShipsInSystem.remove(index);
+                index--;
             }
         }
 
@@ -390,6 +396,16 @@ public class SimplicityRestController {
             player.setSecondTechResearched(true);
             player.setResearchPoolTotal(player.getResearchPoolTotal() - 50);
         }
+        if (techId == 2) {
+            if (player.getCruiserTechResearched()) {
+                throw new AssertionError("already researched");
+            }
+            if (player.getResearchPoolTotal() < 90) {
+                throw new AssertionError("not enough rp");
+            }
+            player.setCruiserTechResearched(true);
+            player.setResearchPoolTotal(player.getResearchPoolTotal() - 90);
+        }
         players.save(player);
         return player;
     }
@@ -424,8 +440,11 @@ public class SimplicityRestController {
     public ShipyardInfoWrapper shipyardInfo (HttpSession session) {
         Integer playerId = (Integer) session.getAttribute("playerId");
         Player player = players.findOne(playerId);
-
-        return new ShipyardInfoWrapper(player.getProductionPoolTotal());
+        if (player == null) {
+            throw new AssertionError("whats the happy haps?");
+        }
+        System.out.println("Player = " + player);
+        return new ShipyardInfoWrapper(player.getProductionPoolTotal(), player);
     }
 
     @RequestMapping(path = "/return-combat-result.json", method = RequestMethod.POST)

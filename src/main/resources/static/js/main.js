@@ -345,6 +345,12 @@ simplicityApp.controller('researchController', function($scope, $http) {
                 } else {
                     $scope.secondTechImageClass = "img-normal";
                 }
+
+                if (!$scope.researchInfo.cruiserTechResearched) {
+                    $scope.cruiserTechImageClass = "img-grey";
+                } else {
+                    $scope.cruiserTechImageClass = "img-normal";
+                }
             },
 
             function errorCallback (response) {
@@ -364,6 +370,13 @@ simplicityApp.controller('researchController', function($scope, $http) {
             alert('Not enough research points');
             return;
         }
+        if (techNumber === 2 && $scope.researchInfo.researchPoolTotal < 90) {
+            alert('Not enough research points');
+            return;
+        }
+        if (techNumber > 2) {
+            alert("That tech hasn't been programmed in yet.");
+        }
 
         var wrapper = {"techId": techNumber};
         $http.post("/research-tech.json", wrapper)
@@ -381,6 +394,11 @@ simplicityApp.controller('researchController', function($scope, $http) {
                     $scope.secondTechImageClass = "img-grey";
                 } else {
                     $scope.secondTechImageClass = "img-normal";
+                }
+                if (!$scope.researchInfo.cruiserTechResearched) {
+                    $scope.cruiserTechImageClass = "img-grey";
+                } else {
+                    $scope.cruiserTechImageClass = "img-normal";
                 }
             },
 

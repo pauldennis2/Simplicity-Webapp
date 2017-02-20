@@ -45,6 +45,9 @@ public class Player {
     @Column
     private Boolean secondTechResearched;
 
+    @Column
+    private Boolean cruiserTechResearched;
+
     @OneToOne
     private StarSystem homeSystem;
 
@@ -71,6 +74,7 @@ public class Player {
         researchPoolTotal = 0;
         firstTechResearched = false;
         secondTechResearched = false;
+        cruiserTechResearched = false;
     }
 
     public void addShip (Starship starship) {
@@ -195,5 +199,13 @@ public class Player {
 
     public void setPercentOfTotalPop(double percentOfTotalPop) {
         this.percentOfTotalPop = percentOfTotalPop;
+    }
+
+    public Boolean getCruiserTechResearched() {
+        return cruiserTechResearched;
+    }
+
+    public void setCruiserTechResearched(Boolean cruiserTechResearched) {
+        this.cruiserTechResearched = cruiserTechResearched;
     }
 }
