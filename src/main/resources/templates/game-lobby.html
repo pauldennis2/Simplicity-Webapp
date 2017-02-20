@@ -22,9 +22,19 @@
     </li>
 </ul>
 <hr>
+<h4>Open Games (Just Started)</h4>
+Name format: (game starter's username):(lobby name)(random numbers)<br>
+<ul class="list-group" style="width: 500px;">
+    <li class="list-group-item trans-bg" ng-repeat="openGame in openGames">
+        {{openGame.name}}<input value="Join Game" class="yellow-bg black-text" type="button" ng-click="joinGame(openGame.id)">
+    </li>
+</ul>
+<hr>
+(Note: the lobby does not have a programmatic function at the moment (i.e. it is mainly cosmetic)
 <ul class="list-group"  style="width: 500px;">
     <li class="list-group-item trans-bg" ng-click="moveToGroup(alphaUsers)">Alpha Lobby
-        <br><input class="space-bg" type="button" value="Start Game" ng-model="alphaStart" disabled><span class="badge">{{alphaUsers.length}}/4</span>
+        <br><input class="space-bg" type="button" value="Start Game" ng-click="gameStart(0)" ng-disabled="!alphaStartReady">
+        <span class="badge">{{alphaUsers.length}}/4</span>
         <ul class="list-group">
             <li class="list-group-item trans-bg" ng-repeat="user in alphaUsers">
                 {{user.handle}}
@@ -34,7 +44,8 @@
         </ul>
     </li>
     <li class="list-group-item trans-bg" ng-click="moveToGroup(bakerUsers)">Baker Lobby
-        <br><input class="space-bg" type="button" value="Start Game" ng-model="bakerStart" disabled><span class="badge">{{bakerUsers.length}}/4</span>
+        <br><input class="space-bg" type="button" value="Start Game" ng-click="gameStart(1)" ng-disabled="!bakerStartReady">
+        <span class="badge">{{bakerUsers.length}}/4</span>
         <ul class="list-group trans-bg" >
             <li class="list-group-item trans-bg" ng-repeat="user in bakerUsers" >
                 {{user.handle}}
@@ -44,7 +55,8 @@
         </ul>
     </li>
     <li class="list-group-item trans-bg" ng-click="moveToGroup(charlieUsers)">Charlie Lobby
-        <br><input class="space-bg" type="button" value="Start Game" ng-model="charlieStart" disabled><span class="badge">{{charlieUsers.length}}/4</span>
+        <br><input class="space-bg" type="button" value="Start Game" ng-click="gameStart(2)" ng-disabled="!charlieStartReady">
+        <span class="badge">{{charlieUsers.length}}/4</span>
         <ul class="list-group">
             <li class="list-group-item trans-bg" ng-repeat="user in charlieUsers">
                 {{user.handle}}
@@ -54,7 +66,8 @@
         </ul>
     </li>
     <li class="list-group-item trans-bg" ng-click="moveToGroup(deltaUsers)">Delta Lobby
-        <br><input class="space-bg" type="button" value="Start Game" ng-model="deltaStart" disabled><span class="badge">{{deltaUsers.length}}/4</span>
+        <br><input class="space-bg" type="button" value="Start Game" ng-click="gameStart(3)" ng-disabled="!deltaStartReady">
+        <span class="badge">{{deltaUsers.length}}/4</span>
         <ul class="list-group">
             <li class="list-group-item trans-bg" ng-repeat="user in deltaUsers">
                 {{user.handle}}

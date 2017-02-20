@@ -48,6 +48,9 @@ public class Player {
     @Column
     private Boolean cruiserTechResearched;
 
+    @Column
+    private Boolean turnCommitted;
+
     @OneToOne
     private StarSystem homeSystem;
 
@@ -75,6 +78,7 @@ public class Player {
         firstTechResearched = false;
         secondTechResearched = false;
         cruiserTechResearched = false;
+        turnCommitted = false;
     }
 
     public void addShip (Starship starship) {
@@ -207,5 +211,13 @@ public class Player {
 
     public void setCruiserTechResearched(Boolean cruiserTechResearched) {
         this.cruiserTechResearched = cruiserTechResearched;
+    }
+
+    public Boolean getTurnCommitted() {
+        return turnCommitted;
+    }
+
+    public void setTurnCommitted(Boolean turnCommitted) {
+        this.turnCommitted = turnCommitted;
     }
 }

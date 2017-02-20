@@ -49,6 +49,8 @@ public class SimplicityRestController {
 
     public static final int NEW_PLANET_POP = 2;
 
+    public static final int DEFAULT_STARTING_POP = 8;
+
 
     @RequestMapping(path = "/users.json", method = RequestMethod.GET)
     public LobbyUsersWrapper getUsers () {
@@ -58,6 +60,11 @@ public class SimplicityRestController {
         List<User> deltaUsers = users.findByLobbyStatus(LobbyStatus.DELTA);
         List<User> mainLobbyUsers = users.findByLobbyStatus(LobbyStatus.MAIN);
         return new LobbyUsersWrapper(alphaUsers, bakerUsers, charlieUsers, deltaUsers, mainLobbyUsers);
+    }
+
+    @RequestMapping(path = "/open-games.json", method= RequestMethod.GET)
+    public List<Game> openGames () {
+        return games.findByJustStarted(true);
     }
 
     @RequestMapping(path = "/my-user.json", method = RequestMethod.GET)
@@ -83,46 +90,132 @@ public class SimplicityRestController {
         return new Response(false);
     }
 
+    @RequestMapping(path = "/new-multiplayer-game.json", method = RequestMethod.POST)
+    public Response newMultiGame (@RequestBody IdRequestWrapper wrapper, HttpSession session) {
+        Integer raceId = wrapper.getRaceId();
+        AlienRace race = getRaceFromId(raceId);
+
+        String firstFiveRandom = "";
+        Random random = new Random();
+        for (int i = 0; i < 5; i++) {
+            firstFiveRandom += "" + random.nextInt(10);
+        }
+
+        StarSystemGraph ssgraph = new StarSystemGraph("4p_med_ring_map.txt");
+        StarSystem homeSystem = ssgraph.findByName("P" + (1 + getRaceId(race)) + " Home");
+        User user = (User) session.getAttribute("user");
+        Player player = new Player (user.getHandle(), race, homeSystem);
+
+        List<Player> playerList = new ArrayList<>();
+        playerList.add(player);
+
+        Planet homePlanet = homeSystem.getPlanets().get(0);
+        homePlanet.setOwnerRaceNum(getRaceId(race));
+        homePlanet.setPopulation(DEFAULT_STARTING_POP);
+        player.addPlanet(homePlanet);
+
+        ssgraph.setName("Map " + firstFiveRandom);
+        String name = user.getHandle() + ":" + wrapper.getLobbyName() + firstFiveRandom;
+
+        String imageString = "assets/ships/fighter/fighter_" + getColorFromRace(race) + ".png";
+        player.addShip(new Starship(homeSystem, ShipChassis.FIGHTER, "Fighter", imageString, raceId));
+
+        Game game = new Game(name, playerList, ssgraph);
+
+        games.save(game);
+        session.setAttribute("gameId", game.getId());
+        session.setAttribute("playerId", player.getId());
+        return new Response(true, game.getId());
+    }
+
+    @RequestMapping(path = "/join-multiplayer-game.json", method = RequestMethod.POST)
+    public Response joinMultiGame (@RequestBody IdRequestWrapper wrapper, HttpSession session) {
+        Integer gameId = wrapper.getGameId();
+        Game game = games.findOne(gameId);
+        Integer raceId = wrapper.getRaceId();
+        AlienRace race = getRaceFromId(raceId);
+        if (game == null) {
+            throw new AssertionError("Game is null");
+        }
+        if (!game.getJustStarted()) {
+            throw new AssertionError("Game did not just start. Cannot join an in-progress game");
+        }
+        List<Player> playerList = game.getPlayers();
+
+        //Code to check if the desired race is taken; if so, find the first available race
+        Response response = new Response(true);
+        boolean newRaceNeeded = false;
+        for (Player player : playerList) {
+            if (player.getRace() == race) {
+                response.setMessage("Race " + race + " was already taken by " + player.getName()
+                        + " (sorry). You were assigned a different race.");
+                newRaceNeeded = true;
+            }
+        }
+        if (newRaceNeeded) {
+            List<AlienRace> possibleRaces = new ArrayList<>();
+            for (AlienRace race2 : AlienRace.values()) {
+                possibleRaces.add(race2);
+            }
+            for (Player player : playerList) {
+                possibleRaces.remove(player.getRace());
+            }
+            race = possibleRaces.get(0);
+        }
+        StarSystemGraph ssgraph = game.getStarSystemGraph();
+
+        StarSystem homeSystem = ssgraph.findByName("P" + (1 + getRaceId(race)) + " Home");
+
+        Planet homePlanet = homeSystem.getPlanets().get(0);
+        homePlanet.setOwnerRaceNum(getRaceId(race));
+        homePlanet.setPopulation(DEFAULT_STARTING_POP);
+        User user = (User) session.getAttribute("user");
+        Player player = new Player (user.getHandle(), race, homeSystem);
+        String imageString = "assets/ships/fighter/fighter_" + getColorFromRace(race) + ".png";
+        player.addShip(new Starship(homeSystem, ShipChassis.FIGHTER, "Fighter", imageString, raceId));
+        player.addPlanet(homePlanet);
+
+        players.save(player);
+
+        game.getPlayers().add(player);
+
+        games.save(game);
+        System.out.println("Player id = " + player.getId());
+        session.setAttribute("gameId", game.getId());
+        session.setAttribute("playerId", player.getId());
+
+        Integer retrievedId = (Integer)session.getAttribute("playerId");
+
+        System.out.println("retrievedId = " + retrievedId);
+
+        response.setId(game.getId());
+        return response;
+    }
+
     @RequestMapping(path = "/new-empty-game.json", method = RequestMethod.POST)
     public Response newEmptyGame (@RequestBody IdRequestWrapper wrapper, HttpSession session) {
         Integer raceId = wrapper.getRaceId();
-        AlienRace race;
-        switch (raceId) {
-            case 0:
-                race = AlienRace.KITTY;
-                break;
-            case 1:
-                race = AlienRace.DOGE;
-                break;
-            case 2:
-                race = AlienRace.HORSIE;
-                break;
-            case 3:
-                race = AlienRace.SSSNAKE;
-                break;
-            default:
-                throw new AssertionError("Race id is bad");
-        }
+        AlienRace race = getRaceFromId(raceId);
 
         double d = Math.random() * Math.PI + 239 * Math.random();
 
         StarSystemGraph ssgraph = new StarSystemGraph("4p_med_ring_map.txt");
         StarSystem homeSystem = ssgraph.findByName("P" + (1 + raceId) + " Home");
+        User user = (User) session.getAttribute("user");
+        Player player = new Player(user.getHandle(), race, homeSystem);
 
-        Player player = new Player("Default Leader", race, homeSystem);
-
-        List<Player> players = new ArrayList<>();
-        players.add(player);
+        List<Player> playerList = new ArrayList<>();
+        playerList.add(player);
 
         Planet homePlanet = homeSystem.getPlanets().get(0);
         homePlanet.setOwnerRaceNum(raceId);
-        homePlanet.setPopulation(8);
+        homePlanet.setPopulation(DEFAULT_STARTING_POP);
         player.addPlanet(homePlanet);
         ssgraph.setName("Map " + d);
         String name = "Game " + d;
         String imageString = "assets/ships/fighter/fighter_" + getColorFromRace(race) + ".png";
         player.addShip(new Starship(homeSystem, ShipChassis.FIGHTER, "Fighter", imageString, raceId));
-        Game game = new Game(name, players, ssgraph);
+        Game game = new Game(name, playerList, ssgraph);
         games.save(game);
         session.setAttribute("gameId", game.getId());
         session.setAttribute("playerId", player.getId());
@@ -160,23 +253,6 @@ public class SimplicityRestController {
         Integer playerId = (Integer) session.getAttribute("playerId");
         Player player = players.findOne(playerId);
         return player;
-    }
-
-    @RequestMapping(path = "/simple-diplomacy-info.json", method = RequestMethod.POST)
-    public List<PlayerTemp> simpleDiplomacyInfo (@RequestBody IdRequestWrapper wrapper) {
-        List<PlayerTemp> hardCodedList = new ArrayList<>();
-        hardCodedList.add(new PlayerTemp(10, "Kitties", "assets/races/race1.jpg"));
-        hardCodedList.add(new PlayerTemp(15, "Doges", "assets/races/race2.jpg"));
-        hardCodedList.add(new PlayerTemp(0, "Horsies", "assets/races/race3.jpg"));
-        hardCodedList.add(new PlayerTemp(1, "Sssnakesss", "assets/races/race4.jpg"));
-        int total = 0;
-        for (PlayerTemp playerTemp : hardCodedList) {
-            total += playerTemp.getPopulation();
-        }
-        for (PlayerTemp playerTemp : hardCodedList) {
-            playerTemp.calculatePercentageOfTotalPop((double) total);
-        }
-        return hardCodedList;
     }
 
     @RequestMapping(path = "/diplomacy-info.json", method = RequestMethod.POST)
@@ -271,19 +347,6 @@ public class SimplicityRestController {
         ships.delete(ship);
         players.save(player);
         return new Response(true);
-    }
-
-    @RequestMapping(path = "/sample-combat-info.json", method = RequestMethod.POST)
-    public CombatInfoWrapper sampleCombatInfo () {
-        List<Starship> friendShips = new ArrayList<>();
-        List<Starship> enemyShips = new ArrayList<>();
-        friendShips.add(new Starship(null, ShipChassis.DESTROYER, "Defiant", "gold-destroyer", null));
-        friendShips.add(new Starship(null, ShipChassis.DESTROYER, "Valiant", "gold-destroyer", null));
-        enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Tempest", "purple-fighter", null));
-        enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Earthquake", "purple-fighter", null));
-        enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Hurricane", "purple-fighter", null));
-        enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Landslide", "purple-fighter", null));
-        return new CombatInfoWrapper(friendShips, enemyShips);
     }
 
     @RequestMapping (path = "/empty-combat-info.json", method = RequestMethod.POST)
@@ -454,29 +517,46 @@ public class SimplicityRestController {
 
     @RequestMapping(path = "/process-turn.json", method = RequestMethod.POST)
     public TurnInfoWrapper processTurn (HttpSession session) {
+        Integer playerId = (Integer) session.getAttribute("playerId");
+        Player currentPlayer = players.findOne(playerId);
+        currentPlayer.setTurnCommitted(true);
+        players.save(currentPlayer);
         Integer gameId = (Integer) session.getAttribute("gameId");
         Game game = games.findOne(gameId);
-        game.incrementTurn();
-        List<Player> players = game.getPlayers();
-        int productionAmt = 0;
-        int researchAmt = 0;
-        for (Player player : players) {
-            List<Starship> shipList = player.getShips();
-            for (Starship ship : shipList) {
-                ship.moveToDestination();
-            }
+        List<Player> playerList = game.getPlayers();
 
-            for(Planet planet : player.getPlanets()) {
-                productionAmt += planet.getProductionPct() * planet.getPopulation();
-                researchAmt += planet.getResearchPct() * planet.getPopulation();
-                planet.growPop();
+        boolean allPlayersDone = true;
+        for (Player player : playerList) {
+            if (!player.getTurnCommitted()) {
+                allPlayersDone = false;
             }
-            player.setProductionPoolTotal(player.getProductionPoolTotal() + productionAmt);
-            player.setResearchPoolTotal(player.getResearchPoolTotal() + researchAmt);
         }
-        games.save(game);
 
-        return new TurnInfoWrapper(researchAmt, productionAmt);
+        if (allPlayersDone) {
+            game.incrementTurn();
+
+            for (Player player : playerList) {
+                player.setTurnCommitted(false);
+                List<Starship> shipList = player.getShips();
+                for (Starship ship : shipList) {
+                    ship.moveToDestination();
+                }
+
+                int productionAmt = 0;
+                int researchAmt = 0;
+                for (Planet planet : player.getPlanets()) {
+                    productionAmt += planet.getProductionPct() * planet.getPopulation();
+                    researchAmt += planet.getResearchPct() * planet.getPopulation();
+                    planet.growPop();
+                }
+                player.setProductionPoolTotal(player.getProductionPoolTotal() + productionAmt);
+                player.setResearchPoolTotal(player.getResearchPoolTotal() + researchAmt);
+            }
+            games.save(game);
+
+            return null;
+        }
+        return null; //Todo change method return types
     }
 
     public static Integer getRaceId (AlienRace race) {
@@ -522,5 +602,23 @@ public class SimplicityRestController {
         }
 
         return overlap;
+    }
+
+    public static AlienRace getRaceFromId (Integer raceId) {
+        switch (raceId) {
+            case -1:
+                System.out.println("No race selected. Defaulting to first");
+                return AlienRace.KITTY;
+            case 0:
+                return AlienRace.KITTY;
+            case 1:
+                return AlienRace.DOGE;
+            case 2:
+                return AlienRace.HORSIE;
+            case 3:
+                return AlienRace.SSSNAKE;
+            default:
+                throw new AssertionError("Race id is bad");
+        }
     }
 }

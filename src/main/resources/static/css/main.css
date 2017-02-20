@@ -32,10 +32,6 @@ body {
     border: 1px solid white;
 }
 
-.space-bg {
-    background: black;
-}
-
 .img-circle {
     border-radius: 50%;
 }
@@ -46,6 +42,14 @@ body {
 
 .no-bullet-list {
     list-style-type: none;
+}
+
+.yellow-bg {
+    background: yellow;
+}
+
+.space-bg {
+    background: black;
 }
 
 .trans-bg {
@@ -78,6 +82,10 @@ body {
 
 .green-text {
     color: green;
+}
+
+.black-text {
+    color: black;
 }
 
 .production{

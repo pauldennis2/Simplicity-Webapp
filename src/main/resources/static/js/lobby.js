@@ -22,19 +22,23 @@ simplicityLobbyApp.controller('lobbyController', function($scope, $http) {
                 console.log("Could not find my user");
             });
     };
-
+    var raceId = -1;
     $scope.raceChange = function () {
         if ($scope.race_selection == "cat") {
             $scope.raceImg = "../assets/races/race1.jpg";
+            raceId = 0;
         }
         if ($scope.race_selection == "dog") {
             $scope.raceImg = "../assets/races/race2.jpg";
+            raceId = 1;
         }
         if ($scope.race_selection == "horse") {
             $scope.raceImg = "../assets/races/race3.jpg";
+            raceId = 2;
         }
         if ($scope.race_selection == "snake") {
             $scope.raceImg = "../assets/races/race4.jpg";
+            raceId = 3;
         }
     }
 
@@ -49,7 +53,6 @@ simplicityLobbyApp.controller('lobbyController', function($scope, $http) {
     };
 
     getLobbyUsers = function () {
-        console.log("Getting lobby users");
         $http.get("/users.json")
         .then(
             function successCallback (response) {
@@ -64,15 +67,100 @@ simplicityLobbyApp.controller('lobbyController', function($scope, $http) {
                 console.log("Could not find users");
             });
     };
+    $scope.openGames = [];
+    getOpenGames = function () {
+        console.log("getting open games");
+        $http.get("/open-games.json")
+        .then(
+            function successCallback (response) {
+                $scope.openGames = response.data;
+            },
+
+            function errorCallback (response) {
+                console.log("Error callback for open-games");
+            }
+        )
+    }
+
+    $scope.joinGame = function (gameId) {
+        console.log("Attempting to join game with id = " + gameId);
+
+        var wrapper = {"gameId": gameId, "raceId": raceId};
+        $http.post("/join-multiplayer-game.json", wrapper)
+        .then(
+            function successCallback (response) {
+                console.log("Successfully joined game?");
+                console.log(response.data);
+                window.location.href = "/main.html";
+            },
+
+            function errorCallback (response) {
+                console.log("Unable to join game for some reason =(");
+            }
+        )
+    }
+    $scope.alphaStartReady = true;
+    $scope.bakerStartReady = true;
+    $scope.charlieStartReady = true;
+    $scope.deltaStartReady = true;
+
+    $scope.gameStart = function (lobbyNumber) {
+        console.log("Thinking about starting a game. Lobby number: " + lobbyNumber);
+        /*switch (lobbyNumber) {
+            case 0:
+                if ($scope.alphaUsers.length > 1) {
+                    console.log("Cool, starting alpha game");
+                } else {
+                    console.log("Nope, not enough users");
+                }
+                break;
+        }*/
+        var lobbyName;
+        switch (lobbyNumber) {
+            case 0:
+                lobbyName = "Alpha";
+                break;
+            case 1:
+                lobbyName = "Baker";
+                break;
+            case 2:
+                lobbyName = "Charlie";
+                break;
+            case 3:
+                lobbyName = "Delta";
+                break;
+        }
+        var wrapper = {"lobbyName": lobbyName, "raceId": raceId};
+        $http.post("/new-multiplayer-game.json", wrapper)
+        .then(
+            function successCallback (response) {
+                console.log("Successfully started a new game. So sayeth the wise Alaundo");
+                console.log(response.data);
+                window.location.href = "/main.html";
+            },
+
+            function errorCallback (response) {
+                console.log("unable to start new game");
+            }
+        )
+    }
+
     currentUserIndex = 1;
     getLobbyUsers();
-        window.setInterval(function(){
-          getLobbyUsers();
-        }, 1000);
 
-    $scope.raceImg = "../assets/races/race1.jpg";
+    window.setInterval(function(){
+        getLobbyUsers();
+    }, 1000);
+
+    getOpenGames();
+    window.setInterval(function(){
+        getOpenGames();
+    }, 1000);
+
+    $scope.raceImg = "../assets/races/no_race.png";
 
     $scope.moveToGroup = function (group) {
+        //Todo: double-check this logic. It seems like we're changing their database status before we're sure we have room
         if (group === $scope.alphaUsers) {
             updateUser(2); //Third value in the enum LobbyStatus
         }

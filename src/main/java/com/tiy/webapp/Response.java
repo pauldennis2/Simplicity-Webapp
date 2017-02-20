@@ -8,6 +8,8 @@ public class Response {
     private boolean success;
     private Integer id;
 
+    private String message;
+
     public Response (boolean success) {
         this.success = success;
     }
@@ -33,4 +35,11 @@ public class Response {
         this.id = id;
     }
 
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
 }

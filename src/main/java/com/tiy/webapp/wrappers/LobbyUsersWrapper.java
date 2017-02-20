@@ -15,6 +15,11 @@ public class LobbyUsersWrapper {
     List<User> deltaUsers;
     List<User> mainLobbyUsers;
 
+    Integer alphaGameId;
+    Integer bakerGameId;
+    Integer charlieGameId;
+    Integer deltaGameId;
+
     public LobbyUsersWrapper () {
 
     }
@@ -66,5 +71,37 @@ public class LobbyUsersWrapper {
 
     public void setMainLobbyUsers(List<User> mainLobbyUsers) {
         this.mainLobbyUsers = mainLobbyUsers;
+    }
+
+    public Integer getAlphaGameId() {
+        return alphaGameId;
+    }
+
+    public void setAlphaGameId(Integer alphaGameId) {
+        this.alphaGameId = alphaGameId;
+    }
+
+    public Integer getBakerGameId() {
+        return bakerGameId;
+    }
+
+    public void setBakerGameId(Integer bakerGameId) {
+        this.bakerGameId = bakerGameId;
+    }
+
+    public Integer getCharlieGameId() {
+        return charlieGameId;
+    }
+
+    public void setCharlieGameId(Integer charlieGameId) {
+        this.charlieGameId = charlieGameId;
+    }
+
+    public Integer getDeltaGameId() {
+        return deltaGameId;
+    }
+
+    public void setDeltaGameId(Integer deltaGameId) {
+        this.deltaGameId = deltaGameId;
     }
 }

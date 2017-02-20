@@ -5,14 +5,16 @@ package com.tiy.webapp.wrappers;
  */
 public class IdRequestWrapper {
 
+    private Integer gameId;
     private Integer systemId;
     private Integer shipId;
     private Integer planetId;
     private Integer tunnelId;
     private Integer techId;
     private Integer raceId;
-
     private Integer productionNumber;
+
+    private String lobbyName;
 
     public IdRequestWrapper () {
 
@@ -73,5 +75,21 @@ public class IdRequestWrapper {
 
     public void setProductionNumber(Integer productionNumber) {
         this.productionNumber = productionNumber;
+    }
+
+    public Integer getGameId() {
+        return gameId;
+    }
+
+    public void setGameId(Integer gameId) {
+        this.gameId = gameId;
+    }
+
+    public String getLobbyName() {
+        return lobbyName;
+    }
+
+    public void setLobbyName(String lobbyName) {
+        this.lobbyName = lobbyName;
     }
 }

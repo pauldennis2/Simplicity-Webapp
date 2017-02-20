@@ -30,6 +30,12 @@ public class Game {
     @Column (nullable = false)
     private Integer turnNumber;
 
+    @Column
+    private Boolean combatPhase;
+
+    @Column
+    private Boolean justStarted;
+
     public Game () {
 
     }
@@ -39,10 +45,12 @@ public class Game {
         this.players = players;
         this.starSystemGraph = starSystemGraph;
         turnNumber = 0;
+        justStarted = true;
     }
 
     public void incrementTurn () {
         turnNumber++;
+        justStarted = false;
     }
 
     public Integer getId() {
@@ -83,5 +91,21 @@ public class Game {
 
     public void setTurnNumber(Integer turnNumber) {
         this.turnNumber = turnNumber;
+    }
+
+    public Boolean getCombatPhase() {
+        return combatPhase;
+    }
+
+    public void setCombatPhase(Boolean combatPhase) {
+        this.combatPhase = combatPhase;
+    }
+
+    public Boolean getJustStarted() {
+        return justStarted;
+    }
+
+    public void setJustStarted(Boolean justStarted) {
+        this.justStarted = justStarted;
     }
 }
