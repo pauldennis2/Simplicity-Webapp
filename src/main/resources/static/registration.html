@@ -6,7 +6,7 @@
     <link rel="icon" href="assets/game_icon.png">
     <link rel="stylesheet" imageString="text/css" href="../css/main.css">
 </head>
-<body class="art-bg white-text">
+<body class="space-bg art-bg white-text">
 Welcome to Simplicity 4x Registration. Registration is quick and <del>painful</del> painless. A few notes before you
 get started:
 <ul>
@@ -24,10 +24,10 @@ get started:
         not be able to contact you about bug reports. You decide if that's a feature or a bug!
     </li>
 </ul>
-<form action="/register" method="post">
-    <input class="trans-bg white-text" type="text" placeholder="Email" required> E-mail <br><br>
-    <input class="trans-bg white-text" type="text" placeholder="Handle*" required> Handle <br><br>
-    <input class="trans-bg white-text" type="password" placeholder="password" required> Password (CLEAR TEXT)<br><br>
+<form action="/register-user" method="post">
+    <input class="trans-bg white-text" type="text" placeholder="Email" name="email" required> E-mail <br><br>
+    <input class="trans-bg white-text" type="text" placeholder="Handle*" name="handle" required> Handle <br><br>
+    <input class="trans-bg white-text" type="password" placeholder="password" name="password" required> Password (CLEAR TEXT)<br><br>
     <button type="submit" class="trans-bg white-text">Create Account</button>
 </form>
 <br>

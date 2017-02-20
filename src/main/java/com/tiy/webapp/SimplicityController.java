@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import sun.rmi.runtime.Log;
 
 import javax.servlet.http.HttpSession;
 
@@ -70,6 +69,20 @@ public class SimplicityController {
     @RequestMapping(path = "/empty-race-sel", method = RequestMethod.GET)
     public String raceSel () {
         return "empty-race-sel";
+    }
+
+    @RequestMapping (path = "/register-user", method = RequestMethod.POST)
+    public String register (String email, String handle, String password) {
+        User user = users.findFirstByEmail(email);
+        if (user != null) {
+            throw new AssertionError("That email is already in use.");
+            //todo change - this shouldn't be an assertion, we should recover better
+        }
+        System.out.println("email = " + email);
+        user = new User(email, password, handle);
+        user.setLobbyStatus(LobbyStatus.LOGGED_OUT);
+        users.save(user);
+        return "redirect:/";
     }
 
     public void initializeUsers () {

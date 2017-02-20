@@ -41,6 +41,10 @@ public class Game {
         turnNumber = 0;
     }
 
+    public void incrementTurn () {
+        turnNumber++;
+    }
+
     public Integer getId() {
         return id;
     }

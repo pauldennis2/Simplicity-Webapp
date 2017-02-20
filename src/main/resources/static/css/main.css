@@ -108,6 +108,10 @@ body {
     padding: 10px;
 }
 
+th, td {
+    padding: 15px;
+}
+
 .w120 {
     width: 120px;
 }

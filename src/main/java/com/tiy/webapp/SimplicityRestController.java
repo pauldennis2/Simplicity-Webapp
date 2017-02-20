@@ -456,6 +456,7 @@ public class SimplicityRestController {
     public TurnInfoWrapper processTurn (HttpSession session) {
         Integer gameId = (Integer) session.getAttribute("gameId");
         Game game = games.findOne(gameId);
+        game.incrementTurn();
         List<Player> players = game.getPlayers();
         int productionAmt = 0;
         int researchAmt = 0;
