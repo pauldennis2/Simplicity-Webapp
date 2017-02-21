@@ -14,16 +14,25 @@ body {
     padding: 5px;
 }
 
-.errominiview {
+.erro-miniview {
     height: 150px;
+    width: 800px;
     border-style: solid;
     border-color: grey;
+    float: left;
 }
 
 .help-button {
     height: 150px;
+    width: 200px;
     border-style: solid;
     border-color: grey;
+}
+
+.help-button-div {
+    height 150px;
+    width: 200px;
+    float: left;
 }
 
 .space-link-button {
@@ -88,6 +97,12 @@ body {
     color: black;
 }
 
+.bar-text {
+    color: black;
+    font-size: 16px;
+    font-weight: bolder;
+}
+
 .diplomacy {
     color: #cc00ff;
     font-weight: bold;
@@ -135,6 +150,10 @@ th, td {
 
 .w120 {
     width: 120px;
+}
+
+.w150 {
+    width: 150px;
 }
 
 .w200 {
@@ -189,6 +208,10 @@ th, td {
 
 .h120 {
     height: 120px;
+}
+
+.h150 {
+    height: 150px;
 }
 
 .h560 {

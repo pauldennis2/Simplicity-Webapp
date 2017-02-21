@@ -1081,9 +1081,23 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
             planets[i].id = $scope.starSystemInfo.starSystem.planets[i].id;
             console.log("Production Percent = " + planets[i].productionPct);
             var ownerRaceNum = $scope.starSystemInfo.starSystem.planets[i].ownerRaceNum;
-            planets[i].icon = "";
+            planets[i].icon = getIconStringFromRaceNum(ownerRaceNum);
 
             console.log("planet[" + i + "].icon = " + planets[i].icon);
+        }
+        function getIconStringFromRaceNum (ownerRaceNum) {
+            switch (ownerRaceNum) {
+                case -1:
+                    return "assets/races/norace_icon.png";
+                case 0:
+                    return "assets/races/race1_icon.jpg";
+                case 1:
+                    return "assets/races/race2_icon.jpg";
+                case 2:
+                    return "assets/races/race3_icon.jpg";
+                case 3:
+                    return "assets/races/race4_icon.jpg";
+            }
         }
 
         if (addAnimations) {
@@ -1196,6 +1210,7 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
             $scope.selectedElement.population = sprite.population;
             $scope.selectedElement.productionPct = sprite.productionPct;
             $scope.selectedElement.id = sprite.id;
+            console.log("icon = " + sprite.icon);
             console.log("$scope.selectedElement.productionPct = " + $scope.selectedElement.productionPct);
             $scope.outputSlider = 100 * $scope.selectedElement.productionPct;
             console.log("output slider = " + $scope.outputSlider);

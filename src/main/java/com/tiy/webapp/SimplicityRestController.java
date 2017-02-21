@@ -135,6 +135,20 @@ public class SimplicityRestController {
         return new Response(true, game.getId());
     }
 
+    @RequestMapping(path = "/resume-game.json", method = RequestMethod.POST)
+    public Response resumeGame (@RequestBody IdRequestWrapper wrapper, HttpSession session) {
+        Integer gameId = wrapper.getGameId();
+        User user = (User)session.getAttribute("user");
+        Game game = games.findOne(gameId);
+        if (game != null) {
+            Integer playerId = game.getPlayers().get(0).getId();
+            session.setAttribute("playerId", playerId);
+            session.setAttribute("gameId", gameId);
+            return new Response(true);
+        }
+        return new Response(false);
+    }
+
     @RequestMapping(path = "/join-multiplayer-game.json", method = RequestMethod.POST)
     public Response joinMultiGame (@RequestBody IdRequestWrapper wrapper, HttpSession session) {
         Integer gameId = wrapper.getGameId();
@@ -250,10 +264,6 @@ public class SimplicityRestController {
                     shipList.remove(ship);
                 }
             }
-        }
-        System.out.println("Printing Ships:");
-        for (Starship ship : shipList) {
-            System.out.println("\t" + ship.getName());
         }
         List<SpaceTunnel> spaceTunnels = tunnels.findByFirstSystem(starSystem);
         spaceTunnels.addAll(tunnels.findBySecondSystem(starSystem));

@@ -1,7 +1,7 @@
 <div id="phaser-canvas-container" ng-hide="helpMode">
 </div>
 
-<div class="help-div" id="help-div" ng-hide="!helpMode" >
+<div class="help-div" id="help-div" ng-hide="!helpMode">
     <center>System View Help</center>
     Welcome to System View Help. The purpose of this page is to give you, the user, information about how to play this
     part of the game. Let's get started.
@@ -39,33 +39,36 @@
 </div>
 
 <div class="erro-miniview">
-    <div class="w300" id="infoDiv">
+    <div class="w200 h150" id="infoDiv">
         <img ng-src={{selectedElement.icon}} class="icon-padding">
         <b>{{selectedElement.name}}</b><br>
-        {{selectedElement.health}}
-        {{selectedElement.size}}
-        {{selectedElement.travelTime}}
-        {{selectedElement.turnsToGrowth}}
+        {{selectedElement.health}}{{selectedElement.size}}{{selectedElement.travelTime}}<br>
+        {{selectedElement.turnsToGrowth}}<br>
         {{selectedElement.population}}
     </div>
-    <div id="alwaysAvailableButtons" style="width: 200px">
-        <button class="space-bg w120" type="button" ng-click="openTunnels()">{{tunnelToggle}}</button><br>
-        <button class="space-bg w120" type="button" ng-click="colonizeMode()">{{colonizeToggle}}</button><br>
-        <button class="space-bg right help-button" type="button" ng-click="getHelp()"><h2>Help</h2></button>
+    <div class="w390" id="spacerDiv" ng-hide="shipSelected || planetSelected">
+        <span class="black-text">_</span>
     </div>
-    <div class="right" id="shipActionDiv" ng-hide="!shipSelected" style="width: 395px">
+    <div class="w390" id="shipActionDiv" ng-hide="!shipSelected">
         <button class="space-bg w120" type="button" ng-click="enterCombat()">Enter Combat</button> <br>
         <button class="space-bg w120" type="button" ng-click="scrapShip(selectedElement)">Scrap</button>
     </div>
-    <div class="right" id="planetActionDiv" ng-hide="!planetSelected" style="width: 545px">
+    <div class="w390" id="planetActionDiv" ng-hide="!planetSelected">
         <div class="left clear-both">Change Planet Output Priorities </div>
         <div class="left clear-both">
-            <span class="left">Research</span>
-            <input class="w120" type="range" ng-model="outputSlider">
-            <span class="left">Production</span>
+            <span class="left research">Research </span>
+            <div class="left">
+                <input class="w120 left" type="range" ng-model="outputSlider" style="float:left">
+            </div>
+            <span class="left production"> Production</span>
         </div>
         <div class="left clear-both padding10">
             <button class="space-bg" type="button" ng-click="changeOutput(selectedElement)">Confirm</button>
         </div>
+    </div>
+    <div class="w200 h150" id="alwaysAvailableButtons">
+        <button class="btn btn-default space-bg w150 white-text" type="button" ng-click="openTunnels()">{{tunnelToggle}}</button><br>
+        <button class="btn btn-default space-bg w150 white-text" type="button" ng-click="colonizeMode()">{{colonizeToggle}}</button><br>
+        <button class="btn btn-default space-bg w150 blue-text" type="button" ng-click="getHelp()"><h2>Help</h2></button>
     </div>
 </div>
