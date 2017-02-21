@@ -56,7 +56,7 @@ public class Planet {
 
     @Transient
     public void growPop () {
-        if (population > 0) {
+        if (population > 0 && population < size) {
             if (turnsToGrowth == null) {
                 turnsToGrowth = calculateTurnsToGrowth();
             }

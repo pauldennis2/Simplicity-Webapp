@@ -65,15 +65,14 @@ simplicityApp.controller('ssgViewController', function($scope, $http) {
     var tunnels = [];
     getSSGInfo = function () {
         console.log("Getting ssg info");
-        var wrapper = {"gameId": 1, "playerId":2};
-        $http.post("/ssg-info.json", wrapper)
+        $http.post("/ssg-info.json")
         .then(
             function successCallback (response) {
                 console.log("Found info");
                 starSystems = response.data.starSystems;
-                console.log("starSystems = " + starSystems);
+                //console.log(starSystems);
                 tunnels = response.data.tunnels;
-                console.log("tunnels = " + tunnels);
+                //console.log(tunnels);
                 preload();
                 create();
             },
@@ -156,7 +155,25 @@ simplicityApp.controller('ssgViewController', function($scope, $http) {
         selectedSystemId = starSystems[systemSprite.index].id;
         var index = systemSprite.index;
         $scope.selectedSystem.planets = starSystems[index].planets;
+        for (i = 0; i < $scope.selectedSystem.planets.length; i++) {
+            $scope.selectedSystem.planets[i].icon = getIconStringFromRaceNum($scope.selectedSystem.planets[i].ownerRaceNum);
+        }
         $scope.$apply();
+    }
+
+    function getIconStringFromRaceNum (ownerRaceNum) {
+        switch (ownerRaceNum) {
+            case -1:
+                return "assets/races/norace_icon.png";
+            case 0:
+                return "assets/races/race1_icon.jpg";
+            case 1:
+                return "assets/races/race2_icon.jpg";
+            case 2:
+                return "assets/races/race3_icon.jpg";
+            case 3:
+                return "assets/races/race4_icon.jpg";
+        }
     }
 
     function update () {
@@ -345,7 +362,7 @@ simplicityApp.controller('researchController', function($scope, $http) {
                 } else {
                     $scope.secondTechImageClass = "img-normal";
                 }
-
+                $scope.cruiserResearchAvailable = !($scope.researchInfo.firstTechResearched && $scope.researchInfo.secondTechResearched);
                 if (!$scope.researchInfo.cruiserTechResearched) {
                     $scope.cruiserTechImageClass = "img-grey";
                 } else {
@@ -434,7 +451,7 @@ simplicityApp.controller('mainController', function($scope, $http, $rootScope) {
         $http.post("/process-turn.json")
         .then(
             function successCallback (response) {
-                $scope.currentTurn++;
+                $scope.currentTurn = response.data;
             },
 
             function errorCallback (response) {
@@ -445,6 +462,20 @@ simplicityApp.controller('mainController', function($scope, $http, $rootScope) {
 
 simplicityApp.controller('optionsController', function($scope, $http) {
     console.log("Initializing optionsController");
+
+    getGameId = function () {
+        console.log("Going to get game id");
+        $http.get("/game-id.json")
+        .then(
+            function successCallback (response) {
+                $scope.gameId = response.data;
+            },
+
+            function errorCallback (response) {
+                console.log("Unable to find gameId. Sorry.");
+            });
+    }
+    getGameId();
 });
 
 simplicityApp.controller('helpController', function($scope, $http) {
@@ -942,6 +973,8 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
     var systemText;
     
     function getImageStringFromShip (ship) {
+        console.log("ship = ");
+        console.log(ship);
         var chassis = ship.chassis;
         chassis = chassis.toLowerCase();
         var raceId = ship.ownerRaceNum;
@@ -1049,27 +1082,7 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
             console.log("Production Percent = " + planets[i].productionPct);
             var ownerRaceNum = $scope.starSystemInfo.starSystem.planets[i].ownerRaceNum;
             planets[i].icon = "";
-            switch (ownerRaceNum) {
-                case -1:
-                    planets[i].icon = "assets/races/norace_icon.png";
-                    break;
 
-                case 0:
-                    planets[i].icon = "assets/races/race1_icon.jpg";
-                    break;
-
-                case 1:
-                    planets[i].icon = "assets/races/race2_icon.jpg";
-                    break;
-
-                case 2:
-                    planets[i].icon = "assets/races/race3_icon.jpg";
-                    break;
-
-                case 3:
-                    planets[i].icon = "assets/races/race4_icon.jpg";
-                    break;
-            }
             console.log("planet[" + i + "].icon = " + planets[i].icon);
         }
 
@@ -1113,6 +1126,8 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
         explosions = game.add.group();
         explosions.createMultiple(10, 'kaboom');
         for (i = 0; i < $scope.starSystemInfo.ships.length; i++) {
+            console.log("Creating ship sprite " + i);
+            console.log(getImageStringFromShip($scope.starSystemInfo.ships[i]));
             ships[i] = game.add.sprite(20, 20 + i*100, getImageStringFromShip($scope.starSystemInfo.ships[i]));
             ships[i].inputEnabled = true;
             ships[i].input.enableDrag();

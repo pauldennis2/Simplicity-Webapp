@@ -51,6 +51,8 @@ public class SimplicityRestController {
 
     public static final int DEFAULT_STARTING_POP = 8;
 
+    public static final String CAPITOL_SYMBOL = "\u235f";
+
 
     @RequestMapping(path = "/users.json", method = RequestMethod.GET)
     public LobbyUsersWrapper getUsers () {
@@ -70,6 +72,11 @@ public class SimplicityRestController {
     @RequestMapping(path = "/my-user.json", method = RequestMethod.GET)
     public User getMyUser (HttpSession session) {
         return (User)session.getAttribute("user");
+    }
+
+    @RequestMapping(path = "/game-id.json", method = RequestMethod.GET)
+    public Integer getGameId (HttpSession session) {
+        return (Integer) session.getAttribute("gameId");
     }
 
     @RequestMapping(path = "/change-users-lobby.json", method = RequestMethod.POST)
@@ -210,6 +217,7 @@ public class SimplicityRestController {
         Planet homePlanet = homeSystem.getPlanets().get(0);
         homePlanet.setOwnerRaceNum(raceId);
         homePlanet.setPopulation(DEFAULT_STARTING_POP);
+        homePlanet.setName(player.getName() + " Home " + CAPITOL_SYMBOL);
         player.addPlanet(homePlanet);
         ssgraph.setName("Map " + d);
         String name = "Game " + d;
@@ -242,6 +250,10 @@ public class SimplicityRestController {
                     shipList.remove(ship);
                 }
             }
+        }
+        System.out.println("Printing Ships:");
+        for (Starship ship : shipList) {
+            System.out.println("\t" + ship.getName());
         }
         List<SpaceTunnel> spaceTunnels = tunnels.findByFirstSystem(starSystem);
         spaceTunnels.addAll(tunnels.findBySecondSystem(starSystem));
@@ -329,24 +341,31 @@ public class SimplicityRestController {
         Planet planet = planets.findOne(planetId);
         Player player = players.findOne(playerId);
 
-        Integer raceId = getRaceId(player.getRace());
+        //PERMISSIONS EXAMPLE
+        if (ship.getOwnerRaceNum() == getRaceId(player.getRace())) {
 
-        if (ship == null || player == null || planet == null) {
-            throw new AssertionError("one is null");
+            Integer raceId = getRaceId(player.getRace());
+
+            if (ship == null || player == null || planet == null) {
+                throw new AssertionError("one is null");
+            }
+            if (ship.getChassis() != ShipChassis.COLONIZER) {
+                throw new AssertionError("Not a colonizer");
+            }
+            if (planet.getOwnerRaceNum() > -1) {
+                throw new AssertionError("planet already owned");
+            }
+            planet.setPopulation(NEW_PLANET_POP);
+            planet.setOwnerRaceNum(raceId);
+            player.addPlanet(planet);
+            player.removeShip(ship);
+            ships.delete(ship);
+            players.save(player);
+            return new Response(true);
         }
-        if (ship.getChassis() != ShipChassis.COLONIZER) {
-            throw new AssertionError("Not a colonizer");
-        }
-        if (planet.getOwnerRaceNum() > -1) {
-            throw new AssertionError("planet already owned");
-        }
-        planet.setPopulation(NEW_PLANET_POP);
-        planet.setOwnerRaceNum(raceId);
-        player.addPlanet(planet);
-        player.removeShip(ship);
-        ships.delete(ship);
-        players.save(player);
-        return new Response(true);
+        Response response = new Response(false);
+        response.setMessage("Not your ship.");
+        return response;
     }
 
     @RequestMapping (path = "/empty-combat-info.json", method = RequestMethod.POST)
@@ -516,7 +535,7 @@ public class SimplicityRestController {
     }
 
     @RequestMapping(path = "/process-turn.json", method = RequestMethod.POST)
-    public TurnInfoWrapper processTurn (HttpSession session) {
+    public Integer processTurn (HttpSession session) {
         Integer playerId = (Integer) session.getAttribute("playerId");
         Player currentPlayer = players.findOne(playerId);
         currentPlayer.setTurnCommitted(true);
@@ -554,10 +573,11 @@ public class SimplicityRestController {
             }
             games.save(game);
 
-            return null;
+            return game.getTurnNumber();
         }
-        return null; //Todo change method return types
+        return game.getTurnNumber();
     }
+
 
     public static Integer getRaceId (AlienRace race) {
         switch (race) {

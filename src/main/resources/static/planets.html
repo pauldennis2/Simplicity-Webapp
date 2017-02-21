@@ -37,19 +37,21 @@
     does nothing at the present time. <br><br>
     How it works: You decide in percentage the amount to assign to each output. For example, you could do 50/50, 80/20,
     etc. These percentages are then multiplied by the population to determine the output. A planet with 10 population
-    that is assigned 80% production and 20% research would produce 8 production and 2 research each turn.
+    that is assigned 80% production and 20% research would produce 8 production and 2 research each turn.<br><br>
+    For now there are probably some rounding errors that you could exploit to increase total output.
 </div>
 
-<div id="planetInfoDiv" ng-hide="helpMode">
-    <ul class="media-list star-bg w800 h600">
+<div class="w800 h600 star-bg v-scroll" id="planetInfoDiv" ng-hide="helpMode">
+    <ul class="media-list star-bg">
         <li class="media" ng-repeat="planet in planets">
             <div class="media-left">
                 <img class="media-object" ng-src={{planet.imageString}} alt="planet?">
             </div>
             <div class="media-body">
                 <h4 class="media-heading">{{planet.name}}</h4>
-                System: ??? <br>
-                Population: {{planet.size}}
+                Population: {{planet.population}}<br>
+                Size: {{planet.size}}<br>
+                Turns To Growth: {{planet.turnsToGrowth}}
             </div>
         </li>
     </ul>

@@ -80,7 +80,7 @@
     </div>
     <div class="star-bg">
         <!--These in-line styles are left as an excercise for the reader.      No, I mean, I'm coming back here anyway. TODO-->
-        <div id="shipInfoDiv" class="star-bg w400" style="overflow-y:scroll; overflow-x: hidden; height:560px;">
+        <div id="shipInfoDiv" class="star-bg w400 h560 v-scroll no-h-scroll">
             <div ng-repeat="ship in ships">
                 <div class="w200 h120 trans-bg" >
                     <center><img ng-src={{ship.imageString}} style="padding-top: 10%"></center>
@@ -97,7 +97,7 @@
             <select class="space-bg" ng-model="shipTypeSelection">
                 <option ng-repeat="option in unlockedShips">{{option}}</option>
             </select>
-            <input type="text" class="trans-bg" ng-model="shipName" placeholder="Name your ship.">
+            <input type="text" class="trans-bg" ng-model="shipName" placeholder="Name your ship." maxlength="32">
             <button type="button" class="space-bg" ng-click="purchaseShip()">Purchase Ship</button>
         </div>
     </div>

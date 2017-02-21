@@ -1,7 +1,7 @@
 <div id="phaser-canvas-container" ng-hide="helpMode">
 </div>
 
-<div class="w800 h600 star-bg" id="help-div" ng-hide="!helpMode" >
+<div class="help-div" id="help-div" ng-hide="!helpMode" >
     <center>System View Help</center>
     Welcome to System View Help. The purpose of this page is to give you, the user, information about how to play this
     part of the game. Let's get started.
@@ -17,24 +17,30 @@
     <ol>
         <li>Use tunnels to travel to other systems</li>
         <li>Colonize a planet</li>
-        <li>Start combat (NYI)</li>
-        <li>Adjust planet output (NYI)</li>
+        <li>Start Combat (NFI)</li>
+        <li>Adjust planet output</li>
     </ol>
     <h5>Tunnels</h5>
     To open the tunnels and activate space travel hit the "Open Tunnels" button (to close, hit the button again). You
     should see a visual indicator that the tunnels are open (animation). Then simply drag the ship you want to the
     desired tunnel. You can find out which other system a tunnel connects to by clicking it.
     <h5>Colonize</h5>
-    To colonize a planet you will need to toggle Colonize Mode to ON. At this point you should see a small <span style="color: green">green</span> circle
-    around any available planets (may be covered up by larger planet). Then just drag your colonizer over to that
-    planet.<br>
+    To colonize a planet you will need to toggle Colonize Mode to ON. At this point you should see a small
+    <span class="green-text">green</span> circle around any available planets.
+    Then just drag your colonizer over to that planet.<br>
     <img src="assets/ships/colonizer/colonizer_blue.png">
     <img src="assets/planets/planet2.png">
+    <h5>Start Combat (Not Fully Implemented)</h5>
+    This will start combat with four enemy fighters. Combat results are not permanent.<br>
+    <h5>Adjust Output</h5>
+    To adjust the output of a planet between <span class="research">research</span> and <span class="production">production</span>
+    select the planet and play with the slider. The more to the left, the more the planet will be focused on research.
+    To the right the planet will focus its output on production. Hit "Commit" to save the change.
 </div>
 
 <div class="erro-miniview">
     <div class="w300" id="infoDiv">
-        <img ng-src={{selectedElement.icon}} style="padding: 4px">
+        <img ng-src={{selectedElement.icon}} class="icon-padding">
         <b>{{selectedElement.name}}</b><br>
         {{selectedElement.health}}
         {{selectedElement.size}}

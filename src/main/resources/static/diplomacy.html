@@ -1,5 +1,36 @@
-<div class="star-bg h600 w800">
-    <div class="row left" ng-repeat="playerTemp in players">
+<div id="helpDiv" class="help-div" ng-hide="!helpMode">
+    <center>Diplomacy View Help</center>
+
+    <span class="diplomacy">Diplomacy:</span><br><br>
+
+    "Pursuant to Paragraph 1,290, I hereby formally request third party arbitration of our dispute."<br>
+    "You have the right."<br>
+    "Furthermore, pursuant to Sub-section D-3 I name... the Grizzelas to arbitrate."<br>
+    "Grizzelas?!"<br>
+    "Unfortunately, they are currently in their hibernation cycle. However, they will awaken in six months, at which
+    time we can get this matter settled. Now... do you want to wait? Or give me my three weeks?"<br><br>
+
+    - Captain Jean-Luc Picard<br><br>
+
+    Right now there is no diplomacy! So enjoy the world, but it's the wild space west out there! Anyone can attack
+    anyone at any time. The only thing that matters is winning, so how do you do that?
+
+    <h4>Win Conditions</h4>
+
+    Later, we will be adding much more interested win conditions. For now, the way to win the game is to control a
+    percentage of "global" population, as follows:<br>
+    2 Players - 75%<br>
+    3 Players - 65%<br>
+    4 Players - 60%<br>
+    <br>
+    You can achieve this goal either by building up your population faster and defending, or conquering others, or some
+    combination of both.<br><br>
+
+    Good luck!
+
+</div>
+<div class="w800 h600 star-bg" ng-hide="helpMode">
+    <div class="row left" ng-repeat="playerTemp in players" ng-hide="helpMode">
         <div class="col-sm-10 col-md-70">
             <div class="thumbnail trans-bg no-border" >
                 <center><img class="img-rounded" ng-src={{playerTemp.imageFile}} alt="player picture"></center>
@@ -15,4 +46,7 @@
     <div class="clear-both" id="goalPct">
         Required Percent to Win: {{requiredPct}}
     </div>
+</div>
+<div id="helpButtonDiv">
+    <button type="button" class="space-bg help-button" ng-click="getHelp()"><h3>Help</h3></button>
 </div>

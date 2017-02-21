@@ -25,9 +25,9 @@ get started:
     </li>
 </ul>
 <form action="/register-user" method="post">
-    <input class="trans-bg white-text" type="text" placeholder="Email" name="email" required> E-mail <br><br>
-    <input class="trans-bg white-text" type="text" placeholder="Handle*" name="handle" required> Handle <br><br>
-    <input class="trans-bg white-text" type="password" placeholder="password" name="password" required> Password (CLEAR TEXT)<br><br>
+    <input class="trans-bg white-text" type="text" placeholder="Email" name="email" required maxlength="32"> E-mail <br><br>
+    <input class="trans-bg white-text" type="text" placeholder="Handle*" name="handle" required maxlength="20"> Handle <br><br>
+    <input class="trans-bg white-text" type="password" placeholder="password" name="password" required maxlength="20"> Password (CLEAR TEXT)<br><br>
     <button type="submit" class="trans-bg white-text">Create Account</button>
 </form>
 <br>
