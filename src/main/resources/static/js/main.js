@@ -564,6 +564,8 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
         game.load.image('purple-cruiser', 'assets/ships/cruiser/cruiser_purple.png');
         game.load.image('cruiser-shield', 'assets/ships/cruiser/cruiser_shield.png');
 
+        game.load.image('laser', 'assets/red_beam_small.png');
+
         game.load.image('planet', 'assets/planet_large.png');
 
 
@@ -600,11 +602,21 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
     var DESTROYER_SPACE = 100;
     var FIGHTER_SPACE = 70;
     var CRUISER_SPACE = 110;
+    var lasers;
     function create() {
         game.add.sprite(0, 0, 'stars');
         //game.add.sprite(-150, 200, 'planet');
         var yLocation = 50;
         var secondColumn = 0;
+        /*
+        enemyBullets = game.add.group();
+        enemyBullets.enableBody = true;
+        enemyBullets.physicsBodyType = Phaser.Physics.ARCADE;
+        enemyBullets.createMultiple(100, 'bullet');*/
+        lasers = game.add.group();
+        lasers.enableBody = true;
+        lasers.physicsBodyType = Phaser.Physics.ARCADE;
+        lasers.createMultiple(10, 'laser');
         for (i = 0; i < friendShips.length; i++) {
             if (chassis === "FIGHTER") {
                 console.log("I just painted a fighter so I will add " + FIGHTER_SPACE);
@@ -686,6 +698,7 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
         friendChosen = true;
         $scope.bothSelected = friendChosen && enemyChosen;
         $scope.friendSelected = friendShips[sprite.index];
+        friendSelectedIndex = sprite.index;
         var ship = friendShips[sprite.index];
         $scope.friendSelected.healthPct = "" + (ship.health/ship.maxHealth)*100 + "%";
         $scope.friendSelected.shieldPct = "" + (ship.shieldHealth/ship.maxShieldHealth)*100 + "%";
@@ -856,7 +869,28 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
 
     }
 
+
+
     $scope.fireWeapons = function () {
+        /*
+        var bullet = bullets.getFirstExists(false);
+        bullet.reset(turret.x, turret.y);
+        bullet.rotation = game.physics.arcade.moveToPointer(bullet, 1000, game.input.activePointer, 500);
+        */
+        var laser = lasers.getFirstExists(false);
+        laser.anchor.setTo(0.5, 0.5);
+        laser.reset(friendSprites[friendSelectedIndex].x, friendSprites[friendSelectedIndex].y);
+        laser.rotation = game.physics.arcade.moveToObject(laser, enemySprites[enemySelectedIndex], 500);
+        game.physics.arcade.collide(laser, enemySprites[enemySelectedIndex], laserHitsEnemy);
+        //game.physics.arcade.overlap(bullets, enemies[i].tank, bulletHitEnemy, null, this);
+        game.physics.arcade.overlap(laser, enemySprites[enemySelectedIndex], laserHitsEnemy, null, this);
+        console.log("enemySprites[enemySelectedIndex] = ");
+        console.log(enemySprites[enemySelectedIndex]);
+
+        function laserHitsEnemy () {
+            console.log("EXPLOSIONS*****!!!!!");
+        }
+
         if ($scope.friendSelected.currentReservePower == 0) {
             console.log("No energy. exiting function");
             return;
