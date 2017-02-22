@@ -90,27 +90,27 @@ simplicityApp.controller('ssgViewController', function($scope, $http) {
 
     getSSGInfo();
     var scale = 30;
-    var xOffset = 20;
-    var yOffset = 20;
+    var xOffset = 70;
+    var yOffset = 40;
     function preload () {
         console.log("In preload");
         game.load.image('stars', 'assets/starfield.png');
         game.load.image('tinysun', 'assets/tinysun.png');
-        game.load.image('caticon', 'assets/races/race1_icon.jpg');
-        game.load.image('dogicon', 'assets/races/race2_icon.jpg');
-        game.load.image('horseicon', 'assets/races/race3_icon.jpg');
-        game.load.image('snakeicon', 'assets/races/race4_icon.jpg');
+        game.load.image('caticon', 'assets/races/race1_mapicon.png');
+        game.load.image('dogicon', 'assets/races/race2_mapicon.png');
+        game.load.image('horseicon', 'assets/races/race3_mapicon.png');
+        game.load.image('snakeicon', 'assets/races/race4_mapicon.png');
     }
     var homeSystemIconsX = [];
-    homeSystemIconsX[0] = 270;
-    homeSystemIconsX[1] = 610;
-    homeSystemIconsX[2] = 265;
-    homeSystemIconsX[3] = 25;
+    homeSystemIconsX[0] = 250;
+    homeSystemIconsX[1] = 595;
+    homeSystemIconsX[2] = 255;
+    homeSystemIconsX[3] = -10;
     var homeSystemIconsY = [];
-    homeSystemIconsY[0] = 10;
-    homeSystemIconsY[1] = 285;
-    homeSystemIconsY[2] = 490;
-    homeSystemIconsY[3] = 220;
+    homeSystemIconsY[0] = -10;
+    homeSystemIconsY[1] = 275;
+    homeSystemIconsY[2] = 480;
+    homeSystemIconsY[3] = 185;
 
     var homeSystemIconNames = [];
     homeSystemIconNames[0] = 'caticon';
@@ -122,7 +122,10 @@ simplicityApp.controller('ssgViewController', function($scope, $http) {
         console.log("in Create");
         game.add.sprite(0, 0, 'stars');
         var graphics = game.add.graphics(0, 0);
-        graphics.lineStyle(3, 0x002266, 1);
+        //graphics.lineStyle(3, 0x002266, 1);
+        //graphics.lineStyle(2, 0x777777, 1);
+        //graphics.lineStyle(3, 0x99ccff, 1);
+        graphics.lineStyle(3, 0xAAAAAA, 1);
         var systemSprites = [];
         for (i = 0; i < starSystems.length; i++) {
             systemSprites[i] = game.add.sprite(starSystems[i].gridCoordX * scale + xOffset, starSystems[i].gridCoordY * scale + yOffset, 'tinysun');
@@ -142,7 +145,7 @@ simplicityApp.controller('ssgViewController', function($scope, $http) {
             graphics.lineTo(x2 * scale + xOffset, y2 * scale + yOffset);
         }
         for (i = 0; i < 4; i++) {
-            game.add.sprite(homeSystemIconsX[i], homeSystemIconsY[i], homeSystemIconNames[i]);
+            game.add.sprite(homeSystemIconsX[i] + xOffset, homeSystemIconsY[i] + yOffset, homeSystemIconNames[i]);
         }
     }
     var selectedSystemId;
@@ -495,13 +498,13 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
         $scope.helpMode = !$scope.helpMode;
         $scope.combatLogMode = false;
     }
-
+    /*
     window.onbeforeunload = function() {
         //alert("Confirm leaving page?");
         console.log("leaving page????????");
         return "Are you sure?";
     }
-
+    */
     $scope.combatLogMode = false;
     $scope.logToggle = "View Log";
     $scope.viewLog = function () {
@@ -671,6 +674,7 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
             enemySprites[i].index = i;
             enemySprites[i].anchor.setTo(0.5, 0.5);
             enemySprites[i].scale.x *= -1;
+            //game.physics.enable(enemySprites[i]);
         }
 
         explosions = game.add.group();
@@ -880,10 +884,12 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
         var laser = lasers.getFirstExists(false);
         laser.anchor.setTo(0.5, 0.5);
         laser.reset(friendSprites[friendSelectedIndex].x, friendSprites[friendSelectedIndex].y);
-        laser.rotation = game.physics.arcade.moveToObject(laser, enemySprites[enemySelectedIndex], 500);
-        game.physics.arcade.collide(laser, enemySprites[enemySelectedIndex], laserHitsEnemy);
+        laser.rotation = game.physics.arcade.moveToObject(laser, enemySprites[enemySelectedIndex], 1000);
+
+        //game.physics.arcade.enable(enemySprites[enemySelectedIndex]);
+        //game.physics.arcade.collide(laser, enemySprites[enemySelectedIndex], laserHitsEnemy);
         //game.physics.arcade.overlap(bullets, enemies[i].tank, bulletHitEnemy, null, this);
-        game.physics.arcade.overlap(laser, enemySprites[enemySelectedIndex], laserHitsEnemy, null, this);
+        //game.physics.arcade.overlap(laser, enemySprites[enemySelectedIndex], laserHitsEnemy, null, this);
         console.log("enemySprites[enemySelectedIndex] = ");
         console.log(enemySprites[enemySelectedIndex]);
 

@@ -3,6 +3,15 @@ a {
     color: white;
 }
 
+.pd-panel-header {
+    float: left;
+    width: 75%;
+}
+
+.pd-nav-box {
+    height: 150px;
+}
+
 .erronav {
     background-image: url("/assets/starfield.png");
     float: left;
@@ -58,7 +67,7 @@ body {
 }
 
 .space-bg {
-    background: black;
+    background: black !important;
 }
 
 .trans-bg {
@@ -82,7 +91,7 @@ body {
 }
 
 .white-text {
-    color: white;
+    color: white !important;
 }
 
 .blue-text {
