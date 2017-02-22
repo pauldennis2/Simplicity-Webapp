@@ -11,15 +11,15 @@
 <div class="left" id="phaser-canvas-container" ng-hide="helpMode || combatLogMode">
 </div>
 
-<div id="buttonDiv" style="float: right">
+<div class="right" id="buttonDiv">
     <center>
         <button class="btn btn-default space-bg white-text no-border" type="button" style="width:140px" ng-click="passTurn()">
             <h4>Next Round -></h4>
         </button><br>
-        <button class="btn btn-default space-bg blue-text no-border" type="button" style="width:140px" ng-click="getHelp()">
+        <button class="btn btn-default space-bg white-text no-border" type="button" style="width:140px" ng-click="getHelp()">
             <h4>Help</h4>
         </button><br>
-        <button class="btn btn-default space-bg green-text no-border" type="button" style="width:140px" ng-click="viewLog()">
+        <button class="btn btn-default space-bg white-text no-border" type="button" style="width:140px" ng-click="viewLog()">
             <h4>{{logToggle}}</h4>
         </button><br>
         <button class="btn btn-default space-bg white-text no-border" type="button" style="width:140px" ng-click="endCombat()" ng-hide="!combatOver">

@@ -619,7 +619,7 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
         lasers = game.add.group();
         lasers.enableBody = true;
         lasers.physicsBodyType = Phaser.Physics.ARCADE;
-        lasers.createMultiple(10, 'laser');
+        lasers.createMultiple(30, 'laser');
         for (i = 0; i < friendShips.length; i++) {
             if (chassis === "FIGHTER") {
                 console.log("I just painted a fighter so I will add " + FIGHTER_SPACE);
@@ -873,7 +873,7 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
 
     }
 
-
+    var laser;
 
     $scope.fireWeapons = function () {
         /*
@@ -881,7 +881,7 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
         bullet.reset(turret.x, turret.y);
         bullet.rotation = game.physics.arcade.moveToPointer(bullet, 1000, game.input.activePointer, 500);
         */
-        var laser = lasers.getFirstExists(false);
+        laser = lasers.getFirstExists(false);
         laser.anchor.setTo(0.5, 0.5);
         laser.reset(friendSprites[friendSelectedIndex].x, friendSprites[friendSelectedIndex].y);
         laser.rotation = game.physics.arcade.moveToObject(laser, enemySprites[enemySelectedIndex], 1000);
@@ -1261,6 +1261,8 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
                 } else {
                     $scope.selectedElement.turnsToGrowth = "Turns to growth: " + sprite.turnsToGrowth;
                 }
+            } else {
+                $scope.selectedElement.population = null;
             }
             $scope.selectedElement.size = "Size: " + sprite.size;
         }

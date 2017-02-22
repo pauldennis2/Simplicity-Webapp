@@ -79,7 +79,7 @@ body {
 }
 
 .art-bg {
-    background-image: url("/assets/space.png");
+    background-image: url("/assets/space.png") !important;
 }
 
 .red-text {

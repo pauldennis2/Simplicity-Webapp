@@ -402,7 +402,7 @@ public class SimplicityRestController {
         Collections.sort(playersShipsInSystem);
 
         List<Starship> enemyShips = new ArrayList<>();
-        enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Tempest", "purple-fighter", null));
+        enemyShips.add(new Starship(null, ShipChassis.DESTROYER, "Tempest", "purple-destroyer", null));
         enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Earthquake", "purple-fighter", null));
         enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Hurricane", "purple-fighter", null));
         enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Landslide", "purple-fighter", null));
