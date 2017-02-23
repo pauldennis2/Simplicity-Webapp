@@ -38,7 +38,7 @@
     To the right the planet will focus its output on production. Hit "Commit" to save the change.
 </div>
 
-<div class="erro-miniview">
+<!--<div class="erro-miniview">
     <div class="w200 h150" id="infoDiv">
         <img ng-src={{selectedElement.icon}} class="icon-padding img-rounded">
         <b>{{selectedElement.name}}</b><br>
@@ -71,9 +71,10 @@
         <button class="btn btn-default space-bg w150 white-text" type="button" ng-click="colonizeMode()">{{colonizeToggle}}</button><br>
         <button class="btn btn-default space-bg w150 blue-text" type="button" ng-click="getHelp()"><h2>Help</h2></button>
     </div>
-</div>
+</div>-->
+
 <!--
-<div class="panel-body space-bg pd-nav-box">
+<div class="panel-body space-bg pd-nav-box no-padding">
     <div class="left">
         <button type="button" class="trans-bg no-border white-text"  ng-click="getHelp()">
             <h4><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></h4></button>
@@ -91,3 +92,36 @@
     </div>
 </div>
 -->
+
+
+<div class="panel panel-default trans-bg">
+    <!--
+        <div class="w200" id="systemNameDiv">
+            <b>{{selectedSystem.name}} System</b><br>
+        </div>
+    -->
+    <div class="panel-body pd-nav-box no-padding">
+        <div class="left">
+            <button type="button" class="trans-bg no-border white-text"  ng-click="getHelp()">
+                <h3><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></h3></button>
+        </div>
+        <div class="pd-panel-header" ng-if="selectedSystem.name"><center><h4>{{selectedElement.name}}</h4></center></div>
+        <div class="pd-panel-header" ng-if="!selectedSystem.name"><center><h4>Select something</h4></center></div>
+        <div class="right">
+            <button type="button" class="trans-bg no-border white-text padding5"  ng-click="openTunnels()">
+                <h4>{{tunnelToggle}}</h4></button>
+            <button type="button" class="trans-bg no-border white-text padding5"  ng-click="colonizeMode()">
+                <h4>{{colonizeToggle}}</h4></button>
+        </div>
+        <div class="left" id="planetsDiv">
+            <div class="left"><h4>Planets</h4></div>
+            <div class="left" style="padding-top: 5px;">
+                <ul class="no-bullet-list">
+                    <li ng-repeat="planet in selectedSystem.planets">
+                        <img ng-src={{planet.icon}} class="icon-padding">{{planet.name}} Size: {{planet.size}}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

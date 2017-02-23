@@ -605,7 +605,7 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
 
     var friendShieldSprites = [];
     var enemyShieldSprites = [];
-    var DESTROYER_SPACE = 100;
+    var DESTROYER_SPACE = 90;
     var FIGHTER_SPACE = 70;
     var CRUISER_SPACE = 110;
     var lasers;
@@ -667,7 +667,50 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
             friendSprites[i].events.onInputDown.add(friendListener, this);
             friendSprites[i].index = i;
         }
+        yLocation = 20;
+        secondColumn = 0;
+        for (i = 0; i < enemyShips.length; i++) {
+            if (chassis === "FIGHTER") {
+                console.log("I just painted a fighter so I will add " + FIGHTER_SPACE);
+                yLocation += FIGHTER_SPACE/2;
+            } else if (chassis === "DESTROYER") {
+                console.log("I just painted a destroyer so I will add " + DESTROYER_SPACE);
+                yLocation += DESTROYER_SPACE/2;
+            } else if (chassis === "CRUISER") {
+                console.log("I just painted a cruiser so I will add " + CRUISER_SPACE);
+                yLocation += CRUISER_SPACE/2;
+            } else {
+                console.log("Painting error occurred. Consult manual page 56. (Just kidding, there is no manual)")
+            }
+            enemySprites[i] = game.add.sprite(600 - secondColumn, yLocation, getImageStringFromShip(enemyShips[i]));
+            enemyShieldSprites[i] = game.add.sprite(600 - secondColumn, yLocation, getShieldStringFromShip(enemyShips[i]));
+            var chassis = enemyShips[i].chassis;
+            if (chassis === "FIGHTER") {
+                console.log("I just painted a fighter so I will add " + FIGHTER_SPACE);
+                yLocation += FIGHTER_SPACE/2;
+            } else if (chassis === "DESTROYER") {
+                console.log("I just painted a destroyer so I will add " + DESTROYER_SPACE);
+                yLocation += DESTROYER_SPACE/2;
+            } else if (chassis === "CRUISER") {
+                console.log("I just painted a cruiser so I will add " + CRUISER_SPACE);
+                yLocation += CRUISER_SPACE/2;
+            } else {
+                console.log("Painting error occurred. Consult manual page 56. (Just kidding, there is no manual)")
+            }
+            if (yLocation > 500) {
+                yLocation -= 500;
+                secondColumn = 160;
+            }
 
+            enemyShieldSprites[i].anchor.setTo(0.5, 0.5);
+            enemySprites[i].anchor.setTo(0.5, 0.5);
+            enemySprites[i].inputEnabled = true;
+            enemySprites[i].events.onInputDown.add(enemyListener, this);
+            enemySprites[i].index = i;
+            enemySprites[i].scale.x *= -1;
+            enemyShieldSprites[i].scale.x *= -1;
+        }
+        /*
         for (i = 0; i < enemyShips.length; i++) {
             enemySprites[i] = game.add.sprite(600, 50 + 100*i, getImageStringFromShip(enemyShips[i]));
             //enemySprites[i] = game.add.sprite(600, 50 + 100*i, 'purple-fighter');
@@ -684,7 +727,7 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
             enemySprites[i].enableBody = true;
             enemySprites[i].physicsBodyType = Phaser.Physics.ARCADE;
             //game.physics.enable(enemySprites[i]);
-        }
+        }*/
 
         explosions = game.add.group();
         explosions.createMultiple(4, 'destruction_explosion');
