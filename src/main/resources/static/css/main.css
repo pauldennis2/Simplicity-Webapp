@@ -149,8 +149,24 @@ body {
     padding: 4px;
 }
 
+.margin20 {
+    margin: 20px;
+}
+
+.no-padding {
+    padding: 0px;
+}
+
+.padding5 {
+    padding: 5px;
+}
+
 .padding10 {
     padding: 10px;
+}
+
+.padding20 {
+    padding: 20px;
 }
 
 th, td {
@@ -196,7 +212,6 @@ th, td {
 .help-div {
     width: 800px;
     height: 600px;
-    background-image: url("/assets/starfield.png");
     overflow-y: scroll;
 }
 

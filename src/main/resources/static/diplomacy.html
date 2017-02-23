@@ -29,7 +29,7 @@
     Good luck!
 
 </div>
-<div class="w800 h600 star-bg" ng-hide="helpMode">
+<div class="w800 h600" ng-hide="helpMode">
     <div class="row left" ng-repeat="playerTemp in players" ng-hide="helpMode">
         <div class="col-sm-10 col-md-70">
             <div class="thumbnail trans-bg no-border" >
@@ -48,5 +48,6 @@
     </div>
 </div>
 <div id="helpButtonDiv">
-    <button type="button" class="space-bg help-button" ng-click="getHelp()"><h3>Help</h3></button>
+    <button type="button" class="trans-bg no-border white-text"  ng-click="getHelp()">
+        <h3><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></h3></button>
 </div>

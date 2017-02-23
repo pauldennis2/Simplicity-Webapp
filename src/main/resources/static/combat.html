@@ -31,21 +31,21 @@
         </button>
     </center>
 </div>
-<div style="clear: both">
+<div class="clear-both">
     <div class="padding10 w390" id="allied_info">
         <b>{{friendSelected.name}}</b>
         <span ng-if="friendSelected">(Damage: {{friendSelected.damage}})</span><br>
-        <div class="progress space-bg">
+        <div class="progress trans-bg">
             <div class="bar-text progress-bar progress-bar-success" role="progressbar" style="width: {{friendSelected.healthPct}}">
                 <span ng-if="friendSelected">Health {{friendSelected.health}} / {{friendSelected.maxHealth}}</span>
             </div>
         </div>
-        <div class="progress space-bg">
+        <div class="progress trans-bg">
             <div class="bar-text progress-bar progress-bar-info" role="progressbar" style="width: {{friendSelected.shieldPct}}">
                 <span ng-if="friendSelected">Shield {{friendSelected.shieldHealth}} / {{friendSelected.maxShieldHealth}}</span>
             </div>
         </div>
-        <div class="progress space-bg">
+        <div class="progress trans-bg">
             <div class="bar-text progress-bar progress-bar-warning" role="progressbar" style="width: {{friendSelected.energyPct}}">
                 <span ng-if="friendSelected">Energy {{friendSelected.currentReservePower}}
                     (+{{friendSelected.powerPerTurn}}) / {{friendSelected.maxReservePower}}</span>
@@ -57,17 +57,17 @@
     <div class="padding10 w390" id="enemy_info">
         <b>{{enemySelected.name}}</b>
         <span ng-if="enemySelected">(Damage: {{enemySelected.damage}})</span><br>
-        <div class="progress space-bg">
+        <div class="progress trans-bg">
             <div class="bar-text progress-bar progress-bar-success" role="progressbar" style="width: {{enemySelected.healthPct}}">
                 <span ng-if="enemySelected">Health {{enemySelected.health}} / {{enemySelected.maxHealth}} </span>
             </div>
         </div>
-        <div class="progress space-bg">
+        <div class="progress trans-bg">
             <div class="bar-text progress-bar progress-bar-info" role="progressbar" style="width: {{enemySelected.shieldPct}}">
                 <span ng-if="enemySelected">Shield {{enemySelected.shieldHealth}} / {{enemySelected.maxShieldHealth}}</span>
             </div>
         </div>
-        <div class="progress space-bg">
+        <div class="progress trans-bg">
             <div class="bar-text progress-bar progress-bar-warning" role="progressbar" style="width: {{enemySelected.energyPct}}">
                 <span ng-if="enemySelected">Energy {{enemySelected.currentReservePower}}
                     (+{{enemySelected.powerPerTurn}}) / {{enemySelected.maxReservePower}}</span>

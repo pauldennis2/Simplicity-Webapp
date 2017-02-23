@@ -2,7 +2,7 @@
     Research help.
 </div>
 
-<div class="star-bg h600 w800" ng-hide="helpMode">
+<div class="h600 w800" ng-hide="helpMode">
     <div class="w400">
         <div class="row left">
             <div class="col-sm-10 col-md-70">
@@ -56,7 +56,7 @@
                         </div>
                         <br>
                         <p><button class="trans-bg" role="button" ng-disabled="cruiserResearchAvailable"
-                                   ng-hide="researchInfo.cruiserTechResearched" ng-click="purchaseTech(2)">Research</button>
+                                   ng-hide="researchInfo.cruiserTechResearched" ng-click="purchaseTech(2)">Research</button><br>
                             (Requires first two techs)</p>
                     </div>
                 </div>
@@ -64,9 +64,10 @@
         </div>
     </div>
     <div class="clear-both">
-        Research Total: {{researchInfo.researchPoolTotal}}
+        <h3>Research Total: {{researchInfo.researchPoolTotal}}</h3>
     </div>
 </div>
 <div id="helpButtonDiv">
-    <button type="button" class="space-bg help-button" ng-click="getHelp()"><h3>Help</h3></button>
+    <button type="button" class="trans-bg no-border white-text"  ng-click="getHelp()">
+        <h3><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></h3></button>
 </div>

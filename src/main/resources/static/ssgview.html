@@ -25,21 +25,21 @@
     </ul>
 </div>
 <div id="phaser-canvas-container" ng-hide="helpMode"></div>
-<div class="panel panel-default space-bg">
+<div class="panel panel-default trans-bg">
 <!--
     <div class="w200" id="systemNameDiv">
         <b>{{selectedSystem.name}} System</b><br>
     </div>
 -->
-    <div class="panel-body space-bg pd-nav-box">
+    <div class="panel-body pd-nav-box no-padding">
         <div class="left">
             <button type="button" class="trans-bg no-border white-text"  ng-click="getHelp()">
-                <h4><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></h4></button>
+                <h3><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></h3></button>
         </div>
         <div class="pd-panel-header" ng-if="selectedSystem.name"><center><h4>{{selectedSystem.name}} System</h4></center></div>
         <div class="pd-panel-header" ng-if="!selectedSystem.name"><center><h4>Select a System</h4></center></div>
         <div class="right">
-            <button type="button" class="trans-bg no-border white-text"  ng-click="goToDagobah()" ng-hide="noSystemSelected">
+            <button type="button" class="trans-bg no-border white-text padding5"  ng-click="goToDagobah()" ng-hide="noSystemSelected">
                 <h4><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> Go To System</h4></button>
             <div ng-hide="!noSystemSelected" style="height: 40px; width: 100px !important;"></div>
         </div>

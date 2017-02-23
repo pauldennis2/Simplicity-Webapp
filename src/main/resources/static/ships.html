@@ -71,37 +71,42 @@
 </div>
 <div id="mainDiv" ng-hide="helpMode">
     <div class="h40">
-        <div class="star-bg w400">
+        <div class="w400">
             <center><h4>Your Ships</h4></center>
         </div>
-        <div class="star-bg w400">
+        <div class="w400">
             <center><h4>Shipyard</h4></center>
         </div>
     </div>
-    <div class="star-bg">
+    <div>
         <!--These in-line styles are left as an excercise for the reader.      No, I mean, I'm coming back here anyway. TODO-->
-        <div id="shipInfoDiv" class="star-bg w400 h560 v-scroll no-h-scroll">
+        <div id="shipInfoDiv" class="w400 h560 v-scroll no-h-scroll padding10">
             <div ng-repeat="ship in ships">
-                <div class="w200 h120 trans-bg" >
+                <div class="w200 h120">
                     <center><img ng-src={{ship.imageString}} style="padding-top: 10%"></center>
                 </div>
-                <div class="w600 h120 trans-bg">
+                <div class="w600 h120">
                     <h4>{{ship.name}}</h4>
                     Location: {{ship.starSystem.name}} <br>
                     Health: {{ship.health}}/{{ship.maxHealth}}
                 </div>
             </div>
         </div>
-        <div id="shipyardDiv" class="star-bg w400 h560 padding10">
-            Total Production Accumulated: {{totalProduction}}<br>
-            <select class="space-bg" ng-model="shipTypeSelection">
+        <div id="shipyardDiv" class="w400 h560 padding10">
+            <h4>Total Production Accumulated: {{totalProduction}}</h4>
+            <br>
+            Ship Type:<select class="space-bg margin20" ng-model="shipTypeSelection">
                 <option ng-repeat="option in unlockedShips">{{option}}</option>
             </select>
-            <input type="text" class="trans-bg" ng-model="shipName" placeholder="Name your ship." maxlength="32">
-            <button type="button" class="space-bg" ng-click="purchaseShip()">Purchase Ship</button>
+            <br>
+            (Optional)
+            <input type="text" class="trans-bg margin20" ng-model="shipName" placeholder="Name your ship." maxlength="32">
+            <br>
+            <button type="button" class="space-bg margin20" ng-click="purchaseShip()"><h3>Purchase Ship</h3></button>
         </div>
     </div>
 </div>
 <div id="button-div">
-    <button type="button" class="space-bg help-button" ng-click="getHelp()"><h3>Help</h3></button>
+    <button type="button" class="trans-bg no-border white-text"  ng-click="getHelp()">
+        <h3><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></h3></button>
 </div>

@@ -219,6 +219,7 @@ public class SimplicityRestController {
         AlienRace race = getRaceFromId(raceId);
 
         double d = Math.random() * Math.PI + 239 * Math.random();
+        //This is to give the game a unique name without picking one and without trial/error
 
         StarSystemGraph ssgraph = new StarSystemGraph("4p_med_ring_map.txt");
         StarSystem homeSystem = ssgraph.findByName("P" + (1 + raceId) + " Home");

@@ -21,39 +21,21 @@ simplicityRaceSelApp.controller('raceSelController', function($scope, $http) {
     }
 
     $scope.raceImg = "../assets/races/no_race.png";
-    $scope.newGame = function () {
+    $scope.newGame = function (raceId) {
         console.log("Starting new game");
-        var raceId;
-        console.log($scope.race_selection);
-        if ($scope.race_selection == null) {
-            alert("Must choose a race");
-        } else {
-            if ($scope.race_selection == "cat") {
-                raceId = 0;
-            }
-            if ($scope.race_selection == "dog") {
-                raceId = 1;
-            }
-            if ($scope.race_selection == "horse") {
-                raceId = 2;
-            }
-            if ($scope.race_selection == "snake") {
-                raceId = 3;
-            }
-            console.log("raceId = " + raceId);
-            var wrapper = {"raceId": raceId};
-            console.log(wrapper);
-            $http.post("/new-empty-game.json", wrapper)
-            .then(
-                function successCallback (response) {
-                    console.log("Successfully started a new game. So sayeth the wise Alaundo");
-                    console.log(response.data);
-                    window.location.href = "/main.html";
-                },
+        console.log("raceId = " + raceId);
+        var wrapper = {"raceId": raceId};
+        console.log(wrapper);
+        $http.post("/new-empty-game.json", wrapper)
+        .then(
+            function successCallback (response) {
+                console.log("Successfully started a new game. So sayeth the wise Alaundo");
+                console.log(response.data);
+                window.location.href = "/main.html";
+            },
 
-                function errorCallback (response) {
-                    console.log("Unable to start a new game at this time.");
-                });
-        }
+            function errorCallback (response) {
+                console.log("Unable to start a new game at this time.");
+            });
     };
 });

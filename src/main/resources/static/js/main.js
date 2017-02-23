@@ -103,14 +103,14 @@ simplicityApp.controller('ssgViewController', function($scope, $http) {
     }
     var homeSystemIconsX = [];
     homeSystemIconsX[0] = 250;
-    homeSystemIconsX[1] = 595;
-    homeSystemIconsX[2] = 255;
+    homeSystemIconsX[1] = 580;
+    homeSystemIconsX[2] = 325;
     homeSystemIconsX[3] = -10;
     var homeSystemIconsY = [];
     homeSystemIconsY[0] = -10;
-    homeSystemIconsY[1] = 275;
-    homeSystemIconsY[2] = 480;
-    homeSystemIconsY[3] = 185;
+    homeSystemIconsY[1] = 190;
+    homeSystemIconsY[2] = 460;
+    homeSystemIconsY[3] = 255;
 
     var homeSystemIconNames = [];
     homeSystemIconNames[0] = 'caticon';
@@ -280,7 +280,9 @@ simplicityApp.controller('shipsController', function($scope, $http) {
                 chassisCosts = response.data.possibleShipCosts;
                 $scope.totalProduction = response.data.productionAvailable;
                 for (i = 0; i < chassisNames.length; i++) {
-                    $scope.unlockedShips[i] = chassisNames[i] + "(" + chassisCosts[i] + ")";
+                    chassisNames[i] = chassisNames[i].toLowerCase();
+                    chassisNames[i] = chassisNames[i].substring(0, 1).toUpperCase() + chassisNames[i].substring(1);
+                    $scope.unlockedShips[i] = chassisNames[i] + " (" + chassisCosts[i] + ")";
                 }
             },
 
@@ -337,7 +339,7 @@ simplicityApp.controller('shipsController', function($scope, $http) {
         if ($scope.totalProduction > chassisCosts[index]) {
             $scope.totalProduction -= chassisCosts[index];
             console.log("Producing a " + chassisNames[index]);
-            newShip.chassis = chassisNames[index];
+            newShip.chassis = chassisNames[index].toUpperCase();
             createShip(newShip);
         }
     }
@@ -492,6 +494,7 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
      { preload: preload, create: create, update: update });
     var friendShips = [];
     var enemyShips = [];
+    var explosions;
     $scope.helpMode = false;
 
     $scope.getHelp = function () {
@@ -571,7 +574,7 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
 
         game.load.image('planet', 'assets/planet_large.png');
 
-
+        game.load.spritesheet('explosion', 'assets/anims/explode.png');
     }
 
     var friendSprites = [];
@@ -619,7 +622,9 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
         lasers = game.add.group();
         lasers.enableBody = true;
         lasers.physicsBodyType = Phaser.Physics.ARCADE;
-        lasers.createMultiple(30, 'laser');
+        lasers.createMultiple(2, 'laser');
+
+
         for (i = 0; i < friendShips.length; i++) {
             if (chassis === "FIGHTER") {
                 console.log("I just painted a fighter so I will add " + FIGHTER_SPACE);
@@ -674,6 +679,10 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
             enemySprites[i].index = i;
             enemySprites[i].anchor.setTo(0.5, 0.5);
             enemySprites[i].scale.x *= -1;
+            //lasers.enableBody = true;
+            //lasers.physicsBodyType = Phaser.Physics.ARCADE;
+            enemySprites[i].enableBody = true;
+            enemySprites[i].physicsBodyType = Phaser.Physics.ARCADE;
             //game.physics.enable(enemySprites[i]);
         }
 
@@ -729,7 +738,11 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
     var firstShieldAlpha = 1.0;
     var goingDown = true;
     var animateFirstShield = false;
+    var xDestination;
     function update() {
+        if (laser != null) {
+            game.physics.arcade.overlap(laser, enemySprites[enemySelectedIndex], laserHitsEnemy, null, this);
+        }
         //Called every frame
         if (animateFirstShield) {
             if (goingDown) {
@@ -744,6 +757,15 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
                 }
             }
             friendShieldSprites[0].alpha = firstShieldAlpha;
+        }
+
+        if (laser != null) {
+            if (laser.x > xDestination) {
+//                var explosion = explosions.getFirstExists(false);
+//                explosion.reset(alien.body.x, alien.body.y);
+//                explosion.play('kaboom', 30, false, true);
+                laser.kill();
+            }
         }
     }
 
@@ -872,19 +894,24 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
             });
 
     }
-
+    function laserHitsEnemy () {
+        console.log("EXPLOSIONS*****!!!!!");
+    }
     var laser;
 
     $scope.fireWeapons = function () {
+        xDestination = 590;
         /*
         var bullet = bullets.getFirstExists(false);
         bullet.reset(turret.x, turret.y);
         bullet.rotation = game.physics.arcade.moveToPointer(bullet, 1000, game.input.activePointer, 500);
         */
-        laser = lasers.getFirstExists(false);
+        if (laser == null) {
+            laser = lasers.getFirstExists(false);
+        }
         laser.anchor.setTo(0.5, 0.5);
         laser.reset(friendSprites[friendSelectedIndex].x, friendSprites[friendSelectedIndex].y);
-        laser.rotation = game.physics.arcade.moveToObject(laser, enemySprites[enemySelectedIndex], 1000);
+        laser.rotation = game.physics.arcade.moveToObject(laser, enemySprites[enemySelectedIndex], 1200);
 
         //game.physics.arcade.enable(enemySprites[enemySelectedIndex]);
         //game.physics.arcade.collide(laser, enemySprites[enemySelectedIndex], laserHitsEnemy);
@@ -1078,6 +1105,7 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
     var colonizeGraphics;
     var planetCoordsX = [];
     var planetCoordsY = [];
+    var ships = [];
     function create() {
         game.physics.startSystem(Phaser.Physics.ARCADE);
         var ringCenterX = 400;
@@ -1176,7 +1204,7 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
             }
         }
 
-        var ships = [];
+
         explosions = game.add.group();
         explosions.createMultiple(10, 'kaboom');
         for (i = 0; i < $scope.starSystemInfo.ships.length; i++) {
@@ -1193,6 +1221,7 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
             ships[i].shipId = $scope.starSystemInfo.ships[i].id;
             ships[i].type = $scope.starSystemInfo.ships[i].chassis;
             ships[i].id = $scope.starSystemInfo.ships[i].id;
+            ships[i].shipIndex = i;
             ships[i].icon = "";
             switch (ownerRaceNum) {
                 case -1:
@@ -1215,6 +1244,7 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
                     ships[i].icon = "assets/races/race4_icon.jpg";
                     break;
             }
+            console.log(ships[i].icon);
         }
     }
 
@@ -1239,10 +1269,12 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
         $scope.selectedElement = {};
         $scope.selectedElement.name = sprite.elementName;
         $scope.selectedElement.id = sprite.id;
+
         if (sprite.shipHealth != null) {
             $scope.shipSelected = true;
             $scope.selectedElement.icon = sprite.icon;
             $scope.selectedElement.health = sprite.shipHealth + "/" + sprite.maxHealth;
+            $scope.selectedElement.shipIndex = sprite.shipIndex;
         }
         if (sprite.size != null) {
             $scope.planetSelected = true;
@@ -1384,12 +1416,13 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
         console.log("Scrapping ship");
         console.log("id = " + sprite.id);
         var wrapper = {"shipId": sprite.id};
+        ships[sprite.shipIndex].kill();
         $http.post("/scrap-ship.json", wrapper)
         .then(
             function successCallback (response) {
                 console.log("heard back");
                 console.log(response.data);
-                //sprite.kill();
+
             },
 
             function errorCallback (response) {
