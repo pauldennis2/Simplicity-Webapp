@@ -94,7 +94,7 @@
 -->
 
 
-<div class="panel panel-default trans-bg">
+<div class="panel panel-default trans-bg w800">
     <!--
         <div class="w200" id="systemNameDiv">
             <b>{{selectedSystem.name}} System</b><br>
@@ -105,23 +105,63 @@
             <button type="button" class="trans-bg no-border white-text"  ng-click="getHelp()">
                 <h3><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></h3></button>
         </div>
-        <div class="pd-panel-header" ng-if="selectedSystem.name"><center><h4>{{selectedElement.name}}</h4></center></div>
-        <div class="pd-panel-header" ng-if="!selectedSystem.name"><center><h4>Select something</h4></center></div>
-        <div class="right">
-            <button type="button" class="trans-bg no-border white-text padding5"  ng-click="openTunnels()">
-                <h4>{{tunnelToggle}}</h4></button>
-            <button type="button" class="trans-bg no-border white-text padding5"  ng-click="colonizeMode()">
-                <h4>{{colonizeToggle}}</h4></button>
+        <div class="pd-panel-header" ng-hide="!selectedElement.name">
+            <center>
+                <h4>
+                    <img ng-src={{selectedElement.icon}} class="icon-padding img-rounded">
+                    {{selectedElement.name}}
+                </h4>
+            </center>
         </div>
-        <div class="left" id="planetsDiv">
-            <div class="left"><h4>Planets</h4></div>
-            <div class="left" style="padding-top: 5px;">
-                <ul class="no-bullet-list">
-                    <li ng-repeat="planet in selectedSystem.planets">
-                        <img ng-src={{planet.icon}} class="icon-padding">{{planet.name}} Size: {{planet.size}}
-                    </li>
-                </ul>
+        <div class="pd-panel-header" ng-hide="selectedElement.name">
+            <center>
+                <h4>
+                    <img src="assets/tinysun1.png" class="icon-padding img-rounded">
+                    Select something
+                </h4>
+            </center>
+        </div>
+        <div class="w200" id="infoDiv" ng-if="selectedElement.name">
+            Info:<br>
+            {{selectedElement.health}}{{selectedElement.size}}{{selectedElement.travelTime}}<br>
+            {{selectedElement.turnsToGrowth}}<br>
+            {{selectedElement.population}}
+        </div>
+        <div class="w300 left" id="shipActionDiv" ng-hide="!shipSelected">
+            <button class="trans-bg no-border white-text padding5" type="button" ng-click="enterCombat()">
+                <h4>
+                    Enter Combat
+                </h4>
+            </button> <br>
+            <button class="trans-bg no-border white-text padding5" type="button" ng-click="scrapShip(selectedElement)">
+                <h4>
+                    Scrap
+                </h4>
+            </button>
+        </div>
+        <div class="w300 left" id="planetActionDiv" ng-hide="!planetSelected">
+            <div class="left clear-both padding5">Change Planet Output Priorities </div>
+            <div class="left clear-both">
+                <span class="left padding5 slider-height">Research</span>
+                <div class="left">
+                    <input class="w120 left" type="range" ng-model="outputSlider" style="float:left">
+                </div>
+                <span class="left padding5 slider-height">Production</span>
             </div>
+            <div class="left clear-both">
+                <button class="trans-bg no-border white-text padding5" type="button" ng-click="changeOutput(selectedElement)">
+                    <h4>
+                        Confirm
+                    </h4>
+                </button>
+            </div>
+        </div>
+
+        <div class="right">
+            <button type="button" style="width:180px" class="trans-bg no-border white-text padding5"  ng-click="openTunnels()">
+                <h4>{{tunnelToggle}}</h4></button><br>
+            <button type="button" style="width:180px" class="trans-bg no-border white-text padding5"  ng-click="colonizeMode()">
+                <h4>{{colonizeToggle}}</h4></button>
         </div>
     </div>
 </div>

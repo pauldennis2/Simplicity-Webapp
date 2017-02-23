@@ -259,13 +259,24 @@ public class SimplicityRestController {
         }
         StarSystem starSystem = starSystems.findOne(systemId);
         List<Starship> shipList = ships.findByStarSystem(starSystem);
-        for (Starship ship : shipList) {
+
+        for (int i = 0; i < shipList.size(); i++) {
+            Starship ship = shipList.get(i);
+            if (ship.getTurnsToDestination() != null) {
+                if (ship.getTurnsToDestination() > 0) {
+                    shipList.remove(i);
+                    i--;
+                }
+            }
+        }
+
+        /*for (Starship ship : shipList) {
             if (ship.getTurnsToDestination() != null) {
                 if (ship.getTurnsToDestination() > 0) {
                     shipList.remove(ship);
                 }
             }
-        }
+        }*/
         List<SpaceTunnel> spaceTunnels = tunnels.findByFirstSystem(starSystem);
         spaceTunnels.addAll(tunnels.findBySecondSystem(starSystem));
         return new StarSystemInfoWrapper(starSystem, shipList, spaceTunnels);
@@ -409,6 +420,10 @@ public class SimplicityRestController {
         enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Hurricane", "purple-fighter", null));
         enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Landslide", "purple-fighter", null));
 
+        enemyShips.add(new Starship(null, ShipChassis.DESTROYER, "Nerevar", "purple-destroyer", null));
+        enemyShips.add(new Starship(null, ShipChassis.FIGHTER, "Ayleid", "purple-fighter", null));
+
+        Collections.sort(enemyShips);
         return new CombatInfoWrapper(playersShipsInSystem, enemyShips);
     }
 

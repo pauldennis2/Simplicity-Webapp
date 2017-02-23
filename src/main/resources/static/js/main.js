@@ -605,8 +605,8 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
 
     var friendShieldSprites = [];
     var enemyShieldSprites = [];
-    var DESTROYER_SPACE = 90;
-    var FIGHTER_SPACE = 70;
+    var DESTROYER_SPACE = 96;
+    var FIGHTER_SPACE = 64;
     var CRUISER_SPACE = 110;
     var lasers;
     function create() {
@@ -943,7 +943,7 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
     var laser;
 
     $scope.fireWeapons = function () {
-        xDestination = 590;
+        //xDestination = 590;
         /*
         var bullet = bullets.getFirstExists(false);
         bullet.reset(turret.x, turret.y);
@@ -955,7 +955,8 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
         laser.anchor.setTo(0.5, 0.5);
         laser.reset(friendSprites[friendSelectedIndex].x, friendSprites[friendSelectedIndex].y);
         laser.rotation = game.physics.arcade.moveToObject(laser, enemySprites[enemySelectedIndex], 1200);
-
+        xDestination = enemySprites[enemySelectedIndex].x - 10;
+        console.log("xDestination = " + xDestination);
         //game.physics.arcade.enable(enemySprites[enemySelectedIndex]);
         //game.physics.arcade.collide(laser, enemySprites[enemySelectedIndex], laserHitsEnemy);
         //game.physics.arcade.overlap(bullets, enemies[i].tank, bulletHitEnemy, null, this);
@@ -1316,7 +1317,7 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
         if (sprite.shipHealth != null) {
             $scope.shipSelected = true;
             $scope.selectedElement.icon = sprite.icon;
-            $scope.selectedElement.health = sprite.shipHealth + "/" + sprite.maxHealth;
+            $scope.selectedElement.health = "Health: " + sprite.shipHealth + "/" + sprite.maxHealth;
             $scope.selectedElement.shipIndex = sprite.shipIndex;
         }
         if (sprite.size != null) {

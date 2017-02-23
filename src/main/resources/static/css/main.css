@@ -141,12 +141,20 @@ body {
     font-weight: bold;
 }
 
+.slider-height {
+    line-height: 0.7;
+}
+
 .help-button {
     color: blue;
 }
 
 .icon-padding {
     padding: 4px;
+}
+
+.margin5 {
+    margin: 5px;
 }
 
 .margin20 {
