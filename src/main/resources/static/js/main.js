@@ -574,6 +574,9 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
 
         game.load.image('planet', 'assets/planet_large.png');
 
+        game.load.image('friend-crosshair', 'assets/crosshair_green2.png');
+        game.load.image('enemy-crosshair', 'assets/crosshair_red2.png');
+
         game.load.spritesheet('explosion', 'assets/anims/explode.png');
     }
 
@@ -609,6 +612,8 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
     var FIGHTER_SPACE = 64;
     var CRUISER_SPACE = 110;
     var lasers;
+    var friendCrosshair;
+    var enemyCrosshair;
     function create() {
         game.add.sprite(0, 0, 'stars');
         //game.add.sprite(-150, 200, 'planet');
@@ -624,6 +629,14 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
         lasers.physicsBodyType = Phaser.Physics.ARCADE;
         lasers.createMultiple(2, 'laser');
 
+        friendCrosshair = game.add.sprite(0, 0, 'friend-crosshair');
+        enemyCrosshair = game.add.sprite(0, 0, 'enemy-crosshair');
+
+        friendCrosshair.anchor.setTo(0.5, 0.5);
+        enemyCrosshair.anchor.setTo(0.5, 0.5);
+
+        friendCrosshair.alpha = 0.0;
+        enemyCrosshair.alpha = 0.0;
 
         for (i = 0; i < friendShips.length; i++) {
             if (chassis === "FIGHTER") {
@@ -638,8 +651,8 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
             } else {
                 console.log("Painting error occurred. Consult manual page 56. (Just kidding, there is no manual)")
             }
-            friendSprites[i] = game.add.sprite(90 + secondColumn, yLocation, getImageStringFromShip(friendShips[i]));
-            friendShieldSprites[i] = game.add.sprite(90 + secondColumn, yLocation, getShieldStringFromShip(friendShips[i]));
+            friendSprites[i] = game.add.sprite(100 + secondColumn, yLocation, getImageStringFromShip(friendShips[i]));
+            friendShieldSprites[i] = game.add.sprite(100 + secondColumn, yLocation, getShieldStringFromShip(friendShips[i]));
             var chassis = friendShips[i].chassis;
             if (chassis === "FIGHTER") {
                 console.log("I just painted a fighter so I will add " + FIGHTER_SPACE);
@@ -750,8 +763,17 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
     var friendSelectedIndex;
     var enemySelectedIndex;
     $scope.bothSelected = false;
+
+    var friendCrosshairXOffset = -85;
+    var friendCrosshairYOffset = 0;
+    var enemyCrosshairXOffset = 90;
+    var enemyCrosshairYOffset = 0;
     function friendListener (sprite) {
         friendChosen = true;
+        friendCrosshair.y = sprite.y + friendCrosshairYOffset;
+        friendCrosshair.x = sprite.x + friendCrosshairXOffset;
+        friendCrosshair.alpha = 1.0;
+
         $scope.bothSelected = friendChosen && enemyChosen;
         $scope.friendSelected = friendShips[sprite.index];
         friendSelectedIndex = sprite.index;
@@ -769,6 +791,16 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
 
     function enemyListener (sprite) {
         enemyChosen = true;
+
+        enemyCrosshair.y = sprite.y + enemyCrosshairYOffset;
+        if (sprite.x > 550) {
+            enemyCrosshair.x = sprite.x + enemyCrosshairXOffset;
+        } else {
+            enemyCrosshair.x = sprite.x + 45;
+        }
+
+        enemyCrosshair.alpha = 1.0;
+
         $scope.bothSelected = friendChosen && enemyChosen;
         $scope.enemySelected = enemyShips[sprite.index];
         enemySelectedIndex = sprite.index;
@@ -1457,6 +1489,8 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
     $scope.tunnelToggle = "Open Tunnels";
 
     $scope.scrapShip = function (sprite) {
+        $scope.selectedElement = null;
+        $scope.shipSelected = false;
         console.log("Scrapping ship");
         console.log("id = " + sprite.id);
         var wrapper = {"shipId": sprite.id};
