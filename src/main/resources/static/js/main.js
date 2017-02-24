@@ -268,6 +268,8 @@ simplicityApp.controller('shipsController', function($scope, $http) {
     };
     var chassisNames = [];
     var chassisCosts = [];
+    var destroyerResearched;
+    var cruiserResearched;
     getShipyardInfo = function () {
         console.log("Getting shipyard info");
 
@@ -284,11 +286,52 @@ simplicityApp.controller('shipsController', function($scope, $http) {
                     chassisNames[i] = chassisNames[i].substring(0, 1).toUpperCase() + chassisNames[i].substring(1);
                     $scope.unlockedShips[i] = chassisNames[i] + " (" + chassisCosts[i] + ")";
                 }
+                destroyerResearched = response.data.destroyerEnabled;
+                cruiserResearched = response.data.cruiserEnabled;
+                if (destroyerResearched) {
+                    $scope.destroyerEnabled = "img-normal";
+                } else {
+                    $scope.destroyerEnabled = "img-grey";
+                }
+                if (cruiserResearched) {
+                    $scope.cruiserEnabled = "img-normal";
+                } else {
+                    $scope.cruiserEnabled = "img-grey";
+                }
+                $scope.fighterChoice += response.data.raceColor;
+                $scope.destroyerChoice += response.data.raceColor;
+                $scope.colonizerChoice += response.data.raceColor;
+                $scope.cruiserChoice += response.data.raceColor;
+
             },
 
             function errorCallback (response) {
                 console.log("Unable to find shipyard data");
             });
+    }
+    var shipTypeNumber;
+    $scope.selectShipType = function (typeNumber) {
+        shipTypeNumber = typeNumber;
+        console.log("User wants to build ship with typeNumber = " + typeNumber);
+        $scope.colonizerSelected = false;
+        $scope.fighterSelected = false;
+        $scope.destroyerSelected = false;
+        $scope.cruiserSelected = false;
+
+        switch(typeNumber) {
+            case 0:
+                $scope.colonizerSelected = true;
+                break;
+            case 1:
+                $scope.fighterSelected = true;
+                break;
+            case 2:
+                $scope.destroyerSelected = true;
+                break;
+            case 3:
+                $scope.cruiserSelected = true;
+                break;
+        }
     }
 
     createShip = function (starship) {
@@ -308,15 +351,21 @@ simplicityApp.controller('shipsController', function($scope, $http) {
     }
     $scope.unlockedShips = [];
     getShipInfo();
+    $scope.fighterChoice = "assets/ships/fighter/fighter_";
+    $scope.colonizerChoice = "/assets/ships/colonizer/colonizer_";
+    $scope.destroyerChoice = "assets/ships/destroyer/destroyer_";
+    $scope.cruiserChoice = "assets/ships/cruiser/cruiser_";
+
     getShipyardInfo();
 
     console.log("****$scope.unlockedShips = ");
     console.log($scope.unlockedShips);
 
+
     $scope.purchaseShip = function () {
         var newShip = {};
-        var index;
-
+        var index = shipTypeNumber;
+        /*
         if ($scope.shipTypeSelection === $scope.unlockedShips[0]) {
             index = 0;
         } else if ($scope.shipTypeSelection === $scope.unlockedShips[1]) {
@@ -327,6 +376,18 @@ simplicityApp.controller('shipsController', function($scope, $http) {
             index = 3;
         } else {
             console.log("Error: ship option not programmed in yet.");
+        }*/
+        if (index === 2) {
+            if(!destroyerResearched) {
+                alert("Destroyer tech not yet researched");
+                return;
+            }
+        }
+        if (index === 3) {
+            if(!cruiserResearched) {
+                alert("Cruiser tech not yet researched");
+                return;
+            }
         }
 
         if ($scope.shipName === "" || $scope.shipName == null) {
@@ -335,12 +396,14 @@ simplicityApp.controller('shipsController', function($scope, $http) {
         } else {
             newShip.name = $scope.shipName;
         }
-
+        console.log(chassisCosts[index]);
         if ($scope.totalProduction > chassisCosts[index]) {
             $scope.totalProduction -= chassisCosts[index];
             console.log("Producing a " + chassisNames[index]);
             newShip.chassis = chassisNames[index].toUpperCase();
             createShip(newShip);
+        } else {
+            alert("Not enough production");
         }
     }
 });

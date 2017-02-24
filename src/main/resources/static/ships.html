@@ -95,14 +95,43 @@
         <div id="shipyardDiv" class="w400 h560 padding10">
             <h4>Total Production Accumulated: {{totalProduction}}</h4>
             <br>
-            Ship Type:<select class="space-bg margin20" ng-model="shipTypeSelection">
-                <option ng-repeat="option in unlockedShips">{{option}}</option>
-            </select>
-            <br>
             (Optional)
             <input type="text" class="trans-bg margin20" ng-model="shipName" placeholder="Name your ship." maxlength="32">
-            <br>
-            <button type="button" class="trans-bg margin20 no-border" ng-click="purchaseShip()"><h3>Purchase Ship</h3></button>
+            <div id="shipImagesDiv" class="w150 left">
+                <img ng-src="{{colonizerChoice}}" ng-click="selectShipType(0)">
+
+                <br><br>
+                <img ng-src="{{fighterChoice}}" ng-click="selectShipType(1)">
+
+                <br><br>
+                <img ng-src="{{destroyerChoice}}" ng-click="selectShipType(2)" ng-class="destroyerEnabled">
+
+                <br><br>
+                <img ng-src="{{cruiserChoice}}" ng-click="selectShipType(3)" ng-class="cruiserEnabled">
+
+                <br><br>
+                <button type="button" class="trans-bg margin20 no-border" ng-click="purchaseShip()"><h3>Purchase Ship</h3></button>
+                <br>
+            </div>
+            <div id="shipTypeDiv" class="w150 left">
+                <center>
+                    <span ng-if="colonizerSelected">
+                        Colonizer (Cost: 60)
+                    </span>
+                    <br><br><br><br>
+                    <span ng-if="fighterSelected">
+                        Fighter (Cost: 20)
+                    </span>
+                    <br><br><br>
+                    <span ng-if="destroyerSelected">
+                        Destroyer (Cost: 80)
+                    </span>
+                    <br><br><br><br><br>
+                    <span ng-if="cruiserSelected">
+                        Cruiser (Cost: 100)
+                    </span>
+                </center>
+            </div>
         </div>
     </div>
 </div>

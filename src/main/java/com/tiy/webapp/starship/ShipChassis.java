@@ -6,7 +6,6 @@ package com.tiy.webapp.starship;
 public enum ShipChassis {
     //ShipChassis Constructor:
     COLONIZER (50, 60, 0),
-
     FIGHTER (25, 20, 8),
     DESTROYER (100, 80, 30),
     CRUISER (150, 100, 45);

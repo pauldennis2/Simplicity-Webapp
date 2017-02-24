@@ -16,6 +16,10 @@ public class ShipyardInfoWrapper {
 
     private Integer productionAvailable;
 
+    private Boolean destroyerEnabled;
+    private Boolean cruiserEnabled;
+    private String raceColor;
+
     public ShipyardInfoWrapper () {
 
     }
@@ -27,18 +31,39 @@ public class ShipyardInfoWrapper {
             possibleShips.add(chassis);
             possibleShipCosts.add(chassis.getBaseProductionCost());
         }*/
-        possibleShips.add(ShipChassis.FIGHTER);
-        possibleShipCosts.add(ShipChassis.FIGHTER.getBaseProductionCost());
         possibleShips.add(ShipChassis.COLONIZER);
         possibleShipCosts.add(ShipChassis.COLONIZER.getBaseProductionCost());
+        possibleShips.add(ShipChassis.FIGHTER);
+        possibleShipCosts.add(ShipChassis.FIGHTER.getBaseProductionCost());
 
         if (player.getSecondTechResearched()) { //Second Tech = destroyer
             possibleShips.add(ShipChassis.DESTROYER);
             possibleShipCosts.add(ShipChassis.DESTROYER.getBaseProductionCost());
+            destroyerEnabled = true;
+        } else {
+            destroyerEnabled = false;
         }
         if (player.getCruiserTechResearched()) {
             possibleShips.add(ShipChassis.CRUISER);
             possibleShipCosts.add(ShipChassis.CRUISER.getBaseProductionCost());
+            cruiserEnabled = true;
+        } else {
+            cruiserEnabled = false;
+        }
+
+        switch(player.getRace()) {
+            case KITTY:
+                raceColor = "ltblue.png";
+                break;
+            case DOGE:
+                raceColor = "red.png";
+                break;
+            case HORSIE:
+                raceColor = "gold.png";
+                break;
+            case SSSNAKE:
+                raceColor = "green.png";
+                break;
         }
 
         this.productionAvailable = productionAvailable;
@@ -66,5 +91,29 @@ public class ShipyardInfoWrapper {
 
     public void setProductionAvailable(Integer productionAvailable) {
         this.productionAvailable = productionAvailable;
+    }
+
+    public Boolean getDestroyerEnabled() {
+        return destroyerEnabled;
+    }
+
+    public void setDestroyerEnabled(Boolean destroyerEnabled) {
+        this.destroyerEnabled = destroyerEnabled;
+    }
+
+    public Boolean getCruiserEnabled() {
+        return cruiserEnabled;
+    }
+
+    public void setCruiserEnabled(Boolean cruiserEnabled) {
+        this.cruiserEnabled = cruiserEnabled;
+    }
+
+    public String getRaceColor() {
+        return raceColor;
+    }
+
+    public void setRaceColor(String raceColor) {
+        this.raceColor = raceColor;
     }
 }
