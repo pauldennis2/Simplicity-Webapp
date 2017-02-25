@@ -343,7 +343,7 @@ public class SimplicityRestController {
     }
 
     @RequestMapping(path = "/planets-info.json", method = RequestMethod.POST)
-    public List<Planet> planetsInfo (@RequestBody IdRequestWrapper wrapper, HttpSession session) {
+    public List<Planet> planetsInfo (HttpSession session) {
         Integer playerId = (Integer) session.getAttribute("playerId");
         return players.findOne(playerId).getPlanets();
     }

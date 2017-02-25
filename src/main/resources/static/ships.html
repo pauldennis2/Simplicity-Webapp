@@ -83,10 +83,11 @@
         <div id="shipInfoDiv" class="w400 h560 v-scroll no-h-scroll padding10">
             <div ng-repeat="ship in ships">
                 <div class="w200 h120">
-                    <center><img ng-src={{ship.imageString}} style="padding-top: 10%"></center>
+                    <center><img class="ship-image-padding" ng-src={{ship.imageString}}></center>
                 </div>
                 <div class="w600 h120">
                     <h4>{{ship.name}}</h4>
+                    <!--TODO: fix this so it diplays time to destination if in a tunnel-->
                     Location: {{ship.starSystem.name}} <br>
                     Health: {{ship.health}}/{{ship.maxHealth}}
                 </div>
@@ -115,19 +116,19 @@
             </div>
             <div id="shipTypeDiv" class="w150 left">
                 <center>
-                    <span ng-if="colonizerSelected">
+                    <span ng-if="shipTypeNumber == 0">
                         Colonizer (Cost: 60)
                     </span>
                     <br><br><br><br>
-                    <span ng-if="fighterSelected">
+                    <span ng-if="shipTypeNumber == 1">
                         Fighter (Cost: 20)
                     </span>
                     <br><br><br>
-                    <span ng-if="destroyerSelected">
+                    <span ng-if="shipTypeNumber == 2">
                         Destroyer (Cost: 80)
                     </span>
                     <br><br><br><br><br>
-                    <span ng-if="cruiserSelected">
+                    <span ng-if="shipTypeNumber == 3">
                         Cruiser (Cost: 100)
                     </span>
                 </center>

@@ -34,8 +34,8 @@ simplicityApp.config(function($routeProvider) {
             controller: "systemController"
         })
         .when("/help", {
-            templateUrl: "help.html",
-            controller: "helpController"
+            templateUrl: "bug-report.html",
+            controller: "bugReportController"
         })
         .when("/options", {
             templateUrl: "options.html",
@@ -52,48 +52,37 @@ simplicityApp.config(function($routeProvider) {
 });
 
 simplicityApp.controller('ssgViewController', function($scope, $http) {
+    //Scope variables
     $scope.helpMode = false;
-    $scope.getHelp = function () {
-        $scope.helpMode = !$scope.helpMode;
-    }
-    console.log("Initializing ssgViewController");
-    var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-canvas-container',
-         { preload: preload, create: create, update: update });
-
     $scope.starSystemGraph = {};
-    var starSystems = [];
-    var tunnels = [];
-    getSSGInfo = function () {
-        console.log("Getting ssg info");
-        $http.post("/ssg-info.json")
-        .then(
-            function successCallback (response) {
-                console.log("Found info");
-                starSystems = response.data.starSystems;
-                //console.log(starSystems);
-                tunnels = response.data.tunnels;
-                //console.log(tunnels);
-                preload();
-                create();
-            },
-
-            function errorCallback (response) {
-                console.log("Failed to find SSG info");
-            });
-    };
-    $scope.goToDagobah = function () {
-        console.log("Go to the Dagobah system Luke");
-        console.log("Selected system = " + $scope.selectedSystem.name);
-        window.location.href = "/main.html#/system/" + selectedSystemId;
-    };
     $scope.noSystemSelected = true;
 
-    getSSGInfo();
+    //Constants
     var scale = 30;
     var xOffset = 70;
     var yOffset = 40;
+    var homeSystemIconsX = [250, 580, 325, -10];
+    var homeSystemIconsY = [-10, 190, 460, 255];
+    var homeSystemIconNames = ['caticon', 'dogicon', 'horseicon', 'snakeicon'];
+
+    //Regular joe variables
+    var starSystems = [];
+    var tunnels = [];
+
+    var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-canvas-container',
+         { preload: preload, create: create, update: update });
+
+    //Scope functions
+    $scope.getHelp = function () {
+        $scope.helpMode = !$scope.helpMode;
+    }
+
+    $scope.goToSystem = function () {
+        window.location.href = "/main.html#/system/" + starSystems[$scope.selectedSystem.index].id;
+    };
+
+    //Phaser functions
     function preload () {
-        console.log("In preload");
         game.load.image('stars', 'assets/starfield.png');
         game.load.image('tinysun', 'assets/tinysun.png');
         game.load.image('caticon', 'assets/races/race1_mapicon.png');
@@ -101,30 +90,11 @@ simplicityApp.controller('ssgViewController', function($scope, $http) {
         game.load.image('horseicon', 'assets/races/race3_mapicon.png');
         game.load.image('snakeicon', 'assets/races/race4_mapicon.png');
     }
-    var homeSystemIconsX = [];
-    homeSystemIconsX[0] = 250;
-    homeSystemIconsX[1] = 580;
-    homeSystemIconsX[2] = 325;
-    homeSystemIconsX[3] = -10;
-    var homeSystemIconsY = [];
-    homeSystemIconsY[0] = -10;
-    homeSystemIconsY[1] = 190;
-    homeSystemIconsY[2] = 460;
-    homeSystemIconsY[3] = 255;
-
-    var homeSystemIconNames = [];
-    homeSystemIconNames[0] = 'caticon';
-    homeSystemIconNames[1] = 'dogicon';
-    homeSystemIconNames[2] = 'horseicon';
-    homeSystemIconNames[3] = 'snakeicon';
 
     function create () {
         console.log("in Create");
         game.add.sprite(0, 0, 'stars');
         var graphics = game.add.graphics(0, 0);
-        //graphics.lineStyle(3, 0x002266, 1);
-        //graphics.lineStyle(2, 0x777777, 1);
-        //graphics.lineStyle(3, 0x99ccff, 1);
         graphics.lineStyle(3, 0xAAAAAA, 1);
         var systemSprites = [];
         for (i = 0; i < starSystems.length; i++) {
@@ -132,30 +102,39 @@ simplicityApp.controller('ssgViewController', function($scope, $http) {
             systemSprites[i].inputEnabled = true;
             systemSprites[i].anchor.setTo(0.5, 0.5);
             systemSprites[i].events.onInputDown.add(systemClickListener, this);
-            systemSprites[i].systemName = starSystems[i].name;
             systemSprites[i].index = i;
         }
         for (i = 0; i < tunnels.length; i++) {
-            var x1 = tunnels[i].firstSystem.gridCoordX;
-            var y1 = tunnels[i].firstSystem.gridCoordY;
-            var x2 = tunnels[i].secondSystem.gridCoordX;
-            var y2 = tunnels[i].secondSystem.gridCoordY;
-
-            graphics.moveTo(x1 * scale + xOffset, y1 * scale + yOffset);
-            graphics.lineTo(x2 * scale + xOffset, y2 * scale + yOffset);
+            graphics.moveTo(tunnels[i].firstSystem.gridCoordX * scale + xOffset, tunnels[i].firstSystem.gridCoordY * scale + yOffset);
+            graphics.lineTo(tunnels[i].secondSystem.gridCoordX * scale + xOffset, tunnels[i].secondSystem.gridCoordY * scale + yOffset);
         }
         for (i = 0; i < 4; i++) {
             game.add.sprite(homeSystemIconsX[i] + xOffset, homeSystemIconsY[i] + yOffset, homeSystemIconNames[i]);
         }
     }
-    var selectedSystemId;
+
+    function update () {
+    }
+
+    //Other functions
+    function getSSGInfo () {
+        $http.post("/ssg-info.json")
+        .then(
+            function successCallback (response) {
+                starSystems = response.data.starSystems;
+                tunnels = response.data.tunnels;
+            },
+
+            function errorCallback (response) {
+                console.log("Failed to find SSG info");
+            });
+    };
+
     function systemClickListener (systemSprite) {
         $scope.noSystemSelected = false;
-        $scope.selectedSystem = {};
-        $scope.selectedSystem.name = systemSprite.systemName;
+        $scope.selectedSystem = systemSprite;
         console.log(starSystems[systemSprite.index]);
         console.log("id of system = " + starSystems[systemSprite.index].id);
-        selectedSystemId = starSystems[systemSprite.index].id;
         var index = systemSprite.index;
         $scope.selectedSystem.planets = starSystems[index].planets;
         for (i = 0; i < $scope.selectedSystem.planets.length; i++) {
@@ -179,25 +158,16 @@ simplicityApp.controller('ssgViewController', function($scope, $http) {
         }
     }
 
-    function update () {
-    }
+    getSSGInfo();
 });
 
 simplicityApp.controller('diplomacyController', function($scope, $http) {
-    console.log("Initializing diplomacyController");
-    $scope.players = [];
-    var requiredPcts = [];
-    requiredPcts[1] = 110;
-    requiredPcts[2] = 75;
-    requiredPcts[3] = 70;
-    requiredPcts[4] = 65;
+    $scope.helpMode = false;
+    var requiredPcts = [0, 110, 75, 70, 65];
     getPlayerInfo = function () {
-        console.log("Getting player info");
         $http.post("/diplomacy-info.json")
         .then(
             function successCallback (response) {
-                console.log("Found players");
-                console.log(response.data);
                 $scope.players = response.data;
                 $scope.requiredPct = requiredPcts[$scope.players.length];
             },
@@ -208,7 +178,6 @@ simplicityApp.controller('diplomacyController', function($scope, $http) {
     };
     getPlayerInfo();
 
-    $scope.helpMode = false;
     $scope.getHelp = function () {
         $scope.helpMode = !$scope.helpMode;
     }
@@ -219,20 +188,13 @@ simplicityApp.controller('planetsController', function($scope, $http) {
     $scope.getHelp = function () {
         $scope.helpMode = !$scope.helpMode;
     }
-    console.log("Initializing planetsController");
     getPlanetInfo = function () {
-        console.log("Getting planets info");
-        var wrapper = {"gameId": 1, "playerId":2};
-        $scope.planets = [];
-        $http.post("/planets-info.json", wrapper)
+        $http.post("/planets-info.json")
         .then(
             function successCallback (response) {
-                console.log("Found planets");
-                console.log(response.data);
                 $scope.planets = response.data;
                 for (i = 0; i < $scope.planets.length; i++) {
                     $scope.planets[i].imageString = "assets/planets/" + $scope.planets[i].imageString + ".png";
-                    console.log($scope.planets[i].imageString);
                 }
             },
 
@@ -244,21 +206,62 @@ simplicityApp.controller('planetsController', function($scope, $http) {
 });
 
 simplicityApp.controller('shipsController', function($scope, $http) {
-    console.log("Initializing shipsController");
-
+    //Scope variables
     $scope.helpMode = false;
+    $scope.fighterChoice = "assets/ships/fighter/fighter_";
+    $scope.colonizerChoice = "/assets/ships/colonizer/colonizer_";
+    $scope.destroyerChoice = "assets/ships/destroyer/destroyer_";
+    $scope.cruiserChoice = "assets/ships/cruiser/cruiser_";
+    //Regular variables
+    var chassisNames = [];
+    var chassisCosts = [];
+    var destroyerResearched;
+    var cruiserResearched;
+
+    //Scope functions
     $scope.getHelp = function () {
         $scope.helpMode = !$scope.helpMode;
     }
 
-    getShipInfo = function () {
-        console.log("Getting ship info");
-        $scope.ships = [];
+    $scope.selectShipType = function (typeNumber) {
+        $scope.shipTypeNumber = typeNumber;
+    }
+
+    $scope.purchaseShip = function () {
+        var newShip = {};
+        var index = $scope.shipTypeNumber;
+
+        if (index === 2) {
+            if(!destroyerResearched) {
+                alert("Destroyer tech not yet researched");
+                return;
+            }
+        }
+        if (index === 3) {
+            if(!cruiserResearched) {
+                alert("Cruiser tech not yet researched");
+                return;
+            }
+        }
+
+        if ($scope.shipName === "" || $scope.shipName == null) {
+            newShip.name = chassisNames[index];
+        } else {
+            newShip.name = $scope.shipName;
+        }
+        if ($scope.totalProduction > chassisCosts[index]) {
+            $scope.totalProduction -= chassisCosts[index];
+            newShip.chassis = chassisNames[index].toUpperCase();
+            createShip(newShip);
+        } else {
+            alert("Not enough production");
+        }
+    }
+
+    function getShipInfo () {
         $http.post("/ships-info.json")
         .then(
             function successCallback (response) {
-                console.log("Found ships");
-                console.log(response.data);
                 $scope.ships = response.data;
             },
 
@@ -266,25 +269,17 @@ simplicityApp.controller('shipsController', function($scope, $http) {
                 console.log("No ships");
             });
     };
-    var chassisNames = [];
-    var chassisCosts = [];
-    var destroyerResearched;
-    var cruiserResearched;
-    getShipyardInfo = function () {
-        console.log("Getting shipyard info");
 
+    function getShipyardInfo () {
         $http.post("/shipyard-info.json")
         .then(
             function successCallback (response) {
-                console.log("Found info");
-                console.log(response.data);
                 chassisNames = response.data.possibleShips;
                 chassisCosts = response.data.possibleShipCosts;
                 $scope.totalProduction = response.data.productionAvailable;
                 for (i = 0; i < chassisNames.length; i++) {
                     chassisNames[i] = chassisNames[i].toLowerCase();
                     chassisNames[i] = chassisNames[i].substring(0, 1).toUpperCase() + chassisNames[i].substring(1);
-                    $scope.unlockedShips[i] = chassisNames[i] + " (" + chassisCosts[i] + ")";
                 }
                 destroyerResearched = response.data.destroyerEnabled;
                 cruiserResearched = response.data.cruiserEnabled;
@@ -302,46 +297,17 @@ simplicityApp.controller('shipsController', function($scope, $http) {
                 $scope.destroyerChoice += response.data.raceColor;
                 $scope.colonizerChoice += response.data.raceColor;
                 $scope.cruiserChoice += response.data.raceColor;
-
             },
 
             function errorCallback (response) {
                 console.log("Unable to find shipyard data");
             });
     }
-    var shipTypeNumber;
-    $scope.selectShipType = function (typeNumber) {
-        shipTypeNumber = typeNumber;
-        console.log("User wants to build ship with typeNumber = " + typeNumber);
-        $scope.colonizerSelected = false;
-        $scope.fighterSelected = false;
-        $scope.destroyerSelected = false;
-        $scope.cruiserSelected = false;
 
-        switch(typeNumber) {
-            case 0:
-                $scope.colonizerSelected = true;
-                break;
-            case 1:
-                $scope.fighterSelected = true;
-                break;
-            case 2:
-                $scope.destroyerSelected = true;
-                break;
-            case 3:
-                $scope.cruiserSelected = true;
-                break;
-        }
-    }
-
-    createShip = function (starship) {
-        console.log("Attempting to create the following ship:");
-        console.log(starship);
-
+    function createShip (starship) {
         $http.post("/create-ship.json", starship)
         .then(
             function successCallback (response) {
-                console.log("Ship created I guess");
                 $scope.ships.push(response.data);
             },
 
@@ -349,74 +315,66 @@ simplicityApp.controller('shipsController', function($scope, $http) {
                 console.log("Failed to create ship");
             });
     }
-    $scope.unlockedShips = [];
+
     getShipInfo();
-    $scope.fighterChoice = "assets/ships/fighter/fighter_";
-    $scope.colonizerChoice = "/assets/ships/colonizer/colonizer_";
-    $scope.destroyerChoice = "assets/ships/destroyer/destroyer_";
-    $scope.cruiserChoice = "assets/ships/cruiser/cruiser_";
-
     getShipyardInfo();
-
-    console.log("****$scope.unlockedShips = ");
-    console.log($scope.unlockedShips);
-
-
-    $scope.purchaseShip = function () {
-        var newShip = {};
-        var index = shipTypeNumber;
-        /*
-        if ($scope.shipTypeSelection === $scope.unlockedShips[0]) {
-            index = 0;
-        } else if ($scope.shipTypeSelection === $scope.unlockedShips[1]) {
-            index = 1;
-        } else if ($scope.shipTypeSelection === $scope.unlockedShips[2]) {
-            index = 2;
-        } else if ($scope.shipTypeSelection === $scope.unlockedShips[3]) {
-            index = 3;
-        } else {
-            console.log("Error: ship option not programmed in yet.");
-        }*/
-        if (index === 2) {
-            if(!destroyerResearched) {
-                alert("Destroyer tech not yet researched");
-                return;
-            }
-        }
-        if (index === 3) {
-            if(!cruiserResearched) {
-                alert("Cruiser tech not yet researched");
-                return;
-            }
-        }
-
-        if ($scope.shipName === "" || $scope.shipName == null) {
-            console.log("No name selected; defaulting to ship type");
-            newShip.name = chassisNames[index];
-        } else {
-            newShip.name = $scope.shipName;
-        }
-        console.log(chassisCosts[index]);
-        if ($scope.totalProduction > chassisCosts[index]) {
-            $scope.totalProduction -= chassisCosts[index];
-            console.log("Producing a " + chassisNames[index]);
-            newShip.chassis = chassisNames[index].toUpperCase();
-            createShip(newShip);
-        } else {
-            alert("Not enough production");
-        }
-    }
 });
 
 simplicityApp.controller('researchController', function($scope, $http) {
-    console.log("Initializing researchController");
-    getResearchInfo = function () {
-        console.log("Getting research info");
+    $scope.helpMode = false;
 
+    $scope.purchaseTech = function (techNumber) {
+        console.log("Trying to purchase tech number " + techNumber);
+        if (techNumber === 0 && $scope.researchInfo.researchPoolTotal < 40) {
+            alert('Not enough research points');
+            return;
+        }
+        if (techNumber === 1 && $scope.researchInfo.researchPoolTotal < 50) {
+            alert('Not enough research points');
+            return;
+        }
+        if (techNumber === 2 && $scope.researchInfo.researchPoolTotal < 90) {
+            alert('Not enough research points');
+            return;
+        }
+        if (techNumber > 2) {
+            alert("That tech hasn't been programmed in yet.");
+        }
+
+        $http.post("/research-tech.json", {"techId": techNumber})
+        .then(
+            function successCallback (response) {
+                $scope.researchInfo = response.data;
+                if (!$scope.researchInfo.firstTechResearched) {
+                    $scope.firstTechImageClass = "img-grey";
+                } else {
+                    $scope.firstTechImageClass = "img-normal";
+                }
+                if (!$scope.researchInfo.secondTechResearched) {
+                    $scope.secondTechImageClass = "img-grey";
+                } else {
+                    $scope.secondTechImageClass = "img-normal";
+                }
+                if (!$scope.researchInfo.cruiserTechResearched) {
+                    $scope.cruiserTechImageClass = "img-grey";
+                } else {
+                    $scope.cruiserTechImageClass = "img-normal";
+                }
+            },
+
+            function errorCallback (response) {
+                console.log("Unable to research tech")
+            });
+    }
+
+    $scope.getHelp = function () {
+        $scope.helpMode = !$scope.helpMode;
+    }
+
+    function getResearchInfo () {
         $http.post("/research-info.json")
         .then(
             function successCallback (response) {
-                console.log("Found research info");
                 console.log(response.data);
                 $scope.researchInfo = response.data;
                 if (!$scope.researchInfo.firstTechResearched) {
@@ -444,65 +402,23 @@ simplicityApp.controller('researchController', function($scope, $http) {
     };
 
     getResearchInfo();
+});
 
-    $scope.purchaseTech = function (techNumber) {
-        console.log("Trying to purchase tech number " + techNumber);
-        if (techNumber === 0 && $scope.researchInfo.researchPoolTotal < 40) {
-            alert('Not enough research points');
-            return;
-        }
-        if (techNumber === 1 && $scope.researchInfo.researchPoolTotal < 50) {
-            alert('Not enough research points');
-            return;
-        }
-        if (techNumber === 2 && $scope.researchInfo.researchPoolTotal < 90) {
-            alert('Not enough research points');
-            return;
-        }
-        if (techNumber > 2) {
-            alert("That tech hasn't been programmed in yet.");
-        }
+simplicityApp.controller('mainController', function($scope, $http) {
 
-        var wrapper = {"techId": techNumber};
-        $http.post("/research-tech.json", wrapper)
+    $scope.advanceTurn = function () {
+        $http.post("/process-turn.json")
         .then(
             function successCallback (response) {
-                console.log("Got a tech response");
-                console.log(response.data);
-                $scope.researchInfo = response.data;
-                if (!$scope.researchInfo.firstTechResearched) {
-                    $scope.firstTechImageClass = "img-grey";
-                } else {
-                    $scope.firstTechImageClass = "img-normal";
-                }
-                if (!$scope.researchInfo.secondTechResearched) {
-                    $scope.secondTechImageClass = "img-grey";
-                } else {
-                    $scope.secondTechImageClass = "img-normal";
-                }
-                if (!$scope.researchInfo.cruiserTechResearched) {
-                    $scope.cruiserTechImageClass = "img-grey";
-                } else {
-                    $scope.cruiserTechImageClass = "img-normal";
-                }
+                $scope.currentTurn = response.data;
             },
 
             function errorCallback (response) {
-                console.log("Unable to research tech")
+                console.log("Could not find turn info");
             });
-    }
+    };
 
-    $scope.helpMode = false;
-    $scope.getHelp = function () {
-        $scope.helpMode = !$scope.helpMode;
-    }
-});
-
-simplicityApp.controller('mainController', function($scope, $http, $rootScope) {
-    console.log("Initializing mainController");
-    $scope.currentTurn = 0;
-
-    getCurrentTurn = function () {
+    function getCurrentTurn () {
         $http.post("/get-turn-number.json")
         .then(
             function successCallback (response) {
@@ -514,25 +430,11 @@ simplicityApp.controller('mainController', function($scope, $http, $rootScope) {
             });
     }
     getCurrentTurn();
-    $scope.advanceTurn = function () {
-
-        $http.post("/process-turn.json")
-        .then(
-            function successCallback (response) {
-                $scope.currentTurn = response.data;
-            },
-
-            function errorCallback (response) {
-                console.log("Could not find turn info");
-            });
-    };
 });
 
 simplicityApp.controller('optionsController', function($scope, $http) {
-    console.log("Initializing optionsController");
 
     getGameId = function () {
-        console.log("Going to get game id");
         $http.get("/game-id.json")
         .then(
             function successCallback (response) {
@@ -546,33 +448,65 @@ simplicityApp.controller('optionsController', function($scope, $http) {
     getGameId();
 });
 
-simplicityApp.controller('helpController', function($scope, $http) {
-    console.log("Initializing helpController");
+simplicityApp.controller('bugReportController', function($scope, $http) {
+    console.log("Initializing bugReportController");
 });
 
-simplicityApp.controller('combatController', function($scope, $http, $routeParams, $rootScope) {
-    $rootScope.combatMode = true;
-    console.log("Initializing combatController");
+simplicityApp.controller('combatController', function($scope, $http, $routeParams) {
+
+    //Scope variables
+    $scope.combatLogMode = false;
+    $scope.logToggle = "View Log";
+    $scope.helpMode = false;
+    $scope.combatLog = [];
+    $scope.bothSelected = false;
+
+    //Constants
+    var DESTROYER_SPACE = 96;
+    var FIGHTER_SPACE = 64;
+    var CRUISER_SPACE = 110;
+    var friendCrosshairXOffset = -85;
+    var friendCrosshairYOffset = 0;
+    var enemyCrosshairXOffset = 90;
+    var enemyCrosshairYOffset = 0;
+
+    //Regular variables
     var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-canvas-container',
      { preload: preload, create: create, update: update });
     var friendShips = [];
+    var friendSprites = [];
+    var friendShieldSprites = [];
+
     var enemyShips = [];
+    var enemySprites = [];
+    var enemyShieldSprites = [];
+
     var explosions;
-    $scope.helpMode = false;
+    var enemiesRemaining;
+    var combatLogIndex = 0;
+
+    var lasers;
+    var friendCrosshair;
+    var enemyCrosshair;
+
+    var friendChosen = false;
+    var enemyChosen = false;
+    var friendSelectedIndex;
+    var enemySelectedIndex;
+    var laser;
+    var xDestination;
+
+    //Unused at the moment
+    var firstShieldAlpha = 1.0;
+    var goingDown = true;
+    var animateFirstShield = false;
+
 
     $scope.getHelp = function () {
         $scope.helpMode = !$scope.helpMode;
         $scope.combatLogMode = false;
     }
-    /*
-    window.onbeforeunload = function() {
-        //alert("Confirm leaving page?");
-        console.log("leaving page????????");
-        return "Are you sure?";
-    }
-    */
-    $scope.combatLogMode = false;
-    $scope.logToggle = "View Log";
+
     $scope.viewLog = function () {
         $scope.combatLogMode = !$scope.combatLogMode;
         if ($scope.combatLogMode) {
@@ -583,11 +517,7 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
         $scope.helpMode = false;
     }
 
-    $scope.combatLog = [];
-    var combatLogIndex = 0;
-
-    var enemiesRemaining;
-    getCombatInfo = function (systemId) {
+    function getCombatInfo (systemId) {
         var wrapper = {"systemId": systemId};
         $http.post("/empty-combat-info.json", wrapper)
         .then(
@@ -635,16 +565,11 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
 
         game.load.image('laser', 'assets/red_beam_small.png');
 
-        game.load.image('planet', 'assets/planet_large.png');
-
         game.load.image('friend-crosshair', 'assets/crosshair_green2.png');
         game.load.image('enemy-crosshair', 'assets/crosshair_red2.png');
 
         game.load.spritesheet('explosion', 'assets/anims/explode.png');
     }
-
-    var friendSprites = [];
-    var enemySprites = [];
 
     function getImageStringFromShip (ship) {
         var chassis = ship.chassis;
@@ -669,47 +594,29 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
         return chassisName + '-shield';
     }
 
-    var friendShieldSprites = [];
-    var enemyShieldSprites = [];
-    var DESTROYER_SPACE = 96;
-    var FIGHTER_SPACE = 64;
-    var CRUISER_SPACE = 110;
-    var lasers;
-    var friendCrosshair;
-    var enemyCrosshair;
     function create() {
         game.add.sprite(0, 0, 'stars');
-        //game.add.sprite(-150, 200, 'planet');
         var yLocation = 50;
         var secondColumn = 0;
-        /*
-        enemyBullets = game.add.group();
-        enemyBullets.enableBody = true;
-        enemyBullets.physicsBodyType = Phaser.Physics.ARCADE;
-        enemyBullets.createMultiple(100, 'bullet');*/
         lasers = game.add.group();
         lasers.enableBody = true;
         lasers.physicsBodyType = Phaser.Physics.ARCADE;
         lasers.createMultiple(2, 'laser');
 
         friendCrosshair = game.add.sprite(0, 0, 'friend-crosshair');
-        enemyCrosshair = game.add.sprite(0, 0, 'enemy-crosshair');
-
         friendCrosshair.anchor.setTo(0.5, 0.5);
-        enemyCrosshair.anchor.setTo(0.5, 0.5);
-
         friendCrosshair.alpha = 0.0;
+
+        enemyCrosshair = game.add.sprite(0, 0, 'enemy-crosshair');
+        enemyCrosshair.anchor.setTo(0.5, 0.5);
         enemyCrosshair.alpha = 0.0;
 
         for (i = 0; i < friendShips.length; i++) {
             if (chassis === "FIGHTER") {
-                console.log("I just painted a fighter so I will add " + FIGHTER_SPACE);
                 yLocation += FIGHTER_SPACE/2;
             } else if (chassis === "DESTROYER") {
-                console.log("I just painted a destroyer so I will add " + DESTROYER_SPACE);
                 yLocation += DESTROYER_SPACE/2;
             } else if (chassis === "CRUISER") {
-                console.log("I just painted a cruiser so I will add " + CRUISER_SPACE);
                 yLocation += CRUISER_SPACE/2;
             } else {
                 console.log("Painting error occurred. Consult manual page 56. (Just kidding, there is no manual)")
@@ -718,13 +625,10 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
             friendShieldSprites[i] = game.add.sprite(100 + secondColumn, yLocation, getShieldStringFromShip(friendShips[i]));
             var chassis = friendShips[i].chassis;
             if (chassis === "FIGHTER") {
-                console.log("I just painted a fighter so I will add " + FIGHTER_SPACE);
                 yLocation += FIGHTER_SPACE/2;
             } else if (chassis === "DESTROYER") {
-                console.log("I just painted a destroyer so I will add " + DESTROYER_SPACE);
                 yLocation += DESTROYER_SPACE/2;
             } else if (chassis === "CRUISER") {
-                console.log("I just painted a cruiser so I will add " + CRUISER_SPACE);
                 yLocation += CRUISER_SPACE/2;
             } else {
                 console.log("Painting error occurred. Consult manual page 56. (Just kidding, there is no manual)")
@@ -734,9 +638,6 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
                 secondColumn = 160;
             }
 
-
-            //friendSprites[i] = game.add.sprite(100, 50 + 150*i, getImageStringFromShip(friendShips[i]));
-            //friendShieldSprites[i] = game.add.sprite(72, 50 + 150*i, getShieldStringFromShip(friendShips[i]));
             friendShieldSprites[i].anchor.setTo(0.5, 0.5);
             friendSprites[i].anchor.setTo(0.5, 0.5);
             friendSprites[i].inputEnabled = true;
@@ -747,13 +648,10 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
         secondColumn = 0;
         for (i = 0; i < enemyShips.length; i++) {
             if (chassis === "FIGHTER") {
-                console.log("I just painted a fighter so I will add " + FIGHTER_SPACE);
                 yLocation += FIGHTER_SPACE/2;
             } else if (chassis === "DESTROYER") {
-                console.log("I just painted a destroyer so I will add " + DESTROYER_SPACE);
                 yLocation += DESTROYER_SPACE/2;
             } else if (chassis === "CRUISER") {
-                console.log("I just painted a cruiser so I will add " + CRUISER_SPACE);
                 yLocation += CRUISER_SPACE/2;
             } else {
                 console.log("Painting error occurred. Consult manual page 56. (Just kidding, there is no manual)")
@@ -762,13 +660,10 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
             enemyShieldSprites[i] = game.add.sprite(600 - secondColumn, yLocation, getShieldStringFromShip(enemyShips[i]));
             var chassis = enemyShips[i].chassis;
             if (chassis === "FIGHTER") {
-                console.log("I just painted a fighter so I will add " + FIGHTER_SPACE);
                 yLocation += FIGHTER_SPACE/2;
             } else if (chassis === "DESTROYER") {
-                console.log("I just painted a destroyer so I will add " + DESTROYER_SPACE);
                 yLocation += DESTROYER_SPACE/2;
             } else if (chassis === "CRUISER") {
-                console.log("I just painted a cruiser so I will add " + CRUISER_SPACE);
                 yLocation += CRUISER_SPACE/2;
             } else {
                 console.log("Painting error occurred. Consult manual page 56. (Just kidding, there is no manual)")
@@ -786,24 +681,6 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
             enemySprites[i].scale.x *= -1;
             enemyShieldSprites[i].scale.x *= -1;
         }
-        /*
-        for (i = 0; i < enemyShips.length; i++) {
-            enemySprites[i] = game.add.sprite(600, 50 + 100*i, getImageStringFromShip(enemyShips[i]));
-            //enemySprites[i] = game.add.sprite(600, 50 + 100*i, 'purple-fighter');
-            enemyShieldSprites[i] = game.add.sprite(600, 50 + 100*i, getShieldStringFromShip(enemyShips[i]));
-            enemyShieldSprites[i].anchor.setTo(0.5, 0.5);
-            enemyShieldSprites[i].scale.x *= -1;
-            enemySprites[i].inputEnabled = true;
-            enemySprites[i].events.onInputDown.add(enemyListener, this);
-            enemySprites[i].index = i;
-            enemySprites[i].anchor.setTo(0.5, 0.5);
-            enemySprites[i].scale.x *= -1;
-            //lasers.enableBody = true;
-            //lasers.physicsBodyType = Phaser.Physics.ARCADE;
-            enemySprites[i].enableBody = true;
-            enemySprites[i].physicsBodyType = Phaser.Physics.ARCADE;
-            //game.physics.enable(enemySprites[i]);
-        }*/
 
         explosions = game.add.group();
         explosions.createMultiple(4, 'destruction_explosion');
@@ -821,16 +698,6 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
         }
     }
 
-    var friendChosen = false;
-    var enemyChosen = false;
-    var friendSelectedIndex;
-    var enemySelectedIndex;
-    $scope.bothSelected = false;
-
-    var friendCrosshairXOffset = -85;
-    var friendCrosshairYOffset = 0;
-    var enemyCrosshairXOffset = 90;
-    var enemyCrosshairYOffset = 0;
     function friendListener (sprite) {
         friendChosen = true;
         friendCrosshair.y = sprite.y + friendCrosshairYOffset;
@@ -873,10 +740,7 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
         $scope.enemySelected.energyPct = "" + (ship.currentReservePower/ship.maxReservePower)*100 + "%";
         $scope.$apply();
     }
-    var firstShieldAlpha = 1.0;
-    var goingDown = true;
-    var animateFirstShield = false;
-    var xDestination;
+
     function update() {
         if (laser != null) {
             game.physics.arcade.overlap(laser, enemySprites[enemySelectedIndex], laserHitsEnemy, null, this);
@@ -899,15 +763,10 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
 
         if (laser != null) {
             if (laser.x > xDestination) {
-//                var explosion = explosions.getFirstExists(false);
-//                explosion.reset(alien.body.x, alien.body.y);
-//                explosion.play('kaboom', 30, false, true);
                 laser.kill();
             }
         }
     }
-
-
 
     $scope.passTurn = function () {
         console.log("Passing turn");
@@ -1032,18 +891,8 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
             });
 
     }
-    function laserHitsEnemy () {
-        console.log("EXPLOSIONS*****!!!!!");
-    }
-    var laser;
 
     $scope.fireWeapons = function () {
-        //xDestination = 590;
-        /*
-        var bullet = bullets.getFirstExists(false);
-        bullet.reset(turret.x, turret.y);
-        bullet.rotation = game.physics.arcade.moveToPointer(bullet, 1000, game.input.activePointer, 500);
-        */
         if (laser == null) {
             laser = lasers.getFirstExists(false);
         }
@@ -1052,10 +901,6 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
         laser.rotation = game.physics.arcade.moveToObject(laser, enemySprites[enemySelectedIndex], 1200);
         xDestination = enemySprites[enemySelectedIndex].x - 10;
         console.log("xDestination = " + xDestination);
-        //game.physics.arcade.enable(enemySprites[enemySelectedIndex]);
-        //game.physics.arcade.collide(laser, enemySprites[enemySelectedIndex], laserHitsEnemy);
-        //game.physics.arcade.overlap(bullets, enemies[i].tank, bulletHitEnemy, null, this);
-        //game.physics.arcade.overlap(laser, enemySprites[enemySelectedIndex], laserHitsEnemy, null, this);
         console.log("enemySprites[enemySelectedIndex] = ");
         console.log(enemySprites[enemySelectedIndex]);
 
@@ -1132,18 +977,27 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
 });
 
 simplicityApp.controller('systemController', function($scope, $http, $routeParams) {
-    console.log("Initializing systemController");
+
+    var explosions;
+    var wormholes;
+    var wormholeAnims = [];
+    var addAnimations = true;
+    var systemText;
+    var tunnels = [];
+    var graphics;
+    var colonizeGraphics;
+    var planetCoordsX = [430, 350, 525];
+    var planetCoordsY = [205, 105, 360];
+    var tunnelCoordsX = [20, 620, 350];
+    var tunnelCoordsY = [400, 400, 490];
+    var ships = [];
     var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-canvas-container',
                                       { preload: preload, create: create, update: update });
 
     getSpecificStarSystemInfo = function (systemId) {
-        var wrapper = {"systemId": systemId};
-        console.log("For system with id = " + systemId);
-        $http.post("/specific-system-info.json", wrapper)
+        $http.post("/specific-system-info.json", {"systemId": systemId})
         .then(
             function successCallback (response) {
-                console.log("Found specific system info");
-                console.log(response.data);
                 $scope.starSystemInfo = response.data;
             },
 
@@ -1155,14 +1009,11 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
         getSpecificStarSystemInfo($routeParams.param);
     }
 
-    colonizePlanet = function (planet, ship) {
-        var wrapper = {"planetId": planet.id, "shipId": ship.id};
+    function colonizePlanet (planet, ship) {
         console.log(wrapper);
-        $http.post("/colonize-planet.json", wrapper)
+        $http.post("/colonize-planet.json", {"planetId": planet.id, "shipId": ship.id})
         .then(
             function successCallback (response) {
-                console.log("Colonization successful I guess");
-                console.log(response.data)
                 ship.kill();
             },
 
@@ -1170,13 +1021,6 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
                 console.log("Unable to colonize planet?");
             });
     }
-
-
-    var explosions;
-    var wormholes;
-    var wormholeAnims = [];
-    var addAnimations = true;
-    var systemText;
     
     function getImageStringFromShip (ship) {
         console.log("ship = ");
@@ -1239,12 +1083,7 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
         game.load.image('gold-cruiser', 'assets/ships/cruiser/cruiser_gold.png');
         game.load.image('purple-cruiser', 'assets/ships/cruiser/cruiser_purple.png');
     }
-    var tunnels = [];
-    var graphics;
-    var colonizeGraphics;
-    var planetCoordsX = [];
-    var planetCoordsY = [];
-    var ships = [];
+
     function create() {
         game.physics.startSystem(Phaser.Physics.ARCADE);
         var ringCenterX = 400;
@@ -1252,24 +1091,6 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
         //  A simple background for our game
         game.add.sprite(0, 0, 'stars');
         game.add.sprite(350, 250, 'sun');
-
-        planetCoordsX[0] = 430;
-        planetCoordsX[1] = 350;
-        planetCoordsX[2] = 525;
-
-        planetCoordsY[0] = 205;
-        planetCoordsY[1] = 105;
-        planetCoordsY[2] = 360;
-
-        var tunnelCoordsX = [];
-        tunnelCoordsX[0] = 20;
-        tunnelCoordsX[1] = 620;
-        tunnelCoordsX[2] = 350;
-
-        var tunnelCoordsY = [];
-        tunnelCoordsY[0] = 400;
-        tunnelCoordsY[1] = 400;
-        tunnelCoordsY[2] = 490;
 
         graphics = game.add.graphics(0, 0);
         colonizeGraphics = game.add.graphics(0, 0);
@@ -1286,12 +1107,11 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
             planets[i].turnsToGrowth = $scope.starSystemInfo.starSystem.planets[i].turnsToGrowth;
             planets[i].productionPct = $scope.starSystemInfo.starSystem.planets[i].productionPct;
             planets[i].id = $scope.starSystemInfo.starSystem.planets[i].id;
-            console.log("Production Percent = " + planets[i].productionPct);
             var ownerRaceNum = $scope.starSystemInfo.starSystem.planets[i].ownerRaceNum;
             planets[i].icon = getIconStringFromRaceNum(ownerRaceNum);
 
-            console.log("planet[" + i + "].icon = " + planets[i].icon);
         }
+
         function getIconStringFromRaceNum (ownerRaceNum) {
             switch (ownerRaceNum) {
                 case -1:
@@ -1313,23 +1133,7 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
             tunnel.events.onInputDown.add(listener, this);
             tunnel.elementName = "Tunnel";
             tunnel.alpha = 0.0;
-        }
 
-
-        systemText = game.add.text(200 , 25, $scope.starSystemInfo.starSystem.name + " System" , { font: '28px Arial', fill: '#fff' });
-        systemText.visible = true;
-
-
-        for (i = 0; i < $scope.starSystemInfo.tunnels.length; i++) {
-            tunnels[i] = game.add.sprite(tunnelCoordsX[i], tunnelCoordsY[i], 'tunnel');
-            tunnels[i].inputEnabled = true;
-            tunnels[i].events.onInputDown.add(listener, this);
-            tunnels[i].elementName = "Tunnel: " + $scope.starSystemInfo.tunnels[i].name;
-            tunnels[i].travelTime = $scope.starSystemInfo.tunnels[i].length + " turns journey";
-            tunnels[i].index = i;
-        }
-
-        if (addAnimations) {
             wormholes = game.add.group();
             wormholes.createMultiple(3, 'wormhole');
             //tunnel.animations.add('wormhole');
@@ -1343,6 +1147,17 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
             }
         }
 
+        systemText = game.add.text(200, 25, $scope.starSystemInfo.starSystem.name + " System" , { font: '28px Arial', fill: '#fff' });
+        systemText.visible = true;
+
+        for (i = 0; i < $scope.starSystemInfo.tunnels.length; i++) {
+            tunnels[i] = game.add.sprite(tunnelCoordsX[i], tunnelCoordsY[i], 'tunnel');
+            tunnels[i].inputEnabled = true;
+            tunnels[i].events.onInputDown.add(listener, this);
+            tunnels[i].elementName = "Tunnel: " + $scope.starSystemInfo.tunnels[i].name;
+            tunnels[i].travelTime = $scope.starSystemInfo.tunnels[i].length + " turns journey";
+            tunnels[i].index = i;
+        }
 
         explosions = game.add.group();
         explosions.createMultiple(10, 'kaboom');
@@ -1383,7 +1198,6 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
                     ships[i].icon = "assets/races/race4_icon.jpg";
                     break;
             }
-            console.log(ships[i].icon);
         }
     }
 

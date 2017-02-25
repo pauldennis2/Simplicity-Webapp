@@ -39,7 +39,7 @@
         <div class="pd-panel-header" ng-if="selectedSystem.name"><center><h4>{{selectedSystem.name}} System</h4></center></div>
         <div class="pd-panel-header" ng-if="!selectedSystem.name"><center><h4>Select a System</h4></center></div>
         <div class="right">
-            <button type="button" class="trans-bg no-border white-text padding5"  ng-click="goToDagobah()" ng-hide="noSystemSelected">
+            <button type="button" class="trans-bg no-border white-text padding5"  ng-click="goToSystem()" ng-hide="noSystemSelected">
                 <h4><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> Go To System</h4></button>
             <div ng-hide="!noSystemSelected" style="height: 40px; width: 100px !important;"></div>
         </div>
