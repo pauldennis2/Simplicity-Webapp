@@ -13,7 +13,6 @@ a {
 }
 
 .erronav {
-    background-image: url("/assets/starfield.png");
     float: left;
     height: 600px;
 }
@@ -187,6 +186,10 @@ th, td {
 
 .w120 {
     width: 120px;
+}
+
+.w140 {
+    width: 140px;
 }
 
 .w150 {

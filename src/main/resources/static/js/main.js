@@ -461,6 +461,8 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
     $scope.combatLog = [];
     $scope.bothSelected = false;
 
+    $scope.combatLog[0] = "(Nothing has happened yet.)";
+
     //Constants
     var DESTROYER_SPACE = 96;
     var FIGHTER_SPACE = 64;
@@ -518,15 +520,11 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
     }
 
     function getCombatInfo (systemId) {
-        var wrapper = {"systemId": systemId};
-        $http.post("/empty-combat-info.json", wrapper)
+        $http.post("/empty-combat-info.json", {"systemId": systemId})
         .then(
             function successCallback (response) {
-                console.log("Found combat info");
                 friendShips = response.data.friendShips;
                 enemyShips = response.data.enemyShips;
-                console.log(friendShips);
-                console.log(enemyShips);
                 enemiesRemaining = enemyShips.length;
             },
 
@@ -534,13 +532,13 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
                 console.log("Did not find combat info");
             });
     };
+
     if ($routeParams.param != null) {
         getCombatInfo($routeParams.param);
     }
 
     function preload() {
         game.load.image('stars', 'assets/starfield.png');
-        game.load.spritesheet('destruction_explosion', 'assets/anims/destruction_explosion.png');
 
         game.load.image('green-destroyer', 'assets/ships/destroyer/destroyer_green.png');
         game.load.image('ltblue-destroyer', 'assets/ships/destroyer/destroyer_ltblue.png');
@@ -564,11 +562,12 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
         game.load.image('cruiser-shield', 'assets/ships/cruiser/cruiser_shield.png');
 
         game.load.image('laser', 'assets/red_beam_small.png');
-
         game.load.image('friend-crosshair', 'assets/crosshair_green2.png');
         game.load.image('enemy-crosshair', 'assets/crosshair_red2.png');
 
+        //Not in use yet
         game.load.spritesheet('explosion', 'assets/anims/explode.png');
+        game.load.spritesheet('destruction_explosion', 'assets/anims/destruction_explosion.png');
     }
 
     function getImageStringFromShip (ship) {
@@ -682,12 +681,12 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
             enemyShieldSprites[i].scale.x *= -1;
         }
 
-        explosions = game.add.group();
-        explosions.createMultiple(4, 'destruction_explosion');
-        setupExplosions();
+        //explosions = game.add.group();
+        //explosions.createMultiple(4, 'destruction_explosion');
+        //setupExplosions();
         //explosions.forEach(setupInvader, this);
     }
-
+    /*
     function setupInvader (invader) {
         invader.animations.add('destruction_explosion');
     }
@@ -697,6 +696,7 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
             enemySprites[i].animations.add('destruction_explosion');
         }
     }
+    */
 
     function friendListener (sprite) {
         friendChosen = true;
@@ -743,7 +743,7 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
 
     function update() {
         if (laser != null) {
-            game.physics.arcade.overlap(laser, enemySprites[enemySelectedIndex], laserHitsEnemy, null, this);
+            //game.physics.arcade.overlap(laser, enemySprites[enemySelectedIndex], laserHitsEnemy, null, this);
         }
         //Called every frame
         if (animateFirstShield) {
@@ -769,8 +769,6 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
     }
 
     $scope.passTurn = function () {
-        console.log("Passing turn");
-
         $scope.combatLog[combatLogIndex] = "Player ended turn. Doing enemy attacks.";
         combatLogIndex++;
 
@@ -814,17 +812,13 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
     }
 
     function doEnemyAttacks (attackerIndex) {
-        console.log("In doEnemyAttacks(attackerIndex) with attackerIndex = " + attackerIndex);
         while (enemyShips[attackerIndex] == null) {
-            console.log("Ship is dead. Incrementing index");
             attackerIndex++;
             if (attackerIndex >= enemyShips.length) {
                 return;
             }
         }
-        console.log("Doing attack for " + enemyShips[attackerIndex].name);
         if (enemyShips[attackerIndex].currentReservePower == 0) {
-            console.log("ship has no energy. Incrementing index");
             attackerIndex++;
             if (attackerIndex >= enemyShips.length) {
                 return;
@@ -848,10 +842,11 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
             }
         }
         if (target == null) {
-            alert("Combat is over. The evil CPU killed all ur ships brah.");
+            alert("Combat is over. The CPU killed all your ships.");
             return;
         }
-        $scope.combatLog[combatLogIndex] = enemyShips[attackerIndex].name + " fired at " + target.name + " for " + damage + " damage.";
+        $scope.combatLog[combatLogIndex] = enemyShips[attackerIndex].name +
+            " fired at " + target.name + " for " + damage + " damage.";
         combatLogIndex++;
         target.damage = damage;
         target.shieldsUp = true;
@@ -868,7 +863,6 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
                     friendShieldSprites[index].alpha = 0.0;
                 }
                 if (friendShips[index].health <= 0) {
-                    console.log("Another one bites the dust");
                     $scope.combatLog[combatLogIndex] = friendShips[index].name + " was destroyed.";
                     combatLogIndex++;
                     friendShips[index] = null;
@@ -889,10 +883,10 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
                 console.log("Error processing enemy attack");
                 console.log(response.data);
             });
-
     }
 
     $scope.fireWeapons = function () {
+        $scope.bothSelected = false;
         if (laser == null) {
             laser = lasers.getFirstExists(false);
         }
@@ -900,9 +894,6 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
         laser.reset(friendSprites[friendSelectedIndex].x, friendSprites[friendSelectedIndex].y);
         laser.rotation = game.physics.arcade.moveToObject(laser, enemySprites[enemySelectedIndex], 1200);
         xDestination = enemySprites[enemySelectedIndex].x - 10;
-        console.log("xDestination = " + xDestination);
-        console.log("enemySprites[enemySelectedIndex] = ");
-        console.log(enemySprites[enemySelectedIndex]);
 
         function laserHitsEnemy () {
             console.log("EXPLOSIONS*****!!!!!");
@@ -951,7 +942,6 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
                 $scope.enemySelected.energyPct = ""
                  + (enemyShips[enemySelectedIndex].currentReservePower/enemyShips[enemySelectedIndex].maxReservePower)*100 + "%";
                 if ($scope.enemySelected.health <= 0) {
-                    console.log("He's dead, Jim");
                     $scope.combatLog[combatLogIndex] = $scope.enemySelected.name + " was destroyed.";
                     combatLogIndex++;
                     enemyShips[enemySelectedIndex] = null;
@@ -959,9 +949,9 @@ simplicityApp.controller('combatController', function($scope, $http, $routeParam
                     enemyShieldSprites[enemySelectedIndex].alpha = 0.0;
                     $scope.enemySelected = null;
                     $scope.bothSelected = false;
-                    var explosion = explosions.getFirstExists(false);
-                    explosion.reset(20, 20);
-                    explosion.play('destruction_explosion', 30, false, true);
+                    //var explosion = explosions.getFirstExists(false);
+                    //explosion.reset(20, 20);
+                    //explosion.play('destruction_explosion', 30, false, true);
                     enemiesRemaining--;
                     if (enemiesRemaining == 0) {
                         alert("Combat is over! You win");
@@ -1010,7 +1000,6 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
     }
 
     function colonizePlanet (planet, ship) {
-        console.log(wrapper);
         $http.post("/colonize-planet.json", {"planetId": planet.id, "shipId": ship.id})
         .then(
             function successCallback (response) {
@@ -1023,8 +1012,6 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
     }
     
     function getImageStringFromShip (ship) {
-        console.log("ship = ");
-        console.log(ship);
         var chassis = ship.chassis;
         chassis = chassis.toLowerCase();
         var raceId = ship.ownerRaceNum;
@@ -1044,7 +1031,7 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
         game.load.image('stars', 'assets/starfield.png');
         game.load.image('sun', 'assets/smallsun.png');
         game.load.image('tunnel', 'assets/single_wormhole.png');
-        game.load.spritesheet('kaboom', 'assets/anims/explode.png', 128, 128);
+        //game.load.spritesheet('kaboom', 'assets/anims/explode.png', 128, 128);
         game.load.spritesheet('wormhole', 'assets/anims/Effect117.png', 128, 128);
 
         game.load.image('planet1', 'assets/planets/planet1.png');
@@ -1063,27 +1050,29 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
         game.load.image('ltblue-destroyer', 'assets/ships/destroyer/destroyer_ltblue.png');
         game.load.image('red-destroyer', 'assets/ships/destroyer/destroyer_red.png');
         game.load.image('gold-destroyer', 'assets/ships/destroyer/destroyer_gold.png');
-        game.load.image('purple-destroyer', 'assets/ships/destroyer/destroyer_purple.png');
-        
+
         game.load.image('green-fighter', 'assets/ships/fighter/fighter_green.png');
         game.load.image('ltblue-fighter', 'assets/ships/fighter/fighter_ltblue.png');
         game.load.image('red-fighter', 'assets/ships/fighter/fighter_red.png');
         game.load.image('gold-fighter', 'assets/ships/fighter/fighter_gold.png');
-        game.load.image('purple-fighter', 'assets/ships/fighter/fighter_purple.png');
-        
+
         game.load.image('green-colonizer', 'assets/ships/colonizer/colonizer_green.png');
         game.load.image('ltblue-colonizer', 'assets/ships/colonizer/colonizer_ltblue.png');
         game.load.image('red-colonizer', 'assets/ships/colonizer/colonizer_red.png');
         game.load.image('gold-colonizer', 'assets/ships/colonizer/colonizer_gold.png');
-        game.load.image('purple-colonizer', 'assets/ships/colonizer/colonizer_purple.png');
 
         game.load.image('green-cruiser', 'assets/ships/cruiser/cruiser_green.png');
         game.load.image('ltblue-cruiser', 'assets/ships/cruiser/cruiser_ltblue.png');
         game.load.image('red-cruiser', 'assets/ships/cruiser/cruiser_red.png');
         game.load.image('gold-cruiser', 'assets/ships/cruiser/cruiser_gold.png');
-        game.load.image('purple-cruiser', 'assets/ships/cruiser/cruiser_purple.png');
-    }
 
+        //Unused
+        //game.load.image('purple-cruiser', 'assets/ships/cruiser/cruiser_purple.png');
+        //game.load.image('purple-colonizer', 'assets/ships/colonizer/colonizer_purple.png');
+        //game.load.image('purple-fighter', 'assets/ships/fighter/fighter_purple.png');
+        //game.load.image('purple-destroyer', 'assets/ships/destroyer/destroyer_purple.png');
+    }
+    var planetSprites = [];
     function create() {
         game.physics.startSystem(Phaser.Physics.ARCADE);
         var ringCenterX = 400;
@@ -1094,22 +1083,20 @@ simplicityApp.controller('systemController', function($scope, $http, $routeParam
 
         graphics = game.add.graphics(0, 0);
         colonizeGraphics = game.add.graphics(0, 0);
-        var planets = [];
         graphics.lineStyle(1, 0x6C6C6C, 1);
         for(i = 0; i < $scope.starSystemInfo.starSystem.planets.length; i++) {
             graphics.drawCircle(ringCenterX, ringCenterY, 100 + i*50);
-            planets[i] = game.add.sprite(planetCoordsX[i], planetCoordsY[i], $scope.starSystemInfo.starSystem.planets[i].imageString);
-            planets[i].inputEnabled = true;
-            planets[i].events.onInputDown.add(listener, this);
-            planets[i].elementName = $scope.starSystemInfo.starSystem.planets[i].name;
-            planets[i].size = $scope.starSystemInfo.starSystem.planets[i].size;
-            planets[i].population = $scope.starSystemInfo.starSystem.planets[i].population;
-            planets[i].turnsToGrowth = $scope.starSystemInfo.starSystem.planets[i].turnsToGrowth;
-            planets[i].productionPct = $scope.starSystemInfo.starSystem.planets[i].productionPct;
-            planets[i].id = $scope.starSystemInfo.starSystem.planets[i].id;
-            var ownerRaceNum = $scope.starSystemInfo.starSystem.planets[i].ownerRaceNum;
-            planets[i].icon = getIconStringFromRaceNum(ownerRaceNum);
-
+            planetSprites[i] = game.add.sprite(planetCoordsX[i], planetCoordsY[i], $scope.starSystemInfo.starSystem.planetSprites[i].imageString);
+            planetSprites[i].inputEnabled = true;
+            planetSprites[i].events.onInputDown.add(listener, this);
+            planetSprites[i].elementName = $scope.starSystemInfo.starSystem.planetSprites[i].name;
+            planetSprites[i].size = $scope.starSystemInfo.starSystem.planetSprites[i].size;
+            planetSprites[i].population = $scope.starSystemInfo.starSystem.planetSprites[i].population;
+            planetSprites[i].turnsToGrowth = $scope.starSystemInfo.starSystem.planetSprites[i].turnsToGrowth;
+            planetSprites[i].productionPct = $scope.starSystemInfo.starSystem.planetSprites[i].productionPct;
+            planetSprites[i].id = $scope.starSystemInfo.starSystem.planetSprites[i].id;
+            var ownerRaceNum = $scope.starSystemInfo.starSystem.planetSprites[i].ownerRaceNum;
+            planetSprites[i].icon = getIconStringFromRaceNum(ownerRaceNum);
         }
 
         function getIconStringFromRaceNum (ownerRaceNum) {

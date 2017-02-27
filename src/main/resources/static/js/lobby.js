@@ -1,16 +1,23 @@
 var simplicityLobbyApp = angular.module("simplicityLobbyApp", []);
 
-console.log("In lobby.js");
-
 simplicityLobbyApp.controller('lobbyController', function($scope, $http) {
-    console.log("Lobbycontroller initialized");
     $scope.alphaUsers = [];
     $scope.bakerUsers = [];
     $scope.charlieUsers = [];
     $scope.deltaUsers = [];
     $scope.mainLobbyUsers = [];
+    $scope.raceImg = "../assets/races/no_race.png";
+    $scope.alphaStartReady = true;
+    $scope.bakerStartReady = true;
+    $scope.charlieStartReady = true;
+    $scope.deltaStartReady = true;
+
+    $scope.openGames = [];
+
+    var raceId = -1;
     var myUser = {};
-    getMyUser = function () {
+
+    function getMyUser () {
         $http.get("/my-user.json")
         .then(
             function successCallback (response) {
@@ -22,27 +29,8 @@ simplicityLobbyApp.controller('lobbyController', function($scope, $http) {
                 console.log("Could not find my user");
             });
     };
-    var raceId = -1;
-    $scope.raceChange = function () {
-        if ($scope.race_selection == "cat") {
-            $scope.raceImg = "../assets/races/race1.jpg";
-            raceId = 0;
-        }
-        if ($scope.race_selection == "dog") {
-            $scope.raceImg = "../assets/races/race2.jpg";
-            raceId = 1;
-        }
-        if ($scope.race_selection == "horse") {
-            $scope.raceImg = "../assets/races/race3.jpg";
-            raceId = 2;
-        }
-        if ($scope.race_selection == "snake") {
-            $scope.raceImg = "../assets/races/race4.jpg";
-            raceId = 3;
-        }
-    }
 
-    updateUser = function (lobbyNumber) {
+    function updateUser (lobbyNumber) {
         console.log("Trying to update user's lobby");
         $http.post("/change-users-lobby.json", lobbyNumber)
         .then(
@@ -52,7 +40,7 @@ simplicityLobbyApp.controller('lobbyController', function($scope, $http) {
             });
     };
 
-    getLobbyUsers = function () {
+    function getLobbyUsers () {
         $http.get("/users.json")
         .then(
             function successCallback (response) {
@@ -67,8 +55,8 @@ simplicityLobbyApp.controller('lobbyController', function($scope, $http) {
                 console.log("Could not find users");
             });
     };
-    $scope.openGames = [];
-    getOpenGames = function () {
+
+    function getOpenGames () {
         console.log("getting open games");
         $http.get("/open-games.json")
         .then(
@@ -99,22 +87,8 @@ simplicityLobbyApp.controller('lobbyController', function($scope, $http) {
             }
         )
     }
-    $scope.alphaStartReady = true;
-    $scope.bakerStartReady = true;
-    $scope.charlieStartReady = true;
-    $scope.deltaStartReady = true;
 
     $scope.gameStart = function (lobbyNumber) {
-        console.log("Thinking about starting a game. Lobby number: " + lobbyNumber);
-        /*switch (lobbyNumber) {
-            case 0:
-                if ($scope.alphaUsers.length > 1) {
-                    console.log("Cool, starting alpha game");
-                } else {
-                    console.log("Nope, not enough users");
-                }
-                break;
-        }*/
         var lobbyName;
         switch (lobbyNumber) {
             case 0:
@@ -134,8 +108,6 @@ simplicityLobbyApp.controller('lobbyController', function($scope, $http) {
         $http.post("/new-multiplayer-game.json", wrapper)
         .then(
             function successCallback (response) {
-                console.log("Successfully started a new game. So sayeth the wise Alaundo");
-                console.log(response.data);
                 window.location.href = "/main.html";
             },
 
@@ -145,19 +117,24 @@ simplicityLobbyApp.controller('lobbyController', function($scope, $http) {
         )
     }
 
-    currentUserIndex = 1;
-    getLobbyUsers();
-
-    window.setInterval(function(){
-        getLobbyUsers();
-    }, 1000);
-
-    getOpenGames();
-    window.setInterval(function(){
-        getOpenGames();
-    }, 1000);
-
-    $scope.raceImg = "../assets/races/no_race.png";
+    $scope.raceChange = function () {
+        if ($scope.race_selection == "cat") {
+            $scope.raceImg = "../assets/races/race1.jpg";
+            raceId = 0;
+        }
+        if ($scope.race_selection == "dog") {
+            $scope.raceImg = "../assets/races/race2.jpg";
+            raceId = 1;
+        }
+        if ($scope.race_selection == "horse") {
+            $scope.raceImg = "../assets/races/race3.jpg";
+            raceId = 2;
+        }
+        if ($scope.race_selection == "snake") {
+            $scope.raceImg = "../assets/races/race4.jpg";
+            raceId = 3;
+        }
+    }
 
     $scope.moveToGroup = function (group) {
         //Todo: double-check this logic. It seems like we're changing their database status before we're sure we have room
@@ -185,7 +162,6 @@ simplicityLobbyApp.controller('lobbyController', function($scope, $http) {
             //console.log("a = " + alphaIndex + ", b = " + bakerIndex + ", c = " + charlieIndex + ", d = " + deltaIndex)
             //Remove the user from the group they were in
             if (alphaIndex > -1) {
-                //$scope.alphaUsers.shift();
                 $scope.alphaUsers.splice(alphaIndex, 1);
 
             }
@@ -235,7 +211,16 @@ simplicityLobbyApp.controller('lobbyController', function($scope, $http) {
                 myUser.leader = false;
             }
         }
-        //group.shift();
-        //$scope.deltaUsers.unshift(users[currentUserIndex]);
     }
+
+    getLobbyUsers();
+    window.setInterval(function(){
+        getLobbyUsers();
+    }, 1000);
+
+    getOpenGames();
+    window.setInterval(function(){
+        getOpenGames();
+    }, 1000);
+
 });

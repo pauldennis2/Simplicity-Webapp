@@ -1,7 +1,35 @@
-<div id="helpDiv" class="help-div left" ng-hide="!helpMode">
-    Combat help
+<div id="helpDiv" class="help-div left star-bg" ng-hide="!helpMode">
+    <center>
+        Combat Help
+    </center>
+    <br>
+    Combat in Simplicity is fairly simple. It is broken up into combat rounds. Each ship can fire once per combat round.
+    Left click on a ship (allied or enemy) to select it. You should see its statistics (health, shield, generator)
+    displayed in the bottom. If it's an allied ship the info will be to the left, whereas enemy ship info will be to the
+    right. Once you have selected an allied ship to attack with and an enemy ship to target, you will see a red
+    "<span class="red-text">Fire Weapons</span>" button. If it's <span class="grey-text">greyed out</span>, it means
+    your ship has already fired its weapons this turn.
+    <br><br>
+
+    Once you have fired all your ships' weapons, press the "Next Round ->" button to proceed. The enemy ships will fire
+    on your ships, doing damage as appropriate. If you want to see exactly what happened, check out the <b>Combat
+    Log</b> by pressing "View Log". <br><br>
+
+    <h4>
+        Combat Mechanics
+    </h4>
+    When a ship fires its weapon, it does damage. This damage is currently determined solely by the size of the ship (
+    Fighers do 8, Destroyers 30, Cruisers 45). The defending ship will try to absorb as much damage as possible on its
+    <span class="shield">shield</span>. Shields require power equal to the damage they absorb though, so if the
+    defending ship is low on energy, the shield's effectiveness will be reduced. Also, shields can only absorb so much
+    damage on a given attack; the rest will bleed over to the ship's hull. This amount depends on the ship size.<br><br>
+
+    <span class="generator">Generators</span> provide power for your attacks and shields. Each round your generator will
+    produce a certain amount of power. You can see this amount on the generator info bar; it will look like "Energy 30
+    (+10) / 30". This means it produces 10 units per turn. Firing weapons requires power equal to the damage of the
+    ship, so again, if your ship is low on energy it will do less damage.<br>
 </div>
-<div id="combatLogDiv" class="help-div left" ng-hide="!combatLogMode">
+<div id="combatLogDiv" class="help-div left star-bg" ng-hide="!combatLogMode">
     <center>Combat Log</center><br><br>
     <div ng-repeat="logItem in combatLog track by $index">
         {{logItem}}
@@ -13,19 +41,19 @@
 
 <div class="right" id="buttonDiv">
     <center>
-        <button class="btn btn-default space-bg white-text no-border" type="button" style="width:140px" ng-click="passTurn()">
+        <button class="trans-bg white-text no-border w140" type="button" ng-click="passTurn()">
             <h4>Next Round -></h4>
         </button><br>
-        <button class="btn btn-default space-bg white-text no-border" type="button" style="width:140px" ng-click="getHelp()">
+        <button class="trans-bg white-text no-border w140" type="button" ng-click="getHelp()">
             <h4>Help</h4>
         </button><br>
-        <button class="btn btn-default space-bg white-text no-border" type="button" style="width:140px" ng-click="viewLog()">
+        <button class="trans-bg white-text no-border w140" type="button" ng-click="viewLog()">
             <h4>{{logToggle}}</h4>
         </button><br>
-        <button class="btn btn-default space-bg white-text no-border" type="button" style="width:140px" ng-click="endCombat()" ng-hide="!combatOver">
+        <button class="trans-bg white-text no-border w140" type="button" ng-click="endCombat()" ng-hide="!combatOver">
             <h4>Exit Combat</h4>
         </button><br>
-        <button class="btn btn-default space-bg red-text no-border" type="button" style="width:140px" ng-click="fireWeapons()" ng-hide="!bothSelected"
+        <button class="trans-bg red-text no-border w140" type="button" ng-click="fireWeapons()" ng-hide="!bothSelected"
                 ng-disabled="friendSelected.alreadyFired" ng-class="greyIfFired">
             <h4>Fire Weapons</h4>
         </button>
