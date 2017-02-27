@@ -124,8 +124,8 @@
         <div class="w200" id="infoDiv" ng-if="selectedElement.name">
             Info:<br>
             {{selectedElement.health}}{{selectedElement.size}}{{selectedElement.travelTime}}<br>
-            {{selectedElement.turnsToGrowth}}<br>
-            {{selectedElement.population}}
+            Turns to Growth:{{selectedElement.turnsToGrowth}}<br>
+            Population: {{selectedElement.population}}
         </div>
         <div class="w300 left" id="shipActionDiv" ng-hide="!shipSelected">
             <button class="trans-bg no-border white-text padding5" type="button" ng-click="enterCombat()">
@@ -144,7 +144,7 @@
             <div class="left clear-both">
                 <span class="left padding5 slider-height">Research</span>
                 <div class="left">
-                    <input class="w120 left" type="range" ng-model="outputSlider" style="float:left">
+                    <input class="w120 left" type="range" ng-model="outputSlider">
                 </div>
                 <span class="left padding5 slider-height">Production</span>
             </div>
