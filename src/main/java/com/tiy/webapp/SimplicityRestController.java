@@ -64,14 +64,15 @@ public class SimplicityRestController {
         return new LobbyUsersWrapper(alphaUsers, bakerUsers, charlieUsers, deltaUsers, mainLobbyUsers);
     }
 
-    @RequestMapping(path = "/open-games.json", method= RequestMethod.GET)
+    @RequestMapping(path = "/open-savedGames.json", method= RequestMethod.GET)
     public List<Game> openGames () {
         return games.findByJustStarted(true);
     }
 
     @RequestMapping(path = "/my-user.json", method = RequestMethod.GET)
     public User getMyUser (HttpSession session) {
-        return (User)session.getAttribute("user");
+        User user = (User)session.getAttribute("user");
+        return user;
     }
 
     @RequestMapping(path = "/game-id.json", method = RequestMethod.GET)
@@ -135,8 +136,8 @@ public class SimplicityRestController {
         return new Response(true, game.getId());
     }
 
-    @RequestMapping(path = "/resume-game.json", method = RequestMethod.POST)
-    public Response resumeGame (@RequestBody IdRequestWrapper wrapper, HttpSession session) {
+    @RequestMapping(path = "/load-game.json", method = RequestMethod.POST)
+    public Response loadGame (@RequestBody IdRequestWrapper wrapper, HttpSession session) {
         Integer gameId = wrapper.getGameId();
         User user = (User)session.getAttribute("user");
         Game game = games.findOne(gameId);
@@ -147,6 +148,21 @@ public class SimplicityRestController {
             return new Response(true);
         }
         return new Response(false);
+    }
+
+    @RequestMapping (path = "/save-game.json", method = RequestMethod.POST)
+    public Response saveGame (HttpSession session) {
+        Integer gameId = (Integer) session.getAttribute("gameId");
+        User user = (User) session.getAttribute("user");
+        user.addSaveGameId(gameId);
+        users.save(user);
+        return new Response(true);
+    }
+
+    @RequestMapping (path =  "/get-saved-game-ids.json", method = RequestMethod.POST)
+    public Set<Integer> getSavedGames (HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        return user.getSavedGameIds();
     }
 
     @RequestMapping(path = "/join-multiplayer-game.json", method = RequestMethod.POST)

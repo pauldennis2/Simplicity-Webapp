@@ -2,8 +2,8 @@
     Game settings coming soon!
     <br>
     (OK probably not soon. But eventually)<br><br>
-    A note about save games: all save data is stored in the database. During the early stages of development I will
-    likely be "resetting" the database as part of the debugging process. This means (sorry!) for the moment, save games
+    A note about save savedGames: all save data is stored in the database. During the early stages of development I will
+    likely be "resetting" the database as part of the debugging process. This means (sorry!) for the moment, save savedGames
     do not have any promise of longevity. If enough people start playing and actually enjoying the game, that will of
     course change.
     <br>
@@ -11,4 +11,6 @@
     <h3>{{gameId}}</h3>
     If you remember this number hopefully soon I will figure out how to load that
     game so you can resume it.
+
+    <button class="trans-bg" ng-click="saveGame()"><h3>Save Game</h3></button>
 </div>

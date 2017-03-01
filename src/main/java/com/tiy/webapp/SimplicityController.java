@@ -66,6 +66,11 @@ public class SimplicityController {
         return "main-menu";
     }
 
+    @RequestMapping(path = "/load-game", method = RequestMethod.GET)
+    public String loadGame () {
+        return "load-game";
+    }
+
     @RequestMapping(path = "/empty-race-sel", method = RequestMethod.GET)
     public String raceSel () {
         return "empty-race-sel";

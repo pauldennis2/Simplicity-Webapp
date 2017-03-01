@@ -434,7 +434,7 @@ simplicityApp.controller('mainController', function($scope, $http) {
 
 simplicityApp.controller('optionsController', function($scope, $http) {
 
-    getGameId = function () {
+    function getGameId () {
         $http.get("/game-id.json")
         .then(
             function successCallback (response) {
@@ -446,6 +446,18 @@ simplicityApp.controller('optionsController', function($scope, $http) {
             });
     }
     getGameId();
+
+    $scope.saveGame = function () {
+        $http.post("/save-game.json")
+        .then (
+            function successCallback (response) {
+                console.log("Successfully saved game");
+            },
+
+            function errorCallback (response) {
+                console.log("Error saving game");
+            });
+    }
 });
 
 simplicityApp.controller('bugReportController', function($scope, $http) {
